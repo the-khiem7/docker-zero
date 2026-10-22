@@ -109,7 +109,7 @@ Gate: run on this workstation; Portainer data intact and the legacy shortcut rep
 | First launch | The setup window opened on its own with the card and four checked items |
 | Take over clicked through UI Automation | `Replaced 4 items`; the card then read `Nothing left to replace` |
 | Legacy launchers | Desktop and Start Menu `Portainer.lnk`, the Startup keepalive shortcut and the `docker-wsl` folder gone; Docker Zero shortcuts present |
-| Auto start and command | `HKCU Run` value kept `--start-distro`; `docker-zeroin\docker.cmd` written and run (`docker ps` listed `portainer`); user PATH 22 entries before and after, old entry replaced by the new one |
+| Auto start and command | `HKCU Run` value kept `--start-distro`; `docker-zero\bin\docker.cmd` written and run (`docker ps` listed `portainer`); user PATH 22 entries before and after, old entry replaced by the new one |
 | Idle line | `.wslconfig` unchanged; stored idle mode became `wslconfig` |
 | Portainer data | Container id and start time identical before and after, `portainer_data` listed, status endpoint `200` |
 | `wails3 task test`, `wails3 task lint`, `wails3 task build` | All ok; 0 lint issues; 0 svelte-check errors |
