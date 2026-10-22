@@ -27,6 +27,11 @@ import (
 var assets embed.FS
 
 func main() {
+	configDir, err := paths.ConfigDir(os.Getenv)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var shell *ui.Shell
 	app := application.New(application.Options{
 		Name:        "Docker Zero",
@@ -47,13 +52,11 @@ func main() {
 		Windows: application.WindowsOptions{
 			// The app lives in the tray; hiding every window must not quit it.
 			DisableQuitOnLastWindowClosed: true,
+			// Kept beside the settings, so uninstall finds and removes it.
+			WebviewUserDataPath: filepath.Join(configDir, "webview"),
 		},
 	})
 
-	configDir, err := paths.ConfigDir(os.Getenv)
-	if err != nil {
-		log.Fatal(err)
-	}
 	installExe, err := paths.InstalledExe(os.Getenv)
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +65,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	prefs, err := ui.LoadPrefs(settings.Store{Path: filepath.Join(configDir, "settings.json")})
+	prefs, err := ui.LoadPrefs(settings.Store{Path: filepath.Join(configDir, paths.SettingsFile)})
 	if err != nil {
 		app.Logger.Warn("settings unreadable, using defaults", "error", err)
 	}

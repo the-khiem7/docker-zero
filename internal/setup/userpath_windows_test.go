@@ -2,7 +2,13 @@
 
 package setup
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/the-khiem7/docker-zero/internal/paths"
+)
 
 func TestPathWithout(t *testing.T) {
 	cases := []struct {
@@ -31,5 +37,33 @@ func TestRemoveAfterExitRefusesOtherFolders(t *testing.T) {
 		if err := removeAfterExit(dir); err == nil {
 			t.Errorf("accepted %q", dir)
 		}
+	}
+}
+
+func TestRemoveAfterExitRefusesWhenAnyFolderIsForeign(t *testing.T) {
+	if err := removeAfterExit(`C:\x\docker-zero`, `C:\Users`); err == nil {
+		t.Error("accepted a foreign second folder")
+	}
+}
+
+func TestRemoveConfigKeepsTheFolder(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), paths.AppDirName)
+	if err := os.MkdirAll(filepath.Join(dir, "webview"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, paths.SettingsFile), []byte("{}"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	h := NewHost(HostConfig{ConfigDir: dir})
+	for range 2 {
+		if err := h.RemoveConfig(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(dir, paths.SettingsFile)); !os.IsNotExist(err) {
+		t.Errorf("settings file still there: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "webview")); err != nil {
+		t.Errorf("webview folder removed early: %v", err)
 	}
 }

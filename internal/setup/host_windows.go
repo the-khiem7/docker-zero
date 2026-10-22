@@ -20,7 +20,8 @@ import (
 type HostConfig struct {
 	// InstallDir holds the installed executable.
 	InstallDir string
-	// ConfigDir holds settings.json.
+	// ConfigDir holds settings.json and the WebView2 data, which stays locked
+	// while the app runs.
 	ConfigDir string
 	// WSLConfig is the user's .wslconfig.
 	WSLConfig settings.WSLConfig
@@ -59,29 +60,41 @@ func NewHost(c HostConfig) Host {
 			_, err := c.WSLConfig.SetIdleDisabled(false)
 			return err
 		},
-		RemoveConfig: func() error { return os.RemoveAll(c.ConfigDir) },
+		RemoveConfig: func() error {
+			err := os.Remove(filepath.Join(c.ConfigDir, paths.SettingsFile))
+			if errors.Is(err, os.ErrNotExist) {
+				return nil
+			}
+			return err
+		},
 		RemoveInstallDirAfterExit: func() error {
-			return removeAfterExit(c.InstallDir)
+			return removeAfterExit(c.InstallDir, c.ConfigDir)
 		},
 	}
 }
 
 // removeAfterExit starts a detached shell that waits a few seconds, long
-// enough for this process to end, then deletes dir. A running executable
-// cannot delete its own folder.
-func removeAfterExit(dir string) error {
-	dir = filepath.Clean(dir)
-	// The folder name is the guard against a wrong path; the characters keep
-	// the command line below from being reinterpreted by cmd.exe.
-	if filepath.Base(dir) != paths.AppDirName || strings.ContainsAny(dir, `"%`) {
-		return ErrUnsafeDir
+// enough for this process to end, then deletes dirs. A running executable
+// cannot delete its own folder, and WebView2 keeps its data folder locked.
+func removeAfterExit(dirs ...string) error {
+	var line strings.Builder
+	line.WriteString(`cmd.exe /c "ping -n 5 127.0.0.1 >nul`)
+	for _, dir := range dirs {
+		dir = filepath.Clean(dir)
+		// The folder name is the guard against a wrong path; the characters keep
+		// the command line below from being reinterpreted by cmd.exe.
+		if filepath.Base(dir) != paths.AppDirName || strings.ContainsAny(dir, `"%`) {
+			return ErrUnsafeDir
+		}
+		line.WriteString(` & rmdir /s /q "` + dir + `"`)
 	}
-	cmd := exec.Command("cmd.exe") //nolint:gosec // fixed executable; the command line is built below from a checked path
+	line.WriteString(`"`)
+	cmd := exec.Command("cmd.exe") //nolint:gosec // fixed executable; the command line is built below from checked paths
 	// CmdLine bypasses Go's argument quoting, which cmd.exe does not parse.
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		HideWindow:    true,
 		CreationFlags: windows.CREATE_NO_WINDOW | windows.CREATE_NEW_PROCESS_GROUP,
-		CmdLine:       `cmd.exe /c "ping -n 5 127.0.0.1 >nul & rmdir /s /q "` + dir + `""`,
+		CmdLine:       line.String(),
 	}
 	return cmd.Start()
 }

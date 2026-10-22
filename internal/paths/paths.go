@@ -14,6 +14,9 @@ const AppDirName = "docker-zero"
 // ExeName is the file name the app copies itself to.
 const ExeName = "docker-zero.exe"
 
+// SettingsFile is the settings file name inside the config folder.
+const SettingsFile = "settings.json"
+
 // ErrNoLocalAppData is returned when LOCALAPPDATA is not set.
 var ErrNoLocalAppData = errors.New("LOCALAPPDATA is not set")
 
