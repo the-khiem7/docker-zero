@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker Zero UI inventory</title>
+<!-- Every window and state of the app, rendered by shoot.py from the mocked
+     frontend, plus screenshots of the built exe. Open this file in a browser;
+     reviews are kept in this browser only and can be copied as Markdown. -->
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f5f7;
+    --panel: #ffffff;
+    --panel-2: #eef0f3;
+    --line: #dde1e6;
+    --text: #1a1d21;
+    --muted: #5b636d;
+    --accent: #005fb8;
+    --accent-soft: #e3effa;
+    --keep: #0f7b0f;
+    --keep-soft: #e4f3e4;
+    --revise: #b3261e;
+    --revise-soft: #fbe7e5;
+    --discuss: #8a5300;
+    --discuss-soft: #fbefd9;
+    --shot-bg: repeating-conic-gradient(#e9ebee 0 25%, #f6f7f8 0 50%) 0 0 / 16px 16px;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #16181b;
+      --panel: #1f2226;
+      --panel-2: #272b30;
+      --line: #343940;
+      --text: #eceef1;
+      --muted: #a2aab4;
+      --accent: #60cdff;
+      --accent-soft: #10334a;
+      --keep: #6ccb5f;
+      --keep-soft: #1c3320;
+      --revise: #ff99a4;
+      --revise-soft: #3d1f23;
+      --discuss: #f5c35b;
+      --discuss-soft: #3a2f16;
+      --shot-bg: repeating-conic-gradient(#202328 0 25%, #1a1c20 0 50%) 0 0 / 16px 16px;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #16181b;
+    --panel: #1f2226;
+    --panel-2: #272b30;
+    --line: #343940;
+    --text: #eceef1;
+    --muted: #a2aab4;
+    --accent: #60cdff;
+    --accent-soft: #10334a;
+    --keep: #6ccb5f;
+    --keep-soft: #1c3320;
+    --revise: #ff99a4;
+    --revise-soft: #3d1f23;
+    --discuss: #f5c35b;
+    --discuss-soft: #3a2f16;
+    --shot-bg: repeating-conic-gradient(#202328 0 25%, #1a1c20 0 50%) 0 0 / 16px 16px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.45 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  }
+  code { font: 12px/1.4 "Cascadia Mono", Consolas, monospace; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 16px; }
+  header.top { padding-top: 28px; padding-bottom: 12px; }
+  h1 { margin: 0 0 6px; font-size: 26px; font-weight: 650; letter-spacing: -0.01em; }
+  .lede { margin: 0; color: var(--muted); max-width: 70ch; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 9px; border-radius: 999px; font-size: 12px;
+    background: var(--panel-2); color: var(--muted); border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+  .bar {
+    position: sticky; top: 0; z-index: 5;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding-top: 10px; padding-bottom: 10px; }
+  .group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .group > span { font-size: 12px; color: var(--muted); margin-right: 2px; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .seg button, .filter button {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 999px;
+    padding: 3px 11px; font-size: 13px;
+  }
+  .seg button[aria-pressed="true"], .filter button[aria-pressed="true"] {
+    background: var(--accent); border-color: var(--accent); color: var(--panel);
+  }
+  .filter button .n { opacity: .7; margin-left: 3px; font-size: 11px; }
+  input[type="search"] {
+    font: inherit; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--text); min-width: 200px;
+  }
+  .act {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 4px 10px; font-size: 13px;
+  }
+  .act.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); }
+  .spacer { flex: 1; }
+  main { padding: 8px 0 60px; }
+  section.win { margin-top: 26px; }
+  .win-head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; margin-bottom: 4px; }
+  .win-head h2 { margin: 0; font-size: 19px; font-weight: 650; }
+  .win-opens { margin: 0 0 12px; color: var(--muted); max-width: 90ch; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(var(--col, 300px), 100%), 1fr)); align-items: start; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .card[data-verdict="keep"] { border-color: var(--keep); }
+  .card[data-verdict="revise"] { border-color: var(--revise); }
+  .card[data-verdict="discuss"] { border-color: var(--discuss); }
+  .shots { display: grid; gap: 1px; background: var(--line); }
+  .shots.two { grid-template-columns: 1fr 1fr; }
+  figure { margin: 0; background: var(--shot-bg); padding: 10px; display: flex; justify-content: center; position: relative; }
+  figure .frame { position: relative; width: 100%; max-width: var(--w); }
+  figure img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 1px 3px rgb(0 0 0 / .18); cursor: zoom-in; }
+  .fold {
+    position: absolute; left: -6px; right: -6px; height: 0; border-top: 2px dashed var(--accent);
+    pointer-events: none;
+  }
+  .fold span {
+    position: absolute; right: 0; top: -20px; font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    background: var(--accent); color: var(--panel);
+  }
+  figcaption.tag {
+    position: absolute; top: 4px; left: 6px; font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted);
+  }
+  .body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .body h3 { margin: 0; font-size: 15px; font-weight: 600; }
+  .how { margin: 0; color: var(--muted); font-size: 13px; }
+  .note {
+    margin: 2px 0 0; font-size: 13px; padding: 6px 9px; border-radius: 6px;
+    background: var(--discuss-soft); border-left: 3px solid var(--discuss);
+  }
+  .note b { color: var(--discuss); font-weight: 600; margin-right: 4px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px; }
+  .meta .chip { font-size: 11px; padding: 1px 7px; }
+  .meta .chip.step { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .review { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-top: 4px; }
+  .review button {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 2px 9px; font-size: 12px;
+  }
+  .review button[data-v="keep"][aria-pressed="true"] { background: var(--keep-soft); border-color: var(--keep); color: var(--keep); }
+  .review button[data-v="revise"][aria-pressed="true"] { background: var(--revise-soft); border-color: var(--revise); color: var(--revise); }
+  .review button[data-v="discuss"][aria-pressed="true"] { background: var(--discuss-soft); border-color: var(--discuss); color: var(--discuss); }
+  .review textarea {
+    width: 100%; min-height: 34px; resize: vertical; font: inherit; font-size: 13px;
+    padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  }
+  .empty { color: var(--muted); padding: 30px 0; text-align: center; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); }
+  .lightbox {
+    position: fixed; inset: 0; z-index: 20; background: rgb(0 0 0 / .72);
+    display: none; overflow: auto; padding: 24px 16px;
+  }
+  .lightbox.open { display: block; }
+  .lightbox img { display: block; margin: 0 auto; border-radius: 8px; max-width: 100%; height: auto; cursor: zoom-out; }
+  .lightbox p { color: #fff; text-align: center; margin: 0 0 10px; }
+  footer { border-top: 1px solid var(--line); padding: 18px 0 40px; color: var(--muted); font-size: 13px; }
+  footer pre { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; overflow-x: auto; }
+  .toast {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 30;
+    background: var(--text); color: var(--bg); padding: 6px 14px; border-radius: 8px; font-size: 13px;
+    opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  @media (max-width: 640px) {
+    .shots.two, .pair { grid-template-columns: 1fr; }
+    input[type="search"] { min-width: 0; width: 100%; }
+    .spacer { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <h1>Docker Zero UI inventory</h1>
+  <p class="lede">Every window and state of the app as it looks today, rendered from the real Svelte frontend with the Go services replaced by fixed data. Mark each state Keep, Revise or Discuss to drive the redesign.</p>
+  <div class="chips" id="facts"></div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="group filter" id="winFilter" role="group" aria-label="Window"></div>
+    <div class="group seg" id="schemeSeg" role="group" aria-label="Screenshot theme">
+      <span>Shots</span>
+      <button data-s="light">Light</button><button data-s="dark">Dark</button><button data-s="both">Both</button>
+    </div>
+    <div class="group seg" id="reviewSeg" role="group" aria-label="Review filter">
+      <span>Show</span>
+      <button data-r="all">All</button><button data-r="todo">Unreviewed</button><button data-r="notes">Observed</button><button data-r="revise">Revise</button>
+    </div>
+    <input type="search" id="q" placeholder="Search states" aria-label="Search states">
+    <span class="spacer"></span>
+    <span class="chip" id="progress"></span>
+    <button class="act" id="exportBtn" title="Copy every verdict and note as Markdown">Copy review</button>
+    <button class="act" id="themeBtn" title="Page theme">Page theme</button>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<footer class="wrap">
+  <p>Regenerate after a UI change: serve the mocked frontend, then render. Real references come from the built exe with <code>real.ps1</code>.</p>
+<pre>cd frontend &amp;&amp; npm run inventory
+uvx --from playwright --with pillow python -I design/ui-inventory/shoot.py</pre>
+  <p>Scenarios live in <code>frontend/inventory/fixtures.ts</code>; the list of states, their clicks and the observations live in <code>design/ui-inventory/shoot.py</code>.</p>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot at full size"><p id="lbCap"></p><img id="lbImg" alt=""></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="inventory.js"></script>
+<script>
+(function () {
+  const D = window.INVENTORY;
+  const main = document.getElementById("main");
+  if (!D) { main.innerHTML = '<p class="empty">inventory.js is missing; run shoot.py.</p>'; return; }
+
+  const KEY = "dz-ui-inventory-review";
+  const PREF = "dz-ui-inventory-prefs";
+  const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } };
+  const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private window */ } };
+  const review = load(KEY, {});
+  const prefs = Object.assign({ win: "all", scheme: "light", show: "all", theme: "" }, load(PREF, {}));
+  let query = "";
+
+  const el = (tag, attrs = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v;
+      else if (k === "style") n.style.cssText = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v);
+    }
+    for (const kid of kids.flat()) if (kid != null) n.append(kid);
+    return n;
+  };
+
+  const windows = Object.entries(D.windows);
+  const byWin = (w) => D.shots.filter((s) => s.window === w);
+  const shotById = Object.fromEntries(D.shots.map((s) => [s.id, s]));
+
+  // Facts row.
+  const noted = D.shots.filter((s) => s.note).length;
+  document.getElementById("facts").append(
+    el("span", { class: "chip" }, el("b", {}, String(D.shots.length)), " states"),
+    el("span", { class: "chip" }, el("b", {}, String(windows.length)), " views"),
+    el("span", { class: "chip" }, el("b", {}, String(noted)), " observations"),
+    el("span", { class: "chip" }, el("b", {}, String(D.real.length)), " real references"),
+    el("span", { class: "chip" }, "rendered ", el("b", {}, D.generated), " at ", el("code", {}, D.commit || "?")),
+  );
+
+  // Window filter.
+  const wf = document.getElementById("winFilter");
+  const addFilter = (key, label, n) =>
+    wf.append(el("button", { "data-w": key, onclick: () => { prefs.win = key; render(); } }, label, el("span", { class: "n" }, String(n))));
+  addFilter("all", "All", D.shots.length);
+  for (const [key, w] of windows) addFilter(key, w.title.replace("Settings: ", ""), byWin(key).length);
+  if (D.real.length) addFilter("real", "Real exe", D.real.length);
+
+  document.querySelectorAll("#schemeSeg button").forEach((b) =>
+    b.addEventListener("click", () => { prefs.scheme = b.dataset.s; render(); }));
+  document.querySelectorAll("#reviewSeg button").forEach((b) =>
+    b.addEventListener("click", () => { prefs.show = b.dataset.r; render(); }));
+  document.getElementById("q").addEventListener("input", (e) => { query = e.target.value.trim().toLowerCase(); render(); });
+
+  // Page theme: system, then light, then dark.
+  const themeBtn = document.getElementById("themeBtn");
+  const applyTheme = () => {
+    if (prefs.theme) document.documentElement.dataset.theme = prefs.theme;
+    else delete document.documentElement.dataset.theme;
+    themeBtn.textContent = "Page: " + (prefs.theme || "system");
+  };
+  themeBtn.addEventListener("click", () => {
+    prefs.theme = { "": "light", light: "dark", dark: "" }[prefs.theme];
+    applyTheme(); save(PREF, prefs);
+  });
+  applyTheme();
+
+  // Lightbox.
+  const lb = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lbImg");
+  const openLb = (src, w, cap) => {
+    lbImg.src = src; lbImg.style.width = w + "px"; lbImg.alt = cap;
+    document.getElementById("lbCap").textContent = cap + " (100%)";
+    lb.classList.add("open"); lb.focus();
+  };
+  lb.addEventListener("click", () => lb.classList.remove("open"));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") lb.classList.remove("open"); });
+
+  function figure(src, w, h, cap, foldAt, tag) {
+    const frame = el("div", { class: "frame", style: `--w:${w}px` },
+      el("img", { src, alt: cap, loading: "lazy", width: String(w), height: String(h), onclick: () => openLb(src, w, cap) }));
+    if (foldAt && h > foldAt + 4) {
+      frame.append(el("div", { class: "fold", style: `top:${(foldAt / h) * 100}%` }, el("span", {}, `window ends at ${foldAt} px`)));
+    }
+    return el("figure", {}, tag ? el("figcaption", { class: "tag" }, tag) : null, frame);
+  }
+
+  function shotCard(s) {
+    const win = D.windows[s.window];
+    const fold = s.crop === "full" ? win.size[1] : 0;
+    const schemes = prefs.scheme === "both" ? ["light", "dark"] : [prefs.scheme];
+    const label = `${win.title}: ${s.title}`;
+    const r = review[s.id] || {};
+    const card = el("article", { class: "card", id: s.id, "data-verdict": r.v || "" });
+    card.append(el("div", { class: "shots" + (schemes.length > 1 ? " two" : "") },
+      schemes.map((sc) => figure(`shots/${s.id}-${sc}.webp`, s[sc].w, s[sc].h, `${label}, ${sc}`, fold, schemes.length > 1 ? sc : ""))));
+    const meta = el("div", { class: "meta" },
+      el("span", { class: "chip" }, el("code", {}, `?state=${s.state}`)),
+      el("span", { class: "chip" }, { window: "whole window", full: "full scroll height", cards: "cropped to the cards" }[s.crop]),
+      s.actions.map((a) => el("span", { class: "chip step" }, a.startsWith("type ") ? a : `click ${a}`)));
+    const verdict = (v, text) => el("button", {
+      "data-v": v, "aria-pressed": String(r.v === v),
+      onclick: () => { const cur = review[s.id] || {}; cur.v = cur.v === v ? "" : v; review[s.id] = cur; save(KEY, review); render(); },
+    }, text);
+    const ta = el("textarea", { placeholder: "Note for the redesign", "aria-label": `Note for ${label}` });
+    ta.value = r.n || "";
+    ta.addEventListener("change", () => { const cur = review[s.id] || {}; cur.n = ta.value; review[s.id] = cur; save(KEY, review); updateProgress(); });
+    card.append(el("div", { class: "body" },
+      el("h3", {}, s.title),
+      el("p", { class: "how" }, s.how),
+      s.note ? el("p", { class: "note" }, el("b", {}, "Observed"), s.note) : null,
+      meta,
+      el("div", { class: "review" }, verdict("keep", "Keep"), verdict("revise", "Revise"), verdict("discuss", "Discuss")),
+      el("div", { class: "review" }, ta)));
+    return card;
+  }
+
+  function visible(s) {
+    const r = review[s.id] || {};
+    if (prefs.show === "todo" && r.v) return false;
+    if (prefs.show === "notes" && !s.note) return false;
+    if (prefs.show === "revise" && r.v !== "revise") return false;
+    if (query && !`${s.id} ${s.title} ${s.how} ${s.note} ${s.state}`.toLowerCase().includes(query)) return false;
+    return true;
+  }
+
+  function realSection() {
+    const sec = el("section", { class: "win", id: "real" },
+      el("div", { class: "win-head" }, el("h2", {}, "Built exe references"), el("span", { class: "chip" }, "light theme of this machine")),
+      el("p", { class: "win-opens" }, "Screenshots of the installed exe in WebView2, next to the mocked render of the same state. Account paths are painted over. Framed windows include the title bar and the scrollbar, so their content is narrower than the mock."));
+    const grid = el("div", { class: "grid", style: "--col: 560px" });
+    for (const r of D.real) {
+      const m = shotById[r.pair];
+      const card = el("article", { class: "card" });
+      card.append(el("div", { class: "pair" },
+        figure(`real/${r.id}.png`, r.w, r.h, r.title, 0, "built exe"),
+        m ? figure(`shots/${m.id}-light.webp`, m.light.w, m.light.h, `Mock: ${m.title}`, m.crop === "full" ? D.windows[m.window].size[1] : 0, "mock") : null));
+      card.append(el("div", { class: "body" }, el("h3", {}, r.title), m ? el("p", { class: "how" }, "Paired with ", el("a", { href: "#" + m.id }, m.id)) : null));
+      grid.append(card);
+    }
+    sec.append(grid);
+    return sec;
+  }
+
+  function updateProgress() {
+    const done = D.shots.filter((s) => (review[s.id] || {}).v).length;
+    const rev = D.shots.filter((s) => (review[s.id] || {}).v === "revise").length;
+    document.getElementById("progress").innerHTML = `<b>${done}</b>/${D.shots.length} reviewed, <b>${rev}</b> to revise`;
+  }
+
+  function render() {
+    save(PREF, prefs);
+    document.querySelectorAll("#winFilter button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.w === prefs.win)));
+    document.querySelectorAll("#schemeSeg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.s === prefs.scheme)));
+    document.querySelectorAll("#reviewSeg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.r === prefs.show)));
+    main.replaceChildren();
+    let shown = 0;
+    for (const [key, w] of windows) {
+      if (prefs.win !== "all" && prefs.win !== key) continue;
+      const list = byWin(key).filter(visible);
+      if (!list.length) continue;
+      shown += list.length;
+      const col = Math.min(w.size[0], 420) * (prefs.scheme === "both" ? 2 : 1) + 22;
+      main.append(el("section", { class: "win", id: "win-" + key },
+        el("div", { class: "win-head" },
+          el("h2", {}, w.title),
+          el("span", { class: "chip" }, `${w.size[0]} x ${w.size[1]} px`),
+          el("span", { class: "chip" }, el("code", {}, w.component)),
+          el("span", { class: "chip" }, `${list.length} of ${byWin(key).length} states`)),
+        el("p", { class: "win-opens" }, w.opens),
+        el("div", { class: "grid", style: `--col:${Math.min(col, 900)}px` }, list.map(shotCard))));
+    }
+    // The real references carry no review, so the review filter and the search do not apply to them.
+    if (D.real.length && (prefs.win === "real" || (prefs.win === "all" && prefs.show === "all" && !query))) main.append(realSection());
+    else if (!shown) main.append(el("p", { class: "empty" }, "No state matches."));
+    updateProgress();
+  }
+
+  // Review export.
+  const toast = (t) => { const n = document.getElementById("toast"); n.textContent = t; n.classList.add("show"); setTimeout(() => n.classList.remove("show"), 1800); };
+  document.getElementById("exportBtn").addEventListener("click", async () => {
+    const lines = [`UI inventory review (${D.commit}, rendered ${D.generated})`, ""];
+    for (const [key, w] of windows) {
+      const rows = byWin(key).filter((s) => (review[s.id] || {}).v || (review[s.id] || {}).n);
+      if (!rows.length) continue;
+      lines.push(`${w.title}:`);
+      for (const s of rows) {
+        const r = review[s.id];
+        lines.push(`- ${s.id} (${s.title}): ${r.v || "no verdict"}${r.n ? " - " + r.n.replace(/\s+/g, " ") : ""}`);
+      }
+      lines.push("");
+    }
+    const text = lines.join("\n");
+    try { await navigator.clipboard.writeText(text); toast("Review copied as Markdown"); }
+    catch { window.prompt("Copy the review:", text); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
