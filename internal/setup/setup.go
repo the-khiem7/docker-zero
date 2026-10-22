@@ -1,6 +1,7 @@
 // Package setup runs the Day 1 wizard: it installs the WSL distro, Docker
 // Engine and Portainer, and creates the Portainer admin account, one
-// resumable step at a time.
+// resumable step at a time. It also holds the maintenance actions that act on
+// the same distro: update Portainer, reset the admin password and uninstall.
 package setup
 
 import (
@@ -156,6 +157,8 @@ type WSL interface {
 	Available(ctx context.Context) error
 	DistroState(ctx context.Context, distro string) (wsl.State, error)
 	Install(ctx context.Context, image, name, location string) error
+	Export(ctx context.Context, distro, file string) error
+	Unregister(ctx context.Context, distro string) error
 	Terminate(ctx context.Context, distro string) error
 	Start(ctx context.Context, distro string) error
 	Script(ctx context.Context, distro, user, script string) (string, error)
@@ -176,6 +179,8 @@ type Wizard struct {
 	ReadyTimeout time.Duration
 	// NewToken makes the one-time setup token; tests replace it.
 	NewToken func() (string, error)
+	// Host performs the Windows-side removals of Uninstall.
+	Host Host
 
 	cur   StepID
 	token string
@@ -225,10 +230,16 @@ func (w *Wizard) Run(ctx context.Context, cr Credentials) error {
 		StepAdmin:     w.stepAdmin,
 		StepWrapper:   w.stepWrapper,
 	}
-	for _, s := range Steps {
+	return w.execute(Steps, func(id StepID) (bool, error) { return run[id](ctx, cr) })
+}
+
+// execute runs steps in order, reporting each one, and stops at the first
+// failure.
+func (w *Wizard) execute(steps []Step, run func(StepID) (skipped bool, err error)) error {
+	for _, s := range steps {
 		w.cur = s.ID
 		w.emit(StatusRunning, "")
-		skipped, err := run[s.ID](ctx, cr)
+		skipped, err := run(s.ID)
 		if err != nil {
 			w.emit(StatusFailed, err.Error())
 			return fmt.Errorf("%s: %w", s.Title, err)

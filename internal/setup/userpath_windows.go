@@ -52,6 +52,52 @@ func AddToUserPath(dir string) error {
 	return nil
 }
 
+// RemoveFromUserPath takes dir off the user PATH in HKCU, keeping the value
+// type and every other entry. It does nothing when dir is not listed.
+func RemoveFromUserPath(dir string) error {
+	k, err := registry.OpenKey(registry.CURRENT_USER, envKey, registry.QUERY_VALUE|registry.SET_VALUE)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = k.Close() }()
+	cur, typ, err := k.GetStringValue(pathValue)
+	if errors.Is(err, registry.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	next, found := pathWithout(cur, dir)
+	if !found {
+		return nil
+	}
+	if typ == registry.SZ {
+		err = k.SetStringValue(pathValue, next)
+	} else {
+		err = k.SetExpandStringValue(pathValue, next)
+	}
+	if err != nil {
+		return err
+	}
+	broadcastEnvChange()
+	return nil
+}
+
+// pathWithout returns the PATH value without the entries equal to dir, and
+// whether any was there.
+func pathWithout(cur, dir string) (string, bool) {
+	var keep []string
+	found := false
+	for entry := range strings.SplitSeq(cur, ";") {
+		if entry != "" && strings.EqualFold(filepath.Clean(entry), filepath.Clean(dir)) {
+			found = true
+			continue
+		}
+		keep = append(keep, entry)
+	}
+	return strings.Join(keep, ";"), found
+}
+
 // broadcastEnvChange tells running programs, Explorer first, that the
 // environment changed so new terminals pick the PATH up.
 func broadcastEnvChange() {

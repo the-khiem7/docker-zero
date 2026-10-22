@@ -26,8 +26,31 @@ type fakeWSL struct {
 	scripts   []string
 	certPEM   []byte
 	// answer overrides the default reply for a root script; ok false falls through.
-	answer     func(script string) (out string, ok bool)
-	installErr error
+	answer       func(script string) (out string, ok bool)
+	installErr   error
+	exportErr    error
+	exported     []string
+	unregistered []string
+	// calls records the order of backup, removal and host actions.
+	calls []string
+}
+
+func (f *fakeWSL) Export(_ context.Context, _, file string) error {
+	f.calls = append(f.calls, "export")
+	f.exported = append(f.exported, file)
+	if f.exportErr != nil {
+		// A real export leaves a partial file behind when it fails.
+		_ = os.WriteFile(file, []byte("partial"), 0o600)
+		return f.exportErr
+	}
+	return os.WriteFile(file, []byte("tar"), 0o600)
+}
+
+func (f *fakeWSL) Unregister(_ context.Context, distro string) error {
+	f.calls = append(f.calls, "unregister")
+	f.unregistered = append(f.unregistered, distro)
+	f.state = wsl.StateNotInstalled
+	return nil
 }
 
 func (f *fakeWSL) Available(context.Context) error { return nil }
