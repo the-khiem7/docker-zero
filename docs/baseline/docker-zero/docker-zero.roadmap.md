@@ -151,4 +151,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 9: release build, README with screenshots, licence file; gate is the release exe running on a clean profile.
+1. Phase 9: release build, README with screenshots, licence file; gate is the release exe running on a clean profile. The licence file waits on DZ-Q3 (licence choice, open in the hallucination journal).

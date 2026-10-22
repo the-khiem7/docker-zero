@@ -34,10 +34,13 @@ code_ref: "175019e"
 | DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed | DZ-D5, DZ-D18 |
 | DZ-D20 | Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal | closed | DZ-D7, DZ-D18, DZ-D19 |
 | DZ-D21 | Adoption mechanics: four replaceable items, read-only detection, replace before remove, one offer | closed | DZ-D8, DZ-D6, DZ-D20 |
+| DZ-Q3 | Licence for the repository | open | DZ-D1 |
 
 ## Open questions
 
-None.
+### DZ-Q3: Which licence does the repository carry?
+
+Needed by the release phase, which ships a licence file. Options: MIT (shortest, no patent grant), Apache-2.0 (adds an explicit patent grant). Recommended: MIT. The repository is public (DZ-D1).
 
 ## Closed decisions
 
