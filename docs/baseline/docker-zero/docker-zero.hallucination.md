@@ -41,9 +41,11 @@ code_ref: "1aeb16d"
 | DZ-D26 | Lesson: Windows line endings and a shared WebView2 folder broke checks during the release run | closed | DZ-D13, DZ-D25 |
 | DZ-D27 | The first release waits for the design phase | closed | DZ-D22, DZ-D29 |
 | DZ-D28 | UI inventory: mocked frontend for every state, real exe for the main windows, committed | closed | DZ-Q4, DZ-D27 |
-| DZ-D29 | The rebuilt release exe re-runs the full clean-profile gate | closed | DZ-Q5, DZ-D27 |
+| DZ-D29 | The rebuilt release exe re-runs the full clean-profile gate | closed, gate target amended by DZ-D32 | DZ-Q5, DZ-D27, DZ-D32 |
 | DZ-D30 | README and landing page state no affiliation with Docker Inc. or Portainer | closed, logo rule amended by DZ-D31 | DZ-D1, DZ-D27, DZ-D31 |
 | DZ-D31 | Logo: an orca leaping out of a red ring over a two-tone sea; design rounds kept as a public gallery | closed | DZ-D30, DZ-D27 |
+| DZ-D32 | Release exe built and published by a GitHub Actions workflow on tag push | closed | DZ-D29, DZ-D27, DZ-D12, DZ-D33 |
+| DZ-D33 | The release workflow stamps the exe version from the git tag, on the runner only | closed | DZ-D32 |
 
 ## Open questions
 
@@ -427,6 +429,8 @@ What breaks if ignored: the published file is one whose setup flow was never run
 
 Rejected: a smoke run on the existing setup (launch, each window, Start and Stop, Settings actions) - leaves the setup window flow unrun on the published exe. Cost accepted: about 8 min of setup plus an uninstall, and the Portainer admin password is random again afterwards.
 
+Amended by DZ-D32: the exe the gate runs on is the one downloaded from the GitHub release the workflow created, not a local build.
+
 ### DZ-D30: README and landing page state no affiliation with Docker Inc. or Portainer
 
 Decision: the README (Phase 10 item 5) and the landing page (item 6) carry one plain statement that Docker Zero is not affiliated with or endorsed by Docker Inc. or Portainer; the logo avoids the whale and both projects' marks (amended by DZ-D31: a whale as an animal is allowed, Docker's whale graphic is not).
@@ -454,3 +458,25 @@ Why: the user's brief (a whale passing a complete ring: Docker plus Zero) and ch
 What breaks if ignored: a mark redrawn from memory drifts from the chosen one; tray icons drawn in code stop matching the app icon; detail added inside the ring makes the 16 px tray icon unreadable.
 
 Rejected: the blue tile with a white Z (the placeholder look); 17 other first-round concepts; gradient sunset scenes (round 2, too much detail); a front-view or fin-only orca (round 3); the first stylised orca (round 4, user disliked the vector); tray icons drawn in Go (cannot reproduce the mark); the gallery kept only in the ignored local board (lost to visitors); the board in `.frontdoor/` with a copy in the repository (two identical trees that drift once either is rebuilt); the gallery under `docs/brand/` (user moved it to `design/`, beside the UI inventory); stock reference images in the gallery (copyrighted, used only as a style brief, nothing traced).
+
+### DZ-D32: The release exe is built and published by a GitHub Actions workflow on tag push
+
+Decision: a workflow in `.github/workflows/` triggers on a pushed tag matching `v*`, builds `bin/docker-zero.exe` on `windows-latest` with `wails3 task build`, and creates the GitHub release for that tag with the exe and its SHA-256 attached; no locally built exe is published. Owned by Phase 9.
+
+Amends DZ-D29: the clean-profile gate (Uninstall all, then setup from scratch through the window) runs on the exe downloaded from the release the workflow created, before the release is announced.
+
+Why: the user wants a tag push to be the only step that makes a release appear; the published file is then reproducible from the tag and needs no hand upload.
+
+What breaks if ignored: a gate run on a local exe says nothing about the published file, because the runner build has a different SHA-256; a hand-uploaded exe is not traceable to a commit.
+
+Rejected: a local build published by hand - the user wants tag push to release automatically. A separate Phase 11 for the workflow - the user chose Phase 9. Test and lint on every pull request - not chosen; the workflow covers the tag push only. Unverified: the runner has Go, Node and the pinned `wails3` `v3.0.0-beta.30` (DZ-D13) available, and the unsigned runner-built exe behaves as the local one did on a managed machine (DZ-D12).
+
+### DZ-D33: The release workflow stamps the exe version from the git tag, on the runner only
+
+Decision: before `wails3 task build`, the workflow reads the tag, requires `vX.Y.Z` or `vX.Y.Z-suffix` (else fails), writes `X.Y.Z` to `fixed.file_version` and the tag without `v` (suffix kept) to `info.0409.ProductVersion` in `packaging/windows/info.json`, and never commits the change. The committed file holds `0.0.0` and `0.0.0-dev`, so a local build reads as a dev build.
+
+Why: the tag is the one source of the version; `file_version` takes digits only, so a suffix such as `-alpha` can live only in `ProductVersion`.
+
+What breaks if ignored: a hand-bumped file drifts from the tag (tag `v0.2.0`, exe reading `0.1.0`); a workflow that commits back needs write access to `main` and leaves automatic commits behind the tag.
+
+Rejected: bump by hand before tagging - drifts. Commit the stamp back to the repository - branch protection and commit noise. Keep `0.1.0` in the committed file - a local build then looks like the release. Not stamped: `version` in `packaging/config.yml` and the manifest `assemblyIdentity` version, both still `0.1.0`; they do not feed the exe's file or product version.

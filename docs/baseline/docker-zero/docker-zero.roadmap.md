@@ -19,7 +19,7 @@ code_ref: "1aeb16d"
 | Phase 6 | Phase 3 | complete | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | complete | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | complete | Update Portainer, Reset admin, Uninstall all work |
-| Phase 9 | Phase 8, Phase 7, Phase 10 | active | Release exe and README published |
+| Phase 9 | Phase 8, Phase 7, Phase 10 | active | Release workflow builds and publishes the exe on tag push (DZ-D32); README published |
 | Phase 10 | Phase 8 | active | Brand logo used as the app icon, UI upgraded, illustrated README, landing page |
 
 ## Phase 1: Exe policy spike
@@ -165,6 +165,8 @@ Not verified: the backup option from the window; a declined certificate dialog.
 
 Status: active. Gate met at `4e0b13c`; publishing deferred until Phase 10 is done (DZ-D27), so the exe below will be rebuilt and its hash will not name the published file. Built: README rewritten for users with five screenshots in `docs/images/` (account paths cut out or restated), MIT `LICENSE` (DZ-D22), app icon in the tray tile's style replacing the Wails placeholder (`494b924`), and the fixes the release run found: DZ-D23 (`7446db6`), DZ-D21 card (`21ee8a5`), DZ-D25 (`8ca3a6c`), DZ-D24 (`f171d3a`). Release exe: `bin/docker-zero.exe` built by `wails3 task build` at `4e0b13c`, 12 240 384 bytes, SHA-256 `c0f34fc6027dfb499d29dcc263736e9cc6fdb61065188775556aed3d27a3fe21`, version info `0.1.0`.
 
+Release workflow (DZ-D32): written in `.github/workflows/release.yml` (tag `v*`, `windows-latest`, `wails3 task test` then `wails3 task build`, `gh release create` with the exe and its SHA-256, a tag with a suffix is a pre-release; the exe version is stamped from the tag, DZ-D33); YAML parses and the stamp logic ran on a temp copy for `v0.1.0-alpha`, `v1.2.3` and the rejected `v1.2` and `main`, never run on GitHub. Next: a test tag `v0.1.0-alpha` run, which needs the user's approval to push. The final gate runs on the exe downloaded from the release (DZ-D29).
+
 Gate: the release exe runs on a clean profile. This account was cleaned with Uninstall all, so no distro, settings, install folder, Run value, shortcuts, PATH entry or `.wslconfig`; `dz-test` kept. Evidence:
 
 | Check | Result |
@@ -233,5 +235,6 @@ Not verified: the mocks against the Go services at run time beyond the type chec
 
 1. Phase 10 item 2: the user reviews `design/ui-inventory/index.html` and confirms the list of states is complete.
 2. Phase 10 items 3 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
-3. Phase 9: rebuild the release exe from the commit that ends Phase 10, re-run the full clean-profile gate (DZ-D29), then publish GitHub release `v0.1.0` from that commit with the rebuilt exe and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
-4. Then mark Phase 9 complete with the release URL.
+3. Phase 9: commit the release workflow (DZ-D32), push it, then push tag `v0.1.0-alpha` to prove the runner build; delete that pre-release and tag afterwards.
+4. Phase 9: after Phase 10, the user pushes tag `v0.1.0` on the commit that ends it; the workflow builds the exe and creates the release. Download that exe and re-run the full clean-profile gate on it (DZ-D29). The agent's earlier attempt to publish was refused by its permission mode, so the user pushes the tag or allows it.
+5. Then mark Phase 9 complete with the release URL.
