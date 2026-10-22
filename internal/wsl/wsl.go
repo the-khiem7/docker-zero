@@ -179,3 +179,25 @@ func (c *Client) Script(ctx context.Context, distro, user, script string) (strin
 func containsFold(list []string, s string) bool {
 	return slices.ContainsFunc(list, func(v string) bool { return strings.EqualFold(v, s) })
 }
+
+// Install downloads the image distribution and registers it as name. The
+// image keeps its own name when name is empty or equal to it. location, when
+// set, is the folder that receives the virtual disk. The call runs without
+// launching the distro, so no first-run user prompt appears.
+func (c *Client) Install(ctx context.Context, image, name, location string) error {
+	args := []string{"--install", "--distribution", image, "--web-download", "--no-launch"}
+	if name != "" && !strings.EqualFold(name, image) {
+		args = append(args, "--name", name)
+	}
+	if location != "" {
+		args = append(args, "--location", location)
+	}
+	_, err := c.wsl(ctx, nil, args...)
+	return err
+}
+
+// Unregister deletes distro with its disk, every image and every volume.
+func (c *Client) Unregister(ctx context.Context, distro string) error {
+	_, err := c.wsl(ctx, nil, "--unregister", distro)
+	return err
+}

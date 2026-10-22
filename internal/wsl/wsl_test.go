@@ -159,3 +159,27 @@ func TestStopActionsArgs(t *testing.T) {
 		}
 	}
 }
+
+func TestInstallAndUnregisterArgs(t *testing.T) {
+	f := &fake{answers: map[string]Result{}}
+	c := NewWithRunner(f.run)
+	if err := c.Install(t.Context(), "Ubuntu-24.04", "ubuntu-24.04", ""); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Install(t.Context(), "Ubuntu-24.04", "dz-throwaway", `C:\d`); err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Unregister(t.Context(), "dz-throwaway"); err != nil {
+		t.Fatal(err)
+	}
+	want := [][]string{
+		{"--install", "--distribution", "Ubuntu-24.04", "--web-download", "--no-launch"},
+		{"--install", "--distribution", "Ubuntu-24.04", "--web-download", "--no-launch", "--name", "dz-throwaway", "--location", `C:\d`},
+		{"--unregister", "dz-throwaway"},
+	}
+	for i, w := range want {
+		if !slices.Equal(f.calls[i].args, w) {
+			t.Fatalf("call %d: got %q, want %q", i, f.calls[i].args, w)
+		}
+	}
+}
