@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "eba5748"
+code_ref: "ee631c1"
 ---
 
 # docker-zero hallucination journal
@@ -32,6 +32,7 @@ code_ref: "eba5748"
 | DZ-D17 | Lesson: a phase marked complete with its gate unmet | closed | DZ-D15, DZ-D16 |
 | DZ-D18 | Portainer admin: created through the init API with an app-chosen setup token, reset with the helper and a hash | closed | DZ-Q2, DZ-D5, DZ-D7 |
 | DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed | DZ-D5, DZ-D18 |
+| DZ-D20 | Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal | closed | DZ-D7, DZ-D18, DZ-D19 |
 
 ## Open questions
 
@@ -278,3 +279,22 @@ What breaks if ignored: a non-resumable wizard repeats a 100 MB download after a
 Rejected: `--setup-token` on the command line - persists in the config. `--no-setup-token` - see DZ-D18. `InsecureSkipVerify` for the admin call - password to an unverified peer. Writing `docker.ps1` as DZ-D5 listed - risk above, no gain over `docker.cmd`. Skipping the recreate after init - leaves the token behind.
 
 Observed: `go test -tags integration ./internal/setup` with `DZ_SETUP_DISTRO` on a new distro took 169.8 s (first run 2 min 35 s): Ubuntu image registered, Docker Engine 29.9.2 from Docker's apt repository, the DNS drop-in, user in the `docker` group, the certificate served with `--sslcert`, Portainer 2.45.2, admin created, sign-in with the typed credentials `200`, a wrong password rejected, no setup token in the container config, a second run skipping the five steps that had work, and the distro unregistered afterwards. This also covers the flow on `Ubuntu-24.04` with systemd and the certificate flags, which DZ-D18 had left open.
+
+### DZ-D20: Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal
+
+Decision:
+
+- Update pulls `portainer/portainer-ce:lts`, compares the container's image id with the tag, and recreates the container (same volume, certificate, no token) only when they differ.
+- Reset admin hashes the password in the app with bcrypt cost 10 and sends only the hash; the helper script stops the container, runs `portainer/helper-reset-password --password-hash`, and starts the container again from an exit trap; the typed username is used only for a sign-in that proves the new password.
+- One action at a time across setup, update, reset and uninstall.
+- Uninstall order: optional `wsl --export` (refused if the file exists; a partial file is deleted on failure), remove the trusted certificate, unregister the distro, remove auto start, shortcuts, `docker.cmd` with its PATH entry and the `.wslconfig` line, remove settings; a failed step stops the run and a rerun skips finished steps.
+- The `.wslconfig` line is removed only when the stored idle mode is `wslconfig`.
+- The install folder is deleted by a detached `cmd.exe` started when the user quits after the uninstall, refused unless the folder is named `docker-zero`.
+
+Why: the helper writes Portainer's database and the official steps stop the container first; the trap restarts it even when the helper fails; a password in a script breaks DZ-D18; the certificate thumbprint is only readable while the distro exists, so the trust step runs before the unregister and aborts it when Windows' dialog is declined; a running exe cannot delete its own folder; a `.wslconfig` line the user wrote is not the app's to remove (PT-D22).
+
+What breaks if ignored: a restart on every update click; the helper run on a live container; a distro removed while its certificate stays trusted; an export over an existing backup; an uninstall that deletes a user-written `.wslconfig` line or a wrong folder.
+
+Rejected: a tag picker (DZ-D7 keeps `lts`). Recreating `portainer_data` for reset - destroys settings. Deleting the install folder at the uninstall step - the running exe locks it. Continuing after a declined certificate dialog - the thumbprint is lost with the distro.
+
+Observed: `TestMaintenance` on a throwaway distro passed in 577 s with every outcome in the roadmap's Phase 8 table.

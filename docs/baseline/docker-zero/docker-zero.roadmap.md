@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "eba5748"
+code_ref: "ee631c1"
 ---
 
 # docker-zero roadmap
@@ -18,7 +18,7 @@ code_ref: "eba5748"
 | Phase 5 | Phase 4 | complete | Settings apply and revert each item |
 | Phase 6 | Phase 3 | complete | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
-| Phase 8 | Phase 6 | planned | Update Portainer, Reset admin, Uninstall all work |
+| Phase 8 | Phase 6 | complete | Update Portainer, Reset admin, Uninstall all work |
 | Phase 9 | Phase 8, Phase 7 | planned | Release exe and README published |
 
 ## Phase 1: Exe policy spike
@@ -103,7 +103,22 @@ Status: planned. Detection and migration per DZ-D8. Gate: run on this workstatio
 
 ## Phase 8: Maintenance and uninstall
 
-Status: planned. Update Portainer, Reset admin, Uninstall all per DZ-D7. Gate: each run on a throwaway distro.
+Status: complete. Built: `setup.Wizard` methods `UpdatePortainer`, `ResetAdmin` and `Uninstall` (five steps, `Host` hooks, `FinishUninstall`), `wsl.Client.Export`, `RemoveFromUserPath`, `NewHost`, `ui.MaintainService` and `ui.UninstallService` behind one `opGuard`, Svelte `Maintenance` (Portainer card, Danger zone with two confirmations and a backup choice) inside the settings window. Design: DZ-D20, scope DZ-D7.
+
+Gate: each action run on a throwaway distro. Evidence:
+
+| Check | Result |
+|---|---|
+| `go test -tags integration -run TestMaintenance` with `DZ_SETUP_DISTRO=dz-maint-test` | Passed in 577 s |
+| Update with the image current | `Portainer already runs the latest image`; container id unchanged |
+| Update from an older local image | Container recreated on `portainer/portainer-ce:lts`; sign-in with the old admin `200`, so the data volume was kept |
+| Reset admin | New password `200`, old password not `200`, container `running` afterwards |
+| Uninstall with a backup | `wsl --export` tar over 1 MiB; distro `not-installed`; `docker.cmd` gone; all seven Host hooks ran |
+| Real setup | `Ubuntu-24.04` untouched; `dz-maint-test` gone |
+| `TestUserPathRoundTrip` on the real HKCU PATH | Add then remove restored value and type exactly; this also verifies `AddToUserPath` |
+| `wails3 task test`, `wails3 task lint`, `wails3 task build` | All ok; 0 lint issues; 0 svelte-check errors |
+
+Not verified: the Maintenance section in a live window; Windows trust removal and the HKCU Run and shortcut removals on the real account (hooks were recorders in the integration run); `FinishUninstall` deleting the install folder after exit; a failed pull or an unreachable Docker Hub during update.
 
 ## Phase 9: Release
 
@@ -121,4 +136,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 7: adopt the existing manual setup, or Phase 8: Update Portainer, Reset admin and Uninstall all (Phase 8 follows from DZ-D18 and DZ-D7); both are ready and the user picks the order.
+1. Phase 7: adopt the existing manual setup (DZ-D8). Phase 9 waits on it.
