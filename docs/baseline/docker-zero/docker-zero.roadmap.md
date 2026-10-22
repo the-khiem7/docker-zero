@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "175019e"
+code_ref: "4e0b13c"
 ---
 
 # docker-zero roadmap
@@ -19,7 +19,7 @@ code_ref: "175019e"
 | Phase 6 | Phase 3 | complete | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | complete | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | complete | Update Portainer, Reset admin, Uninstall all work |
-| Phase 9 | Phase 8, Phase 7 | planned | Release exe and README published |
+| Phase 9 | Phase 8, Phase 7 | active | Release exe and README published |
 
 ## Phase 1: Exe policy spike
 
@@ -116,6 +116,16 @@ Gate: run on this workstation; Portainer data intact and the legacy shortcut rep
 
 Not verified: the card on a machine with a stopped distro or with only some legacy items; a failing item in the window; a locked Startup folder. The real account now runs the adopted setup; the legacy items were backed up by hand outside the repository.
 
+Revision summary (release run, 2026-10-22), legacy items restored from the manual backup:
+
+| Check | Result |
+|---|---|
+| Distro stopped, only `Portainer.lnk` and the `docker-wsl` folder restored | Card listed exactly those two items; the distro stayed `Stopped` through detection |
+| `docker-wsl\bin\docker.cmd` held open by another process, Take over | Shortcut item replaced; the docker item showed "remove ...docker.cmd: The process cannot access the file because it is being used by another process."; the other legacy files were removed |
+| Take over again after the lock ended | Legacy folder gone; first build lost the result card on a stopped distro, fixed in `21ee8a5` (DZ-D21), then "Replaced 1 item" shown |
+
+Not verified: a locked Startup folder.
+
 ## Phase 8: Maintenance and uninstall
 
 Status: complete. Built: `setup.Wizard` methods `UpdatePortainer`, `ResetAdmin` and `Uninstall` (five steps, `Host` hooks, `FinishUninstall`), `wsl.Client.Export`, `RemoveFromUserPath`, `NewHost`, `ui.MaintainService` and `ui.UninstallService` behind one `opGuard`, Svelte `Maintenance` (Portainer card, Danger zone with two confirmations and a backup choice) inside the settings window. Design: DZ-D20, scope DZ-D7.
@@ -135,9 +145,39 @@ Gate: each action run on a throwaway distro. Evidence:
 
 Not verified: the Maintenance section in a live window; Windows trust removal and the HKCU Run and shortcut removals on the real account (hooks were recorders in the integration run); `FinishUninstall` deleting the install folder after exit; a failed pull or an unreachable Docker Hub during update.
 
+Revision summary (release run, 2026-10-22), the settings window driven by UI Automation on the real `Ubuntu-24.04`:
+
+| Check | Result |
+|---|---|
+| Update Portainer, a newer `lts` existed | Container recreated, Portainer `2.45.2` to `2.45.3`, admin still present (`/api/users/admin/check` `204`) |
+| Update again | "Portainer already runs the latest image."; container id unchanged |
+| Update with Docker Hub names pointed at `127.0.0.9` in the distro's `/etc/hosts` | Window showed the pull error (`connection refused`); container id, start time and state unchanged; hosts file restored |
+| Reset admin with username `nobody-dz` | Password replaced, then "signing in as "nobody-dz" failed; check the username"; sign-in as `admin` with the new password `200` |
+| Reset admin as `admin` | "Password replaced."; new password `200`, another password `422` |
+| Uninstall all without backup | Five steps done or skipped; Windows "Root Certificate Store" delete dialog shown and answered Yes (not by the test script); certificate, distro, Run value, both shortcuts, PATH entry (22 to 21 entries), `.wslconfig` and settings gone; after Quit the process ended and the install folder was deleted |
+| Left behind by that uninstall | `%APPDATA%\docker-zero.exe`, the WebView2 data folder; fixed in `8ca3a6c` (DZ-D25) |
+| Second uninstall with the fixed build | Install folder and settings folder with `webview` removed after Quit; trust step skipped (certificate was not trusted) |
+
+Not verified: the backup option from the window; a declined certificate dialog.
+
 ## Phase 9: Release
 
-Status: planned. Release build, README with screenshots, licence file. Gate: the release exe runs on a clean profile.
+Status: active. Gate met; publishing the GitHub release is pending. Built: README rewritten for users with five screenshots in `docs/images/` (account paths cut out or restated), MIT `LICENSE` (DZ-D22), app icon in the tray tile's style replacing the Wails placeholder (`494b924`), and the fixes the release run found: DZ-D23 (`7446db6`), DZ-D21 card (`21ee8a5`), DZ-D25 (`8ca3a6c`), DZ-D24 (`f171d3a`). Release exe: `bin/docker-zero.exe` built by `wails3 task build` at `4e0b13c`, 12 240 384 bytes, SHA-256 `c0f34fc6027dfb499d29dcc263736e9cc6fdb61065188775556aed3d27a3fe21`, version info `0.1.0`.
+
+Gate: the release exe runs on a clean profile. This account was cleaned with Uninstall all, so no distro, settings, install folder, Run value, shortcuts, PATH entry or `.wslconfig`; `dz-test` kept. Evidence:
+
+| Check | Result |
+|---|---|
+| Launch from a scratch folder | Setup window opened by itself in 1.2 s |
+| Setup through the window (username `admin`, random password not stored) | All eight steps done, "All set" after 454 s (an earlier run took about 12 min, mostly the distro download); Docker `29.9.2`, Portainer `2.45.3`, `/api/users/admin/check` `204` |
+| `docker` from a fresh environment | `docker version` `29.9.2`, `docker ps` listed `portainer` |
+| Auto start, start distro, both shortcuts and the `.wslconfig` mode turned on | Exe copied to the install folder with the same hash; Run value with `--start-distro`; `.wslconfig` `[general]` plus `instanceIdleTimeout=-1` |
+| Relaunch from the install folder | No setup window (DZ-D24) |
+| `wails3 task test`, `wails3 task lint`, `golangci-lint` with the integration tag | All ok; 0 issues; 0 svelte-check errors |
+
+Side effects left for the user: `wsl --unregister` made `dz-test` the default distro, set back to `Ubuntu-24.04` by hand; the Portainer admin password is a random one nobody knows, so the admin resets it with Reset admin password; the new certificate (SHA-1 `1BFBD28089E4A85A0E024D4C382C2084C3B8F240`, to 2031-10-21) is not trusted yet.
+
+Not verified: SmartScreen or policy behaviour on another machine; the release download from GitHub; a machine without WSL.
 
 ## Risks
 
@@ -151,4 +191,5 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 9: release build, README with screenshots, licence file; gate is the release exe running on a clean profile. The licence file waits on DZ-Q3 (licence choice, open in the hallucination journal).
+1. Phase 9: publish GitHub release `v0.1.0` at `4e0b13c` with `bin/docker-zero.exe` (SHA-256 above) and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
+2. Then mark Phase 9 complete with the release URL.

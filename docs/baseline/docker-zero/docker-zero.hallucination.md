@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "175019e"
+code_ref: "4e0b13c"
 ---
 
 # docker-zero hallucination journal
@@ -28,19 +28,21 @@ code_ref: "175019e"
 | DZ-D13 | Scaffold shape: `packaging/` folder, pinned tools, Windows only | closed | DZ-D9 |
 | DZ-D14 | How the WSL runner reads state and probes status | closed | DZ-D4 |
 | DZ-D15 | Day 2 widget mechanics: hold, job object, polling, confirm, second launch | closed, job object part superseded | DZ-D3, DZ-D4, DZ-D6, DZ-D16 |
-| DZ-D16 | Settings mechanics and the hold-only job object | closed | DZ-D6, DZ-D9, DZ-D15 |
+| DZ-D16 | Settings mechanics and the hold-only job object | closed, certificate read amended by DZ-D23 | DZ-D6, DZ-D9, DZ-D15, DZ-D23 |
 | DZ-D17 | Lesson: a phase marked complete with its gate unmet | closed | DZ-D15, DZ-D16 |
 | DZ-D18 | Portainer admin: created through the init API with an app-chosen setup token, reset with the helper and a hash | closed | DZ-Q2, DZ-D5, DZ-D7 |
 | DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed | DZ-D5, DZ-D18 |
-| DZ-D20 | Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal | closed | DZ-D7, DZ-D18, DZ-D19 |
-| DZ-D21 | Adoption mechanics: four replaceable items, read-only detection, replace before remove, one offer | closed | DZ-D8, DZ-D6, DZ-D20 |
-| DZ-Q3 | Licence for the repository | open | DZ-D1 |
+| DZ-D20 | Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal | closed, settings removal superseded by DZ-D25 | DZ-D7, DZ-D18, DZ-D19, DZ-D25 |
+| DZ-D21 | Adoption mechanics: four replaceable items, read-only detection, replace before remove, one offer | closed, launch offer superseded by DZ-D24 | DZ-D8, DZ-D6, DZ-D20, DZ-D24 |
+| DZ-D22 | Repository licence: MIT | closed | DZ-Q3, DZ-D1 |
+| DZ-D23 | Nothing at launch runs a command inside a stopped distro | closed | DZ-D16, DZ-D14 |
+| DZ-D24 | Launch opens the setup window when nothing is installed; the take-over offer needs launchers to replace | closed | DZ-D21, DZ-D5 |
+| DZ-D25 | WebView2 data beside the settings, both folders removed after exit | closed | DZ-D20, DZ-D9 |
+| DZ-D26 | Lesson: Windows line endings and a shared WebView2 folder broke checks during the release run | closed | DZ-D13, DZ-D25 |
 
 ## Open questions
 
-### DZ-Q3: Which licence does the repository carry?
-
-Needed by the release phase, which ships a licence file. Options: MIT (shortest, no patent grant), Apache-2.0 (adds an explicit patent grant). Recommended: MIT. The repository is public (DZ-D1).
+None.
 
 ## Closed decisions
 
@@ -320,4 +322,68 @@ What breaks if ignored: two sign-in starts and two launchers; a Portainer.lnk th
 
 Rejected: a fresh install only (DZ-D8). Recreating the container under the app's flags - risks the data and the user's settings. Matching shortcuts by name alone - removes unrelated links. Editing the `.wslconfig` line - it already holds the value the idle mode needs.
 
-Observed: the run on this workstation in the roadmap's adoption table; the container id and start time were identical before and after.
+Observed: the run on this workstation in the roadmap's adoption table; the container id and start time were identical before and after. Defect found in the release run: with the distro stopped the container state is unread, so the card vanished with its result once the last item was replaced; the card now also stays while a result is shown.
+
+### DZ-D22: Repository licence: MIT
+
+Decision: license the repository under MIT, in `LICENSE` at the root; the copyright holder reads `Docker Zero contributors`.
+
+Closes DZ-Q3.
+
+Why: the user's answer; the release phase ships a licence file; MIT is the shortest permissive text; a contributors holder keeps usernames out of the public repository (DZ-D1).
+
+What breaks if ignored: without a licence file the public code is all rights reserved and nobody may reuse it; a personal name in the holder line leaks an identifier.
+
+Rejected: Apache-2.0 - adds an explicit patent grant and a NOTICE convention the project does not need.
+
+### DZ-D23: Nothing at launch runs a command inside a stopped distro
+
+Decision: every window is created hidden at launch and loads its page then, so code a page runs on load must not run `wsl.exe -d` against a stopped distro; the settings page reads the distro state first and, while it is not running, skips the certificate read and shows "Start Ubuntu-24.04 to read its certificate.", with Regenerate disabled.
+
+Why: any `wsl.exe -d <distro>` command starts that distro; the settings page read `/etc/portainer-certs/portainer.crt` on load.
+
+What breaks if ignored: a stopped distro starts about 2 s after every app launch, undoing Stop distro and the WSL default idle mode (observed on this workstation before the fix).
+
+Rejected: reading the Windows-side copy in the install folder - it exists only after a trust and goes stale after a regenerate. Loading the settings page only when first shown - Wails creates the window and its page together.
+
+### DZ-D24: Launch opens the setup window when nothing is installed; the take-over offer needs launchers to replace
+
+Decision:
+
+- At launch, while `Ubuntu-24.04` is not installed, the setup window opens by itself, at every launch.
+- The once-per-profile take-over offer (`adoptPrompted`) fires only when detection lists at least one replaceable item; a running container alone does not count.
+- The offer waits for the setup window's first `WindowRuntimeReady` event before showing it.
+
+Supersedes the launch-offer rule of DZ-D21.
+
+Why: a tray icon alone, often in the overflow area, tells a first-time user nothing; the app's own setup leaves a running container, which made the next launch offer to take over that same setup; Wails `v3.0.0-beta.30` `WebviewWindow.Focus` dereferences a nil WebView2 controller when called before the window exists.
+
+What breaks if ignored: a first run that looks like nothing happened; an "Existing setup found / Nothing left to replace" window after every fresh setup; a crash at launch on a clean profile (panic in `edge.(*Chromium).GetController`, observed with a console build).
+
+Rejected: offering on a running container (DZ-D21 as first built) - fires after the app's own setup. Setting `adoptPrompted` at the end of setup - leaves the same false offer on a profile whose settings were deleted. Showing without focus - the window can open behind others.
+
+### DZ-D25: WebView2 data beside the settings, both folders removed after exit
+
+Decision: set `WindowsOptions.WebviewUserDataPath` to `%APPDATA%\docker-zero\webview`; the uninstall data step deletes `settings.json` only; the detached `cmd.exe` started at quit deletes both the install folder and the settings folder, each refused unless named `docker-zero`.
+
+Supersedes the settings-removal rule of DZ-D20 (`os.RemoveAll` of the settings folder during the run).
+
+Why: by default Wails puts WebView2 data in `%APPDATA%\docker-zero.exe`, which uninstall never removed; WebView2 keeps its folder locked while the app runs, so it can only go after exit.
+
+What breaks if ignored: an uninstall that leaves the browser cache and local storage of the app windows behind; deleting the settings folder during the run fails on the locked WebView2 files.
+
+Rejected: WebView2 data in the install folder - a portable run from Downloads would create the install folder. Keeping the default folder and adding it to the removal - its name `docker-zero.exe` fails the folder-name guard, and loosening the guard widens what a bad path could delete.
+
+Observed: the second live uninstall on this workstation removed the install folder, the settings folder with `webview`, the Run value, both shortcuts, the PATH entry and `.wslconfig`; `TestRemoveAfterExitDeletesFolders` passed.
+
+### DZ-D26: Lesson: Windows line endings and a shared WebView2 folder broke checks during the release run
+
+Decision: write repository files with LF (Python `write_bytes`, or `newline=""`), never `Path.write_text`, and never `git stash` in this working copy; end the `msedgewebview2.exe` processes of a debug build before launching another build on the same data folder.
+
+Why: Python `write_text` on Windows writes CRLF; `core.autocrlf=true` checks files out with CRLF on `git stash pop`; `gofumpt` in `wails3 task lint` reports a CRLF Go file as unformatted. WebView2 refuses a user data folder held by a browser process started for a different exe name, and the app then exits without a window.
+
+What breaks if ignored: lint fails on files whose content is correct; a release exe that silently exits looks like a product defect.
+
+Rejected: nothing; these were process mistakes, each fixed by converting the files back to LF or by ending the stray processes.
+
+Observed: `gofumpt` flagged `settings_service.go`, then `paths.go` and `host_windows.go` after a stash; the release exe exited twice while a console build named `dz-dbg.exe` still held `%APPDATA%\docker-zero\webview`.
