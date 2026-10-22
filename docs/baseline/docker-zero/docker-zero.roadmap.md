@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "1aeb16d"
+code_ref: "uncommitted"
 ---
 
 # docker-zero roadmap
@@ -163,9 +163,9 @@ Not verified: the backup option from the window; a declined certificate dialog.
 
 ## Phase 9: Release
 
-Status: active. Gate met at `4e0b13c`; publishing deferred until Phase 10 is done (DZ-D27), so the exe below will be rebuilt and its hash will not name the published file. Built: README rewritten for users with five screenshots in `docs/images/` (account paths cut out or restated), MIT `LICENSE` (DZ-D22), app icon in the tray tile's style replacing the Wails placeholder (`494b924`), and the fixes the release run found: DZ-D23 (`7446db6`), DZ-D21 card (`21ee8a5`), DZ-D25 (`8ca3a6c`), DZ-D24 (`f171d3a`). Release exe: `bin/docker-zero.exe` built by `wails3 task build` at `4e0b13c`, 12 240 384 bytes, SHA-256 `c0f34fc6027dfb499d29dcc263736e9cc6fdb61065188775556aed3d27a3fe21`, version info `0.1.0`.
+Status: active. Gate met at `da09172`; publishing deferred until Phase 10 is done (DZ-D27), so the exe below will be rebuilt and its hash will not name the published file. Built: README rewritten for users with five screenshots in `docs/images/` (account paths cut out or restated), MIT `LICENSE` (DZ-D22), app icon in the tray tile's style replacing the Wails placeholder (`494b924`), and the fixes the release run found: DZ-D23 (`7446db6`), DZ-D21 card (`21ee8a5`), DZ-D25 (`8ca3a6c`), DZ-D24 (`f171d3a`). Release exe: `bin/docker-zero.exe` built by `wails3 task build` at `da09172`, 12 240 384 bytes, SHA-256 `c0f34fc6027dfb499d29dcc263736e9cc6fdb61065188775556aed3d27a3fe21`, version info `0.1.0`.
 
-Release workflow (DZ-D32): written in `.github/workflows/release.yml` (tag `v*`, `windows-latest`, `wails3 task test` then `wails3 task build`, `gh release create` with the exe and its SHA-256, a tag with a suffix is a pre-release; the exe version is stamped from the tag, DZ-D33); YAML parses and the stamp logic ran on a temp copy for `v0.1.0-alpha`, `v1.2.3` and the rejected `v1.2` and `main`, never run on GitHub. Next: a test tag `v0.1.0-alpha` run, which needs the user's approval to push. The final gate runs on the exe downloaded from the release (DZ-D29).
+Release workflow (DZ-D32): written in `.github/workflows/release.yml` (tag `v*`, `windows-latest`, version stamp from the tag (DZ-D33), `wails3 task build`, `wails3 task test`, `gh release create` with the exe and its SHA-256, a tag with a suffix is a pre-release). Observed on GitHub: tag `v0.1.0-alpha` failed at the test step, which ran before the build (DZ-D32); tag `v0.1.1-alpha` passed every step in 3 min 5 s and created a pre-release with `docker-zero.exe` (11 691 008 bytes) and `docker-zero.exe.sha256`; the downloaded exe hashed to the published SHA-256 (`72acb45a9bd60ed8409edb31c040b467b8a7bc4958ece87ae0eeb3f6f0d67251`) and contains `0.1.1-alpha`, not `0.0.0-dev`. Not verified: the exe running, and on a managed machine (DZ-D12). The pre-release and both test tags were then deleted from GitHub with `gh`, so no release exists. Next: the final gate runs on the exe downloaded from the real release (DZ-D29).
 
 Gate: the release exe runs on a clean profile. This account was cleaned with Uninstall all, so no distro, settings, install folder, Run value, shortcuts, PATH entry or `.wslconfig`; `dz-test` kept. Evidence:
 
@@ -192,10 +192,10 @@ Status: active. Brand, app UI and front door before the first release (DZ-D27). 
 | 2. UI inventory | One HTML page listing every window and state (popup, corner box, settings, maintenance, setup with the take-over card, confirmations, errors), each with a screenshot: mocked frontend for every state, real exe for the main windows, committed (DZ-D28) | User confirms the list is complete |
 | 3. UI evaluation and design | Findings per screen; redesigned mockups in the logo's signature for the screens that need it | User approves each changed screen |
 | 4. Apply the design | Svelte and CSS changes under `frontend/`, the window sizes in `internal/ui` if a design needs them; no behaviour change | `wails3 task test`, `wails3 task lint`, `wails3 task build` pass; every inventory state re-shot from the built exe in light and dark and matched to its approved mockup |
-| 5. README banner | Hero banner and scenes as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten around them, screenshots re-shot from the new UI, no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
+| 5. README banner | Hero banner and figures as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten story-first with no UI screenshots (DZ-D34), no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
 | 6. Landing page | One `index.html` for GitHub Pages (`frontdoor-landing`), social preview image, favicon from the mark, no-affiliation statement (DZ-D30) | User picks a direction and the placement; the skill's axe and Lighthouse checks; the user switches on Pages in the repository settings |
 
-Item 1 evidence (`1aeb16d` icons, `974c56d` gallery):
+Item 1 evidence (`3aa5256` icons, `c824f21` gallery):
 
 | Check | Result |
 |---|---|
@@ -203,7 +203,7 @@ Item 1 evidence (`1aeb16d` icons, `974c56d` gallery):
 | App icon | `packaging/appicon.png` 1024 px rendered from the tile; `packaging/windows/icon.ico` 16 to 256 px by `wails3 generate icons` (its macOS step fails on the missing `build/darwin`, after the `.ico` is written) |
 | Tray icon | `internal/trayicon` embeds `stopped`, `partial`, `running`, `failed` PNGs at 32 px; `PNG(level)` unchanged |
 | Checks | `wails3 task test` ok, `wails3 task lint` 0 issues, `svelte-check` 0 errors; icons viewed at 32 and 16 px on light and dark |
-| Gallery | `design/brand/gallery/` (72 sheets, `directions.json`, `directions.html`); `.frontdoor/` deleted and dropped from `.gitignore`; `AGENTS.md` rule added |
+| Gallery | `design/brand/gallery/` (72 sheets, `directions.json`, `directions.html`); the `.frontdoor/` copy deleted; `AGENTS.md` rule added, scoped to the logo rounds by DZ-D34 |
 
 Not verified: the icons in the real Windows tray and in Explorer from a built exe.
 
@@ -220,6 +220,19 @@ Item 2 evidence, awaiting the user's review:
 
 Not verified: the mocks against the Go services at run time beyond the type check; the page in browsers other than Edge.
 
+Item 5 evidence, built and awaiting the user's review:
+
+| Check | Result |
+|---|---|
+| Figures | `design/readme/source/figures.html` and `icons.html` render `hero`, `story-licence`, `story-commands`, `story-gui`, `setup`, `tray`, `keep`, `safe`, seven `nav-*` buttons and six `ico-*` icons, each light and dark, to `design/readme/asset/` (44 WebP including the `cta` download button, 856 KB on disk, none over 60 KB); the banners and a sample of the buttons and icons viewed at full size; contrast of the smallest text pairs computed, all 4.5 or above after the button teal was darkened to `#1e7468` |
+| Download button | `cta` item in `figures.html` (button teal `#1e7468`, cream text 5.15, badge on a cream coin, new `down` glyph), `cta.webp` and `cta-dark.webp` 1345x248, 16 KB each, viewed at full size in both themes; README places it above the navigation, links `releases/latest/download/docker-zero.exe` and `.sha256`, and the Install step points to it; `releases/latest` answers 404 today (no release exists since the test pre-release and tags were deleted), so the link is dead until the first release without a suffix |
+| README | Rewritten story-first; every figure directly under its heading, one banner per story paragraph; five screenshots deleted; image paths and the seven navigation anchors checked to exist; no en or em dash; no account path |
+| Labels | Setup steps from `internal/setup/setup.go`; popup rows and buttons from `frontend/src/Popup.svelte`; form text from `frontend/src/Setup.svelte`; tray colours from `internal/trayicon/*.png` |
+| Licence claim | Quoted from Docker's licence page as fetched: paid subscription for professional use in larger organizations; linked, no thresholds stated |
+| `wails3 task test` | All packages ok |
+
+Not verified: the README on github.com in light, dark and phone width (including the picture elements); the text fragment of the Docker link in a browser; the figures against the redesigned UI.
+
 ## Risks
 
 | Risk | State |
@@ -229,12 +242,13 @@ Not verified: the mocks against the Go services at run time beyond the type chec
 | `.wslconfig` and `wsl --shutdown` affect every distro of the account | Confirmation dialogs; keepalive mode is the default (DZ-D6) |
 | Trusting a root certificate on a managed device may raise a security alert | Optional step, user-initiated (DZ-D6) |
 | Docker Hub anonymous pull terms for organisations | Unresolved in the source pack (PT-Q6) |
+| README figures name the current UI's labels; the redesign (items 3 and 4) can leave them stale | Re-check the setup and tray figures after item 4 (DZ-D34) |
+| README download button is a dead link until a release without a suffix exists | Accepted by the user; publish `v0.1.0` and open the button from the README on github.com (DZ-D34) |
 | Logo or name read as Docker Inc. or Portainer branding | Phase 10 logo uses an orca, not Docker's whale graphic (DZ-D31); README and landing page state no affiliation (DZ-D30); Docker's trademark guidelines not checked, the user checks them before the release |
 
 ## Next action
 
 1. Phase 10 item 2: the user reviews `design/ui-inventory/index.html` and confirms the list of states is complete.
-2. Phase 10 items 3 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
-3. Phase 9: commit the release workflow (DZ-D32), push it, then push tag `v0.1.0-alpha` to prove the runner build; delete that pre-release and tag afterwards.
-4. Phase 9: after Phase 10, the user pushes tag `v0.1.0` on the commit that ends it; the workflow builds the exe and creates the release. Download that exe and re-run the full clean-profile gate on it (DZ-D29). The agent's earlier attempt to publish was refused by its permission mode, so the user pushes the tag or allows it.
-5. Then mark Phase 9 complete with the release URL.
+2. Phase 10 item 5 (README) was built ahead of items 3 and 4 at the user's request (DZ-D34): the user reviewed `README.md` and `design/readme/asset/`, and the README is committed; the user pushes it. Items 3, 4 and 6 follow in order, one commit per item after its checks pass; after item 4, re-check the setup and tray figures against the redesigned UI.
+3. Phase 9: after Phase 10, the user pushes tag `v0.1.0` on the commit that ends it; the workflow builds the exe and creates the release. Download that exe and re-run the full clean-profile gate on it (DZ-D29). The agent's earlier attempt to publish was refused by its permission mode, so the user pushes the tag or allows it.
+4. Then mark Phase 9 complete with the release URL.

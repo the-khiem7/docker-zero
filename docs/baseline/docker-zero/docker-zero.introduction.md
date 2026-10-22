@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "introduction"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "1aeb16d"
+code_ref: "uncommitted"
 ---
 
 # docker-zero - Wails3 companion app for Docker Engine in WSL2 with Portainer
@@ -35,7 +35,7 @@ The runtime this app automates was built and verified by hand in another reposit
 
 | Item | State |
 |---|---|
-| Repository | Module `github.com/the-khiem7/docker-zero` (`go 1.26.0`), remote `origin` on GitHub; Wails assets in `packaging/` (DZ-D13); MIT licence (DZ-D22); README for users with screenshots |
+| Repository | Module `github.com/the-khiem7/docker-zero` (`go 1.26.0`), remote `origin` on GitHub; Wails assets in `packaging/` (DZ-D13); MIT licence (DZ-D22); README story-first with drawn figures and no screenshots (DZ-D34) |
 | App code | See `roadmap` for the phases built; `main.go` wires the tray and popup, Go packages under `internal/`, Svelte UI under `frontend/` |
 | Toolchain on this workstation | Go `1.27.2`, Node `v24.18.0`, `wails3` CLI `v3.0.0-beta.30` in the user profile; `wails3 task build` produces `bin/docker-zero.exe` |
 | Runtime on this workstation | `Ubuntu-24.04` installed by the app's own setup from the release exe on 2026-10-22, after the hand-made setup was adopted and then uninstalled; Portainer `2.45.3`; certificate SHA-1 `1BFBD28089E4A85A0E024D4C382C2084C3B8F240`, to 2031-10-21, not trusted yet |

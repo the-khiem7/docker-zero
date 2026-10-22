@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "1aeb16d"
+code_ref: "uncommitted"
 ---
 
 # docker-zero hallucination journal
@@ -46,6 +46,7 @@ code_ref: "1aeb16d"
 | DZ-D31 | Logo: an orca leaping out of a red ring over a two-tone sea; design rounds kept as a public gallery | closed | DZ-D30, DZ-D27 |
 | DZ-D32 | Release exe built and published by a GitHub Actions workflow on tag push | closed | DZ-D29, DZ-D27, DZ-D12, DZ-D33 |
 | DZ-D33 | The release workflow stamps the exe version from the git tag, on the runner only | closed | DZ-D32 |
+| DZ-D34 | README: story-led, no UI screenshots, drawn figures, banner with the logo as the letter o | closed | DZ-D30, DZ-D31, DZ-D27 |
 
 ## Open questions
 
@@ -403,7 +404,7 @@ Why: the user's instruction; Phase 10 replaces the app icon, the look of every w
 
 What breaks if ignored: the first public download carries an icon and a UI about to change, and the README images stop matching the published exe.
 
-Rejected: publish `v0.1.0` at `4e0b13c` now and ship the design in a later version - the user declined it.
+Rejected: publish `v0.1.0` at `da09172` now and ship the design in a later version - the user declined it.
 
 ### DZ-D28: UI inventory: mocked frontend for every state, real exe for the main windows, committed
 
@@ -423,7 +424,7 @@ Decision: before `v0.1.0` is published, the exe built from the commit that ends 
 
 Closes DZ-Q5.
 
-Why: Phase 10 changes the setup window and every other window the first gate exercised with the exe built at `4e0b13c`.
+Why: Phase 10 changes the setup window and every other window the first gate exercised with the exe built at `da09172`.
 
 What breaks if ignored: the published file is one whose setup flow was never run end to end.
 
@@ -448,7 +449,7 @@ Decision:
 - The mark is a stylised orca (one arched silhouette, one white belly sweep, one eye patch) leaping from behind a red ring (the zero) towards the front left, its flukes behind the ring's lower right; inside the ring, below the orca, a light and a dark teal band of sea on a cream fill.
 - Sources: `design/brand/logo.svg` (mark) and `design/brand/logo-tile.svg` (app icon on a cream tile); `packaging/appicon.png` at 1024 px and `packaging/windows/icon.ico` are rendered from them.
 - Tray: the mark at 32 px, embedded as PNG in `internal/trayicon`; the ring is grey when stopped, amber when partly up, green when running (a red ring would read as a fault), and a red dot in the corner marks a failure.
-- The seven design rounds (sheets, notes, choices) live in `design/brand/gallery/`, committed and public, linked from the landing page; the frontdoor design board is built there directly, never in `.frontdoor/` (rule in `AGENTS.md`).
+- The seven design rounds (sheets, notes, choices) live in `design/brand/gallery/`, committed and public, linked from the landing page; the frontdoor design board of the logo is built there directly, never in `.frontdoor/`; the boards of other design work (README, landing page) use `.frontdoor/`, untracked (rule in `AGENTS.md`, DZ-D34).
 - `board.py build` rewrites the page subtitle to "Local file, not committed"; after each build it is edited back to "Design rounds of the Docker Zero logo".
 
 Amends DZ-D30: a whale as an animal is allowed; Docker's whale graphic (side view, containers on the back) is not.
@@ -469,7 +470,9 @@ Why: the user wants a tag push to be the only step that makes a release appear; 
 
 What breaks if ignored: a gate run on a local exe says nothing about the published file, because the runner build has a different SHA-256; a hand-uploaded exe is not traceable to a commit.
 
-Rejected: a local build published by hand - the user wants tag push to release automatically. A separate Phase 11 for the workflow - the user chose Phase 9. Test and lint on every pull request - not chosen; the workflow covers the tag push only. Unverified: the runner has Go, Node and the pinned `wails3` `v3.0.0-beta.30` (DZ-D13) available, and the unsigned runner-built exe behaves as the local one did on a managed machine (DZ-D12).
+Rejected: a local build published by hand - the user wants tag push to release automatically. A separate Phase 11 for the workflow - the user chose Phase 9. Test and lint on every pull request - not chosen; the workflow covers the tag push only. Lesson: the first workflow ran `wails3 task test` before the build; it looked fine because `frontend/dist` exists locally. On the clean runner `go test ./...` failed with `pattern all:frontend/dist: no matching files found` in `main.go` (`frontend/dist` is gitignored and created by the build), tag `v0.1.0-alpha` made no release, and the fix was to run the test step after the build.
+
+Observed: tag `v0.1.1-alpha` ran every step green and created a pre-release whose exe matched its published SHA-256. Unverified: the unsigned runner-built exe behaves as the local one did on a managed machine (DZ-D12).
 
 ### DZ-D33: The release workflow stamps the exe version from the git tag, on the runner only
 
@@ -480,3 +483,21 @@ Why: the tag is the one source of the version; `file_version` takes digits only,
 What breaks if ignored: a hand-bumped file drifts from the tag (tag `v0.2.0`, exe reading `0.1.0`); a workflow that commits back needs write access to `main` and leaves automatic commits behind the tag.
 
 Rejected: bump by hand before tagging - drifts. Commit the stamp back to the repository - branch protection and commit noise. Keep `0.1.0` in the committed file - a local build then looks like the release. Not stamped: `version` in `packaging/config.yml` and the manifest `assemblyIdentity` version, both still `0.1.0`; they do not feed the exe's file or product version.
+
+### DZ-D34: README: story-led, no UI screenshots, drawn figures, banner with the logo as the letter o
+
+Decision:
+
+- The README is written story-first for a new visitor: the Docker Desktop licence wall, then pure WSL where every step and every later check is a command, then Docker Zero as the GUI that lets developers work with containers faster. Practical sections follow: what you get, get started, day to day, safe by design, questions, build from source.
+- The README carries no screenshots of the app. The five PNGs in `docs/images/` are deleted. Drawn figures replace them, each a light and a dark WebP pair in `design/readme/asset/`: hero (banner); one banner per story paragraph (licence, commands, GUI); setup (the form and the eight steps); tray (the popup and the four ring colours); keep-the-distro-running (the three modes); safe by design (no UAC prompt, no Windows service, nothing under Program Files, certificate for localhost only). Seven navigation buttons and six icons for the `What you get` rows are small WebP pairs: the logo's red ring and two-tone sea as a badge around one line glyph. The `What you get` rows are not a table: on a phone GitHub squeezed the icon column to about 12 px. Each of the six rows is a paragraph: a 36 px icon inline before a bold text title, then the description (the user chose this over a drawn header image per row, after comparing both). Figure labels are the app's own labels, taken from `internal/setup`, the Svelte views and the README text; sources and the render commands are in `design/readme/source/` (`figures.html`, `icons.html`).
+- Banner: the name set in Dela Gothic One with the logo as both letters o (Docker, Zero), the logo's two-tone sea along the bottom edge, the line "No admin prompt. No licence talk. No terminal marathon." (moved from a bold line under the banner, which wrapped and left one word alone) and, under it, the tagline "Docker and Portainer on Windows, set up for you and kept one click away." (the line says the benefit, the tagline says what it is and what the app does for the reader, the setup and the daily use; the earlier tagline "Docker Engine and Portainer on Windows. Zero admin rights." repeated the admin point already made by the name and the line); the type is chosen from six typographic directions of the second round on the README board.
+- Layout: every figure sits directly under its section heading, never at the end of the section; the story has one banner above each of its three paragraphs; the navigation under the download button is seven image buttons on one row, each wrapped in an anchor, with the label as alt text; labels are one word where possible (Story, Features, Start, Daily, Safety, FAQ, Build) because the section names made the row about 930 px wide and it wrapped five and two on github.com, while the short labels make it about 610 px.
+- Download button: the first thing under the one-line pitch, above the navigation. One image button "Download for Windows" (light and dark WebP) linking to `releases/latest/download/docker-zero.exe`, with no caption line under it (the user removed it; the WSL requirement stays in "You need", and the SHA-256 link moved into the Install step). The image carries no version number. The Install step points back at the button.
+- The licence statement links Docker's own licence page ("Professional use in larger organizations") and tells the reader to check current terms with legal or procurement; nothing is stated about thresholds or prices.
+- The README design board is the frontdoor default `.frontdoor/` (untracked). `design/brand/gallery/` holds the logo rounds only (amends the board rule recorded in DZ-D31).
+
+Why: the user asked for a whole new README in a marketing tone with the story behind the app, and for the screenshots to be removed; in review the user found the download call to action missing and asked for it before anything else; the user asked for visual navigation buttons, figures right under the headings, one banner per story paragraph (a single banner after three paragraphs read as a wall of text), banners for the keep-running and safe-by-design sections, and icons in the `What you get` table; the UI is redesigned in Phase 10 items 3 and 4, so screenshots taken now would show a retired design. Drawn figures use only labels the code carries.
+
+What breaks if ignored: screenshots of the old UI beside a new logo and a redesigned app; figure labels that drift from the app; a licence claim worded as fact instead of pointing at Docker's page; the download link breaks until a stable release exists, because `releases/latest` skips pre-releases (checked: the API answered 404 while the only release was the `v0.1.1-alpha` pre-release, which was then deleted with both test tags, so it answers 404 with no release at all), so the link starts working at the first tag without a suffix and the user accepted the dead link until then.
+
+Rejected: keep the five screenshots and re-shoot them after item 4 (user asked to remove them). One three-panel story figure after the story text (the user asked for one banner per paragraph). Figures at the end of their section. Plain text navigation anchors (the user asked for buttons). Download button below the story or only in Install (the user wants it first). Download link to the releases list (works for pre-releases but costs a click), or pinned to the `v0.1.1-alpha` tag (goes stale on every release); the user chose the direct latest link. A second button for the releases page (diluted the one action; the Install step links the releases). A caption line under the button (removed in review). A table with an icon column for `What you get` (squeezed to about 12 px on a phone). A drawn header image per row with icon and title (the user chose the inline icon). Icons floated left of the text, or the whole row drawn as one image (misalign or cannot be copied). Navigation in two rows of four and three, or smaller buttons with the full section names (the text would be too small to read at the height that fits one row). A "pre-release" word on the caption (not chosen). The version number inside the image (stale at each release). First README banner round: a horizon scene, a sounding chart, a paper sun (the sun lost the zero ring). Other typefaces for the wordmark: wide geometric, contrast serif, lowercase mono (kept as sketches on the local board). Tagline "Docker Engine and Portainer on Windows, with no admin rights." (replaced by the Zero wording the user picked). Taglines not picked after the line moved into the banner: "Docker Engine and Portainer on Windows." (no new fact), "..., from the tray.", "Docker Engine on WSL2 with Portainer, from the Windows tray." (WSL2 is unfamiliar to a new reader), "Docker for Windows without Docker Desktop." (names Docker Desktop in the banner, closer to the trademark line), no tagline (the banner would not say what the product is), "One exe, one setup window: ...", "Docker Engine in WSL2, Portainer as the GUI, a tray icon to run it.", "A Windows tray app that sets up Docker Engine and Portainer." (first pick, replaced by the user with the set-up-and-one-click wording). Quote above the tagline was chosen over tagline above quote. Taglines not picked earlier: "Docker for Windows PCs where you are not an admin.", "Zero admin rights. Zero Docker Desktop.", "Docker Engine on WSL2 with Portainer, from the Windows tray.", "Docker and Portainer on Windows, no UAC prompt." Stating Docker's employee and revenue thresholds in the README (they change; the page is linked instead). Not checked: the figures against the redesigned UI (item 4), the README on github.com in light, dark and phone width, and the text fragment of the Docker link in a browser.
