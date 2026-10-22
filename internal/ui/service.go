@@ -101,6 +101,13 @@ func (s *Service) OpenSettings() {
 	}
 }
 
+// OpenSetup shows the setup window.
+func (s *Service) OpenSetup() {
+	if s.shell != nil {
+		application.InvokeAsync(s.shell.showSetup)
+	}
+}
+
 // ServiceShutdown stops polling and releases the keepalive session so the
 // distro can idle out after the app exits.
 func (s *Service) ServiceShutdown() error {

@@ -14,6 +14,7 @@ import (
 	"github.com/the-khiem7/docker-zero/internal/control"
 	"github.com/the-khiem7/docker-zero/internal/paths"
 	"github.com/the-khiem7/docker-zero/internal/settings"
+	"github.com/the-khiem7/docker-zero/internal/setup"
 	"github.com/the-khiem7/docker-zero/internal/status"
 	"github.com/the-khiem7/docker-zero/internal/ui"
 	"github.com/the-khiem7/docker-zero/internal/wsl"
@@ -70,12 +71,15 @@ func main() {
 	ctrl.KeepAlive = func() bool { return prefs.Get().IdleMode == settings.IdleKeepalive }
 
 	shell = ui.Install(app, ui.Options{
-		Controller:  ctrl,
-		Prober:      prober,
-		Prefs:       prefs,
-		Scripter:    client,
-		WSLConfig:   settings.WSLConfig{Path: filepath.Join(home, ".wslconfig")},
-		InstallExe:  installExe,
+		Controller: ctrl,
+		Prober:     prober,
+		Prefs:      prefs,
+		Scripter:   client,
+		WSLConfig:  settings.WSLConfig{Path: filepath.Join(home, ".wslconfig")},
+		InstallExe: installExe,
+		NewWizard: func() *setup.Wizard {
+			return setup.New(client, setup.Config{BinDir: setup.DefaultBinDir(installExe), AddToPath: true})
+		},
 		StartDistro: slices.Contains(os.Args[1:], settings.StartDistroFlag),
 	})
 

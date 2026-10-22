@@ -37,6 +37,11 @@
     if (!live.error) await service.HidePopup();
   }
 
+  async function openSetup() {
+    service.OpenSetup();
+    await service.HidePopup();
+  }
+
   async function open() {
     await run(() => service.OpenPortainer());
     if (!live.error) await service.HidePopup();
@@ -79,9 +84,15 @@
     </section>
   {:else}
     <section class="tiles">
-      <button class="tile primary" disabled={!!busy} onclick={start}>
-        <span class="icon" aria-hidden="true">&#9654;</span>Start
-      </button>
+      {#if v?.distro === "not-installed"}
+        <button class="tile primary" onclick={openSetup}>
+          <span class="icon" aria-hidden="true">&#9881;</span>Set up
+        </button>
+      {:else}
+        <button class="tile primary" disabled={!!busy} onclick={start}>
+          <span class="icon" aria-hidden="true">&#9654;</span>Start
+        </button>
+      {/if}
       <button class="tile" disabled={!v?.portainerUp} onclick={open}>
         <span class="icon" aria-hidden="true">&#8599;</span>Open Portainer
       </button>
@@ -108,6 +119,7 @@
       Corner box
     </label>
     <span class="muted">{v?.holding ? "Kept running" : ""}</span>
+    <button class="link" onclick={openSetup}>Set up...</button>
   </footer>
 </main>
 
@@ -229,6 +241,14 @@
   }
   .muted {
     color: var(--text-muted);
+  }
+  .link {
+    border: 0;
+    background: none;
+    padding: 0;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 12px;
   }
   .dot {
     width: 10px;
