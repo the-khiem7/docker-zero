@@ -54,7 +54,10 @@
       <span class="dot {level}"></span>
       <h1>Docker Zero</h1>
     </div>
-    <span class="pill {level}">{busy ? busyLabel(busy) : levelLabel[level]}</span>
+    <div class="title">
+      <span class="pill {level}">{busy ? busyLabel(busy) : levelLabel[level]}</span>
+      <button class="gear" title="Settings" aria-label="Settings" onclick={() => service.OpenSettings()}>&#9881;</button>
+    </div>
   </header>
 
   <section class="card status">
@@ -241,6 +244,14 @@
   }
   .dot.failed {
     background: var(--bad);
+  }
+  .gear {
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-muted);
+    padding: 0 2px;
   }
   .pill {
     font-size: 12px;

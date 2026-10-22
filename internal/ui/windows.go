@@ -5,38 +5,60 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/events"
 
 	"github.com/the-khiem7/docker-zero/internal/control"
+	"github.com/the-khiem7/docker-zero/internal/settings"
 	"github.com/the-khiem7/docker-zero/internal/trayicon"
 )
 
 // Window names; the frontend picks its layout from the ?view= query.
 const (
-	PopupWindow  = "popup"
-	CornerWindow = "corner"
+	PopupWindow    = "popup"
+	CornerWindow   = "corner"
+	SettingsWindow = "settings"
 )
 
 const (
-	popupWidth, popupHeight   = 360, 400
-	cornerWidth, cornerHeight = 280, 96
-	cornerMargin              = 12
+	popupWidth, popupHeight       = 360, 420
+	cornerWidth, cornerHeight     = 280, 96
+	cornerMargin                  = 12
+	settingsWidth, settingsHeight = 520, 680
 )
 
-// Shell holds the tray icon and the two widget windows.
+// Options are what Install needs.
+type Options struct {
+	Controller *control.Controller
+	Prober     control.Prober
+	Prefs      *Prefs
+	Scripter   settings.Scripter
+	WSLConfig  settings.WSLConfig
+	InstallExe string
+	// StartDistro starts the runtime quietly after launch, for auto start
+	// with the start-distro option.
+	StartDistro bool
+}
+
+// Shell holds the tray icon and the widget windows.
 type Shell struct {
 	app        *application.App
 	svc        *Service
+	prefs      *Prefs
 	tray       *application.SystemTray
 	popup      *application.WebviewWindow
 	corner     *application.WebviewWindow
+	settings   *application.WebviewWindow
 	cornerItem *application.MenuItem
 }
 
-// Install registers the service and creates the tray icon, the popup and
-// the corner box. Call it before app.Run.
-func Install(app *application.App, ctrl *control.Controller, prober control.Prober) *Shell {
-	svc := newService(ctrl, prober)
-	sh := &Shell{app: app, svc: svc}
+// Install registers the services and creates the tray icon, the popup, the
+// corner box and the settings window. Call it before app.Run.
+func Install(app *application.App, o Options) *Shell {
+	svc := newService(o.Controller, o.Prober)
+	svc.startDistro = o.StartDistro
+	sh := &Shell{app: app, svc: svc, prefs: o.Prefs}
 	svc.shell = sh
+	setSvc := NewSettingsService(app, o.Prefs, o.Controller, o.Scripter, o.WSLConfig, o.InstallExe)
+	setSvc.onChange = svc.Refresh
 	app.RegisterService(application.NewService(svc))
+	app.RegisterService(application.NewService(setSvc))
 
 	sh.popup = app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:            PopupWindow,
@@ -64,13 +86,26 @@ func Install(app *application.App, ctrl *control.Controller, prober control.Prob
 		Windows:       application.WindowsWindow{HiddenOnTaskbar: true},
 		URL:           "/?view=" + CornerWindow,
 	})
-	for _, w := range []*application.WebviewWindow{sh.popup, sh.corner} {
+	sh.settings = app.Window.NewWithOptions(application.WebviewWindowOptions{
+		Name:      SettingsWindow,
+		Title:     "Docker Zero settings",
+		Width:     settingsWidth,
+		Height:    settingsHeight,
+		MinWidth:  420,
+		MinHeight: 480,
+		Hidden:    true,
+		URL:       "/?view=" + SettingsWindow,
+	})
+	for _, w := range []*application.WebviewWindow{sh.popup, sh.corner, sh.settings} {
 		name := w.Name()
-		// Closing a widget only hides it; the app lives in the tray.
+		// Closing a window only hides it; the app lives in the tray.
 		w.RegisterHook(events.Common.WindowClosing, func(e *application.WindowEvent) {
 			w.Hide()
 			e.Cancel()
 		})
+		if name == SettingsWindow {
+			continue
+		}
 		w.OnWindowEvent(events.Common.WindowShow, func(*application.WindowEvent) { svc.setVisible(name, true) })
 		w.OnWindowEvent(events.Common.WindowHide, func(*application.WindowEvent) { svc.setVisible(name, false) })
 	}
@@ -80,6 +115,7 @@ func Install(app *application.App, ctrl *control.Controller, prober control.Prob
 	sh.cornerItem = menu.AddCheckbox("Show corner box", false).OnClick(func(ctx *application.Context) {
 		sh.setCorner(ctx.ClickedMenuItem().Checked())
 	})
+	menu.Add("Settings...").OnClick(func(*application.Context) { sh.showSettings() })
 	menu.AddSeparator()
 	menu.Add("Quit Docker Zero").OnClick(func(*application.Context) { app.Quit() })
 
@@ -89,6 +125,12 @@ func Install(app *application.App, ctrl *control.Controller, prober control.Prob
 	sh.tray.SetMenu(menu)
 	sh.tray.AttachWindow(sh.popup).WindowOffset(8)
 	svc.attach(app, sh.tray)
+
+	app.Event.OnApplicationEvent(events.Common.ApplicationStarted, func(*application.ApplicationEvent) {
+		if o.Prefs.Get().CornerBox {
+			sh.setCorner(true)
+		}
+	})
 	return sh
 }
 
@@ -97,10 +139,16 @@ func (sh *Shell) ShowPopup() {
 	application.InvokeAsync(sh.tray.ShowWindow)
 }
 
+func (sh *Shell) showSettings() {
+	sh.settings.Show()
+	sh.settings.Focus()
+}
+
 // setCorner shows or hides the corner box in the bottom-right corner of the
-// primary screen's work area.
+// primary screen's work area, and remembers the choice.
 func (sh *Shell) setCorner(show bool) {
 	sh.cornerItem.SetChecked(show)
+	_ = sh.prefs.Update(func(p *settings.Settings) { p.CornerBox = show })
 	if !show {
 		sh.corner.Hide()
 		return

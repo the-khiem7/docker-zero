@@ -47,6 +47,8 @@ type Service struct {
 	emit    func(View)
 	setIcon func([]byte)
 	shell   *Shell
+	// startDistro starts the runtime quietly at launch (auto start option).
+	startDistro bool
 
 	mu       sync.Mutex
 	last     View
@@ -74,12 +76,29 @@ func (s *Service) attach(app *application.App, tray *application.SystemTray) {
 	s.setIcon = func(b []byte) { tray.SetIcon(b) }
 }
 
-// ServiceStartup starts the poll loop.
+// ServiceStartup starts the poll loop, takes a hold on an already running
+// distro in keepalive mode, and starts the runtime when launched with the
+// start-distro option.
 func (s *Service) ServiceStartup(ctx context.Context, _ application.ServiceOptions) error {
 	ctx, cancel := context.WithCancel(ctx)
 	s.cancel = cancel
 	go s.loop(ctx)
+	go func() {
+		if s.startDistro {
+			_ = s.act(func() error { return s.ctrl.Start(ctx, true) })
+			return
+		}
+		_ = s.ctrl.SyncHold(ctx)
+		s.Refresh()
+	}()
 	return nil
+}
+
+// OpenSettings shows the settings window.
+func (s *Service) OpenSettings() {
+	if s.shell != nil {
+		application.InvokeAsync(s.shell.showSettings)
+	}
 }
 
 // ServiceShutdown stops polling and releases the keepalive session so the
@@ -124,7 +143,7 @@ func (s *Service) Status() View {
 
 // Start boots the distro, ensures Portainer and opens it.
 func (s *Service) Start(ctx context.Context) error {
-	return s.act(func() error { return s.ctrl.Start(ctx) })
+	return s.act(func() error { return s.ctrl.Start(ctx, false) })
 }
 
 // StopDistro terminates the distro.
