@@ -14,8 +14,8 @@ code_ref: "uncommitted"
 | Phase 1 | - | complete | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
 | Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
-| Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
-| Phase 5 | Phase 4 | complete | Settings apply and revert each item |
+| Phase 4 | Phase 3 | active | Tray popup and corner box drive Start, Stop, Shut down, Open |
+| Phase 5 | Phase 4 | active | Settings apply and revert each item |
 | Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | planned | Update Portainer, Reset admin, Uninstall all work |
@@ -35,7 +35,7 @@ Status: complete. Packages: `internal/wsl` (`Client` with `Available`, `Distros`
 
 ## Phase 4: Day 2 widget
 
-Status: complete, with Stop distro and Shut down WSL not yet clicked against the real distro (see below). Built: `internal/control` (one action at a time: Start = keepalive hold + `systemctl start docker` + `docker start portainer` + wait up to 90 s for the status endpoint + open browser; Stop distro; Shut down WSL; Open Portainer), `wsl.Hold` (hidden `sleep infinity` session), `internal/trayicon` (status-coloured icon drawn at run time), `internal/ui` (bound `Service`, poll loop, `Shell` with tray menu, popup and corner box), Svelte `Popup`, `Corner` and a shared status store. Design: DZ-D15.
+Status: active; gate not met: Stop distro and Shut down WSL not yet clicked against the real distro (see below), waiting on the user. Built: `internal/control` (one action at a time: Start = keepalive hold + `systemctl start docker` + `docker start portainer` + wait up to 90 s for the status endpoint + open browser; Stop distro; Shut down WSL; Open Portainer), `wsl.Hold` (hidden `sleep infinity` session), `internal/trayicon` (status-coloured icon drawn at run time), `internal/ui` (bound `Service`, poll loop, `Shell` with tray menu, popup and corner box), Svelte `Popup`, `Corner` and a shared status store. Design: DZ-D15.
 
 Evidence:
 
@@ -52,7 +52,7 @@ Not verified: Stop distro and Shut down WSL clicked in the app against `Ubuntu-2
 
 ## Phase 5: Settings
 
-Status: complete, except the certificate store changes (see below). Built: `internal/settings` (settings store, `HKCU` Run value, shortcuts, `.wslconfig` editor, Chrome lookup and browser opener, certificate read, trust, untrust and regenerate, self-copy to the install folder), `internal/ui` `Prefs` and `SettingsService`, a framed settings window opened from the tray menu and the popup gear, corner box choice remembered, `--start-distro` launch option, hold taken at launch in keepalive mode. Design: DZ-D16.
+Status: active; gate not met: certificate Install, Remove and Regenerate not yet run against the real store (see below), waiting on the user. Built: `internal/settings` (settings store, `HKCU` Run value, shortcuts, `.wslconfig` editor, Chrome lookup and browser opener, certificate read, trust, untrust and regenerate, self-copy to the install folder), `internal/ui` `Prefs` and `SettingsService`, a framed settings window opened from the tray menu and the popup gear, corner box choice remembered, `--start-distro` launch option, hold taken at launch in keepalive mode. Design: DZ-D16.
 
 Evidence, each item applied and reverted through the settings window by UI Automation on this machine:
 
