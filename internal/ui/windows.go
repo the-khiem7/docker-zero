@@ -1,9 +1,12 @@
 package ui
 
 import (
+	"context"
+
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
 
+	"github.com/the-khiem7/docker-zero/internal/adopt"
 	"github.com/the-khiem7/docker-zero/internal/control"
 	"github.com/the-khiem7/docker-zero/internal/settings"
 	"github.com/the-khiem7/docker-zero/internal/setup"
@@ -36,6 +39,8 @@ type Options struct {
 	InstallExe string
 	// NewWizard makes the Day 1 wizard for one setup run.
 	NewWizard func() *setup.Wizard
+	// Adopter finds and takes over a setup made by hand.
+	Adopter *adopt.Adopter
 	// StartDistro starts the runtime quietly after launch, for auto start
 	// with the start-distro option.
 	StartDistro bool
@@ -72,11 +77,14 @@ func Install(app *application.App, o Options) *Shell {
 	uninstallSvc := NewUninstallService(o.NewWizard, guard)
 	uninstallSvc.onDone = svc.Refresh
 	uninstallSvc.attach(app)
+	adoptSvc := NewAdoptService(o.Adopter, guard)
+	adoptSvc.onDone = svc.Refresh
 	app.RegisterService(application.NewService(svc))
 	app.RegisterService(application.NewService(setSvc))
 	app.RegisterService(application.NewService(setupSvc))
 	app.RegisterService(application.NewService(maintainSvc))
 	app.RegisterService(application.NewService(uninstallSvc))
+	app.RegisterService(application.NewService(adoptSvc))
 
 	sh.popup = app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:            PopupWindow,
@@ -159,6 +167,7 @@ func Install(app *application.App, o Options) *Shell {
 		if o.Prefs.Get().CornerBox {
 			sh.setCorner(true)
 		}
+		go sh.offerAdoption(adoptSvc)
 	})
 	return sh
 }
@@ -171,6 +180,23 @@ func (sh *Shell) ShowPopup() {
 func (sh *Shell) showSetup() {
 	sh.setup.Show()
 	sh.setup.Focus()
+}
+
+// offerAdoption opens the setup window once when a setup made by hand exists.
+func (sh *Shell) offerAdoption(s *AdoptService) {
+	if sh.prefs.Get().AdoptPrompted {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), adoptTimeout)
+	defer cancel()
+	r, err := s.Detect(ctx)
+	if err != nil || !r.Found() {
+		return
+	}
+	if err := sh.prefs.Update(func(p *settings.Settings) { p.AdoptPrompted = true }); err != nil {
+		return
+	}
+	application.InvokeAsync(sh.showSetup)
 }
 
 func (sh *Shell) showSettings() {

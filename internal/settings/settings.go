@@ -41,6 +41,9 @@ type Settings struct {
 	Browser     BrowserKind `json:"browser"`
 	BrowserPath string      `json:"browserPath,omitempty"`
 	CornerBox   bool        `json:"cornerBox,omitzero"`
+	// AdoptPrompted is set once the app has offered to take over a manual
+	// setup, so the offer is not repeated at every launch.
+	AdoptPrompted bool `json:"adoptPrompted,omitzero"`
 }
 
 // Defaults returns the settings of a fresh install.

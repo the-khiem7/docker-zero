@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Events } from "@wailsio/runtime";
   import * as S from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/setupservice";
+  import * as A from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/adoptservice";
+  import type { Report } from "../bindings/github.com/the-khiem7/docker-zero/internal/adopt/models";
   import type { SetupView } from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/models";
   import { run, service, live } from "./lib/status.svelte";
 
@@ -12,6 +14,41 @@
   let again = $state("");
   let error = $state("");
   let logBox: HTMLElement | undefined = $state();
+
+  let found = $state<Report | null>(null);
+  let chosen = $state<Record<string, boolean>>({});
+  let adopting = $state(false);
+  let adoptError = $state("");
+  let adopted = $state<string[]>([]);
+
+  async function detect() {
+    try {
+      const r = await A.Detect();
+      found = r;
+      for (const f of r.findings ?? []) chosen[f.item] ??= true;
+    } catch (err) {
+      adoptError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
+  async function takeOver() {
+    adopting = true;
+    adoptError = "";
+    try {
+      adopted = (await A.Adopt(Object.keys(chosen).filter((k) => chosen[k]))) ?? [];
+    } catch (err) {
+      adoptError = err instanceof Error ? err.message : String(err);
+    } finally {
+      adopting = false;
+      await detect();
+    }
+  }
+
+  const hasExisting = $derived(
+    !!found &&
+      found.distro !== "not-installed" &&
+      ((found.findings?.length ?? 0) > 0 || (found.container !== "" && found.container !== "missing")),
+  );
 
   const busy = $derived(v?.running ?? false);
   const done = $derived(v?.done ?? false);
@@ -28,6 +65,8 @@
     v = e.data;
   });
   S.State().then((s) => (v = s));
+  detect();
+  window.addEventListener("focus", detect);
 
   $effect(() => {
     // Keep the newest log line in view.
@@ -65,6 +104,39 @@
     Installs Ubuntu-24.04 in WSL, Docker Engine and Portainer for your account. It needs no admin rights and takes
     several minutes, mostly for downloads.
   </p>
+
+  {#if hasExisting && found}
+    <section class="card existing">
+      <h2>Existing setup found</h2>
+      <p class="muted small">
+        Ubuntu-24.04{found.container && found.container !== "missing" ? `, Portainer (${found.container})` : ""} already
+        exists. Taking over keeps the distro, containers and Portainer data as they are and replaces the launchers below
+        with Docker Zero's own. You do not need to run setup.
+      </p>
+      {#each found.findings ?? [] as f (f.item)}
+        <label class="row">
+          <input type="checkbox" bind:checked={chosen[f.item]} disabled={adopting} />
+          <span>
+            {f.title}
+            <span class="muted small block">{f.detail}</span>
+          </span>
+        </label>
+      {/each}
+      {#if found.findings?.length}
+        <button class="primary" disabled={adopting || !Object.values(chosen).some(Boolean)} onclick={takeOver}>
+          {adopting ? "Working..." : "Take over"}
+        </button>
+      {:else}
+        <p class="small">Nothing left to replace.</p>
+      {/if}
+      {#if adopted.length}
+        <p class="ok small">
+          Replaced {adopted.length} item{adopted.length === 1 ? "" : "s"}. Open a new terminal to use the docker command.
+        </p>
+      {/if}
+      {#if adoptError}<p class="error">{adoptError}</p>{/if}
+    </section>
+  {/if}
 
   {#if editable}
     <section class="card">
@@ -150,6 +222,21 @@
   }
   .small {
     font-size: 12px;
+  }
+  .block {
+    display: block;
+  }
+  .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 3px 0;
+  }
+  .ok {
+    color: var(--ok);
+  }
+  .existing {
+    border-color: var(--accent);
   }
   .field {
     display: flex;

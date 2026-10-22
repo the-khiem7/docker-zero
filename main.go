@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"log"
 	"os"
@@ -11,11 +12,13 @@ import (
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 
+	"github.com/the-khiem7/docker-zero/internal/adopt"
 	"github.com/the-khiem7/docker-zero/internal/control"
 	"github.com/the-khiem7/docker-zero/internal/paths"
 	"github.com/the-khiem7/docker-zero/internal/settings"
 	"github.com/the-khiem7/docker-zero/internal/setup"
 	"github.com/the-khiem7/docker-zero/internal/status"
+	"github.com/the-khiem7/docker-zero/internal/target"
 	"github.com/the-khiem7/docker-zero/internal/ui"
 	"github.com/the-khiem7/docker-zero/internal/wsl"
 )
@@ -77,6 +80,25 @@ func main() {
 		Scripter:   client,
 		WSLConfig:  settings.WSLConfig{Path: filepath.Join(home, ".wslconfig")},
 		InstallExe: installExe,
+		Adopter: &adopt.Adopter{
+			WSL:    client,
+			Distro: target.Distro,
+			Machine: adopt.Windows{
+				InstallExe:  installExe,
+				BinDir:      setup.DefaultBinDir(installExe),
+				Distro:      target.Distro,
+				LegacyDir:   filepath.Join(os.Getenv("LOCALAPPDATA"), "Programs", "docker-wsl"),
+				WSLConfig:   settings.WSLConfig{Path: filepath.Join(home, ".wslconfig")},
+				IdleAdopted: func() bool { return prefs.Get().IdleMode == settings.IdleWSLConfig },
+				AdoptIdle: func() error {
+					if err := prefs.Update(func(p *settings.Settings) { p.IdleMode = settings.IdleWSLConfig }); err != nil {
+						return err
+					}
+					// The .wslconfig line now keeps the distro up, so the hold is not needed.
+					return ctrl.SyncHold(context.Background())
+				},
+			},
+		},
 		NewWizard: func() *setup.Wizard {
 			w := setup.New(client, setup.Config{BinDir: setup.DefaultBinDir(installExe), AddToPath: true})
 			w.Host = setup.NewHost(setup.HostConfig{
