@@ -6,4 +6,4 @@ import "os/exec"
 
 func hideWindow(*exec.Cmd) {}
 
-func killChildrenOnExit() {}
+func startInHoldJob(cmd *exec.Cmd) error { return cmd.Start() }

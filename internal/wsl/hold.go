@@ -18,11 +18,9 @@ type Hold struct {
 
 // StartHold starts the session in distro. The distro boots if it was stopped.
 func (c *Client) StartHold(distro string) (*Hold, error) {
-	killChildrenOnExit()
 	cmd := exec.Command(c.exe, "--distribution", distro, "--exec", "/bin/sleep", "infinity") //nolint:gosec // fixed executable, no shell
 	cmd.Env = append(os.Environ(), "WSL_UTF8=1")
-	hideWindow(cmd)
-	if err := cmd.Start(); err != nil {
+	if err := startInHoldJob(cmd); err != nil {
 		if errors.Is(err, exec.ErrNotFound) {
 			return nil, ErrWSLUnavailable
 		}
