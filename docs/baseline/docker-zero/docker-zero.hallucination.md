@@ -28,6 +28,7 @@ code_ref: "uncommitted"
 | DZ-D12 | Wails3 Svelte template name and tray spike result | closed | DZ-D10, DZ-D11 |
 | DZ-D13 | Scaffold shape: `packaging/` folder, pinned tools, Windows only | closed | DZ-D9 |
 | DZ-D14 | How the WSL runner reads state and probes status | closed | DZ-D4 |
+| DZ-D15 | Day 2 widget mechanics: hold, job object, polling, confirm, second launch | closed | DZ-D3, DZ-D4, DZ-D6 |
 
 ## Open questions
 
@@ -193,3 +194,20 @@ Why: observed on this machine - `wsl.exe -l -v` wrote UTF-16LE without a BOM (`2
 What breaks if ignored: wrong state on localised Windows; console flashes every 5 seconds; a status poll that restarts the distro the user just stopped.
 
 Rejected: parsing `--list --verbose` - localised. A TLS-verified probe - fails until the certificate is installed. Probing as `dev` - depends on group membership that the wizard sets up later.
+
+### DZ-D15: Day 2 widget mechanics
+
+Decision:
+
+- Start holds the distro with a hidden `wsl.exe --distribution Ubuntu-24.04 --exec /bin/sleep infinity` child for as long as the app runs (the keepalive idle mode of DZ-D6, built now because Start needs it); Stop distro and Shut down WSL release it first; app exit releases it.
+- The app puts itself in a job object with `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` before the first hold, so every child dies with the app.
+- Polling: every 5 s while the popup or the corner box is visible, every 1 s for 15 s after an action, never otherwise; one reading at launch. Hiding a window re-sends the last reading without probing.
+- Shut down WSL asks for confirmation inside the popup, not with a native dialog.
+- A second launch of the exe opens the popup (`SingleInstance.OnSecondInstanceLaunch`).
+- Windows are told apart by `?view=popup` and `?view=corner`; the tray icon is drawn in Go and its dot follows the status level.
+
+Why: observed - a force-killed build without the job object left `/bin/sleep infinity` running in the distro, which would keep it up forever; with the job object the hold ended. Job membership is inherited at process creation, so `wsl.exe` and the `wsl.exe` it starts are both covered without a race; assigning each child after `Start` would miss a grandchild created first. A native dialog takes focus and the popup hides on focus loss (`HideOnFocusLost`). The second-launch hook gives shortcuts and the Start Menu entry a visible effect and made UI Automation testing possible.
+
+What breaks if ignored: the distro never idles out after a crash; the confirmation dialog closes the popup that asked for it; a hidden app polls `wsl.exe` forever.
+
+Rejected: assigning only the hold's `wsl.exe` to a job after `Start` - races with its own child. A native confirmation dialog - hides the popup. Polling while hidden - wastes CPU in an app meant to sit idle in the tray.

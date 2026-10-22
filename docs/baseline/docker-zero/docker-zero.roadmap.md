@@ -14,7 +14,7 @@ code_ref: "uncommitted"
 | Phase 1 | - | complete | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
 | Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
-| Phase 4 | Phase 3 | planned | Tray popup and corner box drive Start, Stop, Shut down, Open |
+| Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | planned | Settings apply and revert each item |
 | Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
@@ -35,7 +35,20 @@ Status: complete. Packages: `internal/wsl` (`Client` with `Available`, `Distros`
 
 ## Phase 4: Day 2 widget
 
-Status: planned. Tray icon, Action Center style popup, optional corner box, actions and polling per DZ-D3 and DZ-D4. Gate: each action observed changing the real distro state.
+Status: complete, with Stop distro and Shut down WSL not yet clicked against the real distro (see below). Built: `internal/control` (one action at a time: Start = keepalive hold + `systemctl start docker` + `docker start portainer` + wait up to 90 s for the status endpoint + open browser; Stop distro; Shut down WSL; Open Portainer), `wsl.Hold` (hidden `sleep infinity` session), `internal/trayicon` (status-coloured icon drawn at run time), `internal/ui` (bound `Service`, poll loop, `Shell` with tray menu, popup and corner box), Svelte `Popup`, `Corner` and a shared status store. Design: DZ-D15.
+
+Evidence:
+
+| Check | Result |
+|---|---|
+| Popup via a second launch, screenshot | Status rows WSL, Ubuntu-24.04, Docker Engine, Portainer `Up, 2.45.2`; four tiles |
+| Corner box toggled through UI Automation, screenshot | Box at the bottom-right with Open Portainer and Stop |
+| Start clicked through UI Automation on the real distro | `pgrep` showed `/bin/sleep infinity` owned by the app's `wsl.exe`; a browser process started |
+| App force-killed with `taskkill /F` | The hold ended (`pgrep` exit 1); the build before the job object left an orphan hold |
+| `go test -tags integration ./internal/wsl` on throwaway distro `dz-test` | Terminate stops, Start runs, a hold keeps it running and ends with Terminate, Release ends the sleep inside |
+| `wails3 task test`, `wails3 task lint` | All packages ok; `golangci-lint` 0 issues; `svelte-check` 0 errors |
+
+Not verified: Stop distro and Shut down WSL clicked in the app against `Ubuntu-24.04`, because the user's live containers (several `hashicorp/terraform-mcp-server` sessions) run there; `wsl --shutdown` was not run anywhere because it stops every distro of the account. Their code paths call the `wsl.exe` commands checked above.
 
 ## Phase 5: Settings
 
@@ -70,4 +83,5 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 4: build the tray popup and corner box with Start, Stop, Shut down, Open and live status.
+1. Phase 5: build the settings (auto start, shortcuts, idle mode, browser, certificate) with apply and revert.
+2. Ask the user before clicking Stop distro and Shut down WSL in the app against `Ubuntu-24.04`; both stop the live containers there.
