@@ -368,10 +368,7 @@ func (w *Wizard) stepWrapper(_ context.Context, _ Credentials) (bool, error) {
 	if dir == "" {
 		return true, nil
 	}
-	if err := os.MkdirAll(dir, 0o750); err != nil {
-		return false, err
-	}
-	if err := os.WriteFile(filepath.Join(dir, "docker.cmd"), []byte(dockerCmd(w.Config.Distro)), 0o644); err != nil { //nolint:gosec // a launcher script, readable by the user's shell
+	if err := WriteLauncher(dir, w.Config.Distro); err != nil {
 		return false, err
 	}
 	w.logf("Wrote %s", filepath.Join(dir, "docker.cmd"))
@@ -382,4 +379,13 @@ func (w *Wizard) stepWrapper(_ context.Context, _ Credentials) (bool, error) {
 		w.logf("Added it to the user PATH; open a new terminal to use docker")
 	}
 	return false, nil
+}
+
+// WriteLauncher writes docker.cmd into dir, creating the folder. The wrapper
+// forwards docker to the engine in distro.
+func WriteLauncher(dir, distro string) error {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
+		return err
+	}
+	return os.WriteFile(filepath.Join(dir, "docker.cmd"), []byte(dockerCmd(distro)), 0o644) //nolint:gosec // a launcher script, readable by the user's shell
 }
