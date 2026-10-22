@@ -47,7 +47,11 @@
   const hasExisting = $derived(
     !!found &&
       found.distro !== "not-installed" &&
-      ((found.findings?.length ?? 0) > 0 || (found.container !== "" && found.container !== "missing")),
+      ((found.findings?.length ?? 0) > 0 ||
+        (found.container !== "" && found.container !== "missing") ||
+        // A stopped distro reports no container, so without this the card and
+        // its result vanish once the last finding is replaced.
+        adopted.length > 0),
   );
 
   const busy = $derived(v?.running ?? false);
