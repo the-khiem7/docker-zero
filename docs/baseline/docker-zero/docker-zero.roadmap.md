@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "ee631c1"
+code_ref: "175019e"
 ---
 
 # docker-zero roadmap
@@ -17,7 +17,7 @@ code_ref: "ee631c1"
 | Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | complete | Settings apply and revert each item |
 | Phase 6 | Phase 3 | complete | Wizard installs a working setup on a throwaway distro |
-| Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
+| Phase 7 | Phase 5 | complete | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | complete | Update Portainer, Reset admin, Uninstall all work |
 | Phase 9 | Phase 8, Phase 7 | planned | Release exe and README published |
 
@@ -99,7 +99,22 @@ Not verified: the window during a live run and its finish card (a screenshot cap
 
 ## Phase 7: Adopt existing setup
 
-Status: planned. Detection and migration per DZ-D8. Gate: run on this workstation; Portainer data intact and the legacy shortcut replaced.
+Status: complete. Built: `internal/adopt` (`Adopter.Detect` and `Adopt`, `Windows` machine with four replaceable items), `settings.ReadShortcutTarget`, `setup.WriteLauncher`, `ui.AdoptService`, a once-per-profile offer at launch (stored flag `adoptPrompted`) and an Existing setup found card in the setup window. Design: DZ-D8 and DZ-D21.
+
+Gate: run on this workstation; Portainer data intact and the legacy shortcut replaced. Evidence, from the built exe launched on the real account after a manual backup of the legacy items:
+
+| Check | Result |
+|---|---|
+| Read-only detection (`TestDetectOnThisMachine`) | Distro running, container running, certificate present, four items found |
+| First launch | The setup window opened on its own with the card and four checked items |
+| Take over clicked through UI Automation | `Replaced 4 items`; the card then read `Nothing left to replace` |
+| Legacy launchers | Desktop and Start Menu `Portainer.lnk`, the Startup keepalive shortcut and the `docker-wsl` folder gone; Docker Zero shortcuts present |
+| Auto start and command | `HKCU Run` value kept `--start-distro`; `docker-zeroin\docker.cmd` written and run (`docker ps` listed `portainer`); user PATH 22 entries before and after, old entry replaced by the new one |
+| Idle line | `.wslconfig` unchanged; stored idle mode became `wslconfig` |
+| Portainer data | Container id and start time identical before and after, `portainer_data` listed, status endpoint `200` |
+| `wails3 task test`, `wails3 task lint`, `wails3 task build` | All ok; 0 lint issues; 0 svelte-check errors |
+
+Not verified: the card on a machine with a stopped distro or with only some legacy items; a failing item in the window; a locked Startup folder. The real account now runs the adopted setup; the legacy items were backed up by hand outside the repository.
 
 ## Phase 8: Maintenance and uninstall
 
@@ -136,4 +151,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 7: adopt the existing manual setup (DZ-D8). Phase 9 waits on it.
+1. Phase 9: release build, README with screenshots, licence file; gate is the release exe running on a clean profile.

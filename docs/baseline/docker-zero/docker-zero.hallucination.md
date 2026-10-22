@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "ee631c1"
+code_ref: "175019e"
 ---
 
 # docker-zero hallucination journal
@@ -33,6 +33,7 @@ code_ref: "ee631c1"
 | DZ-D18 | Portainer admin: created through the init API with an app-chosen setup token, reset with the helper and a hash | closed | DZ-Q2, DZ-D5, DZ-D7 |
 | DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed | DZ-D5, DZ-D18 |
 | DZ-D20 | Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal | closed | DZ-D7, DZ-D18, DZ-D19 |
+| DZ-D21 | Adoption mechanics: four replaceable items, read-only detection, replace before remove, one offer | closed | DZ-D8, DZ-D6, DZ-D20 |
 
 ## Open questions
 
@@ -298,3 +299,22 @@ What breaks if ignored: a restart on every update click; the helper run on a liv
 Rejected: a tag picker (DZ-D7 keeps `lts`). Recreating `portainer_data` for reset - destroys settings. Deleting the install folder at the uninstall step - the running exe locks it. Continuing after a declined certificate dialog - the thumbprint is lost with the distro.
 
 Observed: `TestMaintenance` on a throwaway distro passed in 577 s with every outcome in the roadmap's Phase 8 table.
+
+### DZ-D21: Adoption mechanics: four replaceable items, read-only detection, replace before remove, one offer
+
+Decision:
+
+- Detection reads the distro state and, only while the distro runs, the container state and the certificate; it never starts a stopped distro and never changes anything.
+- Four items can be replaced, each chosen by a checkbox: the Portainer shortcuts (matched by the `open-portainer.ps1` argument), the Startup keepalive shortcut (matched by `wsl.exe` and `--exec true`), the manual docker command folder with its PATH entry, the `.wslconfig` idle line.
+- The replacement is made first and the legacy part removed after, so a failure leaves the old one; Docker Zero shortcuts that already exist are kept; the Startup shortcut becomes the `HKCU Run` value with `--start-distro`; the legacy folder loses only the files the guide created (launcher, icon, certificate copy, `docker.cmd`, `docker.ps1`) and then empty folders.
+- Taking over the idle line sets the stored idle mode to `wslconfig` and drops the keepalive hold; the line itself is not edited.
+- The app opens the setup window once per profile when it finds a setup (stored flag `adoptPrompted`).
+- The distro, the container and the data volume are never touched by adoption.
+
+Why: a reinstall destroys the data of early users; a shortcut is the user's, so only one whose arguments match the guide's is replaced; the idle line is the app's to remove at uninstall only once it manages it (DZ-D20); a window that reopens at every launch is noise.
+
+What breaks if ignored: two sign-in starts and two launchers; a Portainer.lnk the user made for something else deleted; a legacy folder holding the user's own files emptied; a container restart during adoption.
+
+Rejected: a fresh install only (DZ-D8). Recreating the container under the app's flags - risks the data and the user's settings. Matching shortcuts by name alone - removes unrelated links. Editing the `.wslconfig` line - it already holds the value the idle mode needs.
+
+Observed: the run on this workstation in the roadmap's adoption table; the container id and start time were identical before and after.

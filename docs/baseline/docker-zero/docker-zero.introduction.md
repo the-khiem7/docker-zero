@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "introduction"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "ee631c1"
+code_ref: "175019e"
 ---
 
 # docker-zero - Wails3 companion app for Docker Engine in WSL2 with Portainer
@@ -18,7 +18,7 @@ In scope:
 - Day 1 wizard: detect WSL, install the distro, user, Docker Engine, DNS drop-in, certificate, Portainer container with the certificate, Portainer admin account, `docker` wrappers for `cmd` and PowerShell (DZ-D5).
 - Day 2 widget: tray icon plus an Action Center style popup, and an optional always-on-top box in the bottom-right corner, with Start, Stop (terminate distro or shut down WSL), Open Portainer and live status (DZ-D3, DZ-D4).
 - Settings: auto start, shortcuts, idle mode, browser choice, certificate install/remove/regenerate, Portainer update and admin reset, uninstall (DZ-D6, DZ-D7, DZ-D20).
-- Adopting an existing manual setup made from the source guide (DZ-D8).
+- Adopting an existing manual setup made from the source guide (DZ-D8, DZ-D21).
 
 Out of scope: anything Portainer already does (containers, images, volumes, logs) - DZ-D4; enabling the WSL Windows feature (needs admin) - DZ-D5; Kubernetes; machine-wide install.
 
