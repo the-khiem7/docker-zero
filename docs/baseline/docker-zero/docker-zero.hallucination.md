@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "d057e98"
+code_ref: "b057cbc"
 ---
 
 # docker-zero hallucination journal
@@ -13,14 +13,13 @@ code_ref: "d057e98"
 
 | ID | About | Status | Related |
 |---|---|---|---|
-| DZ-Q2 | Portainer admin init and reset mechanism | open | DZ-D5, DZ-D7 |
 | DZ-D1 | Brand, audience and repository identity | closed | DZ-D2 |
 | DZ-D2 | Imported `portainer` pack and guide are reference only | closed | DZ-D1, DZ-D8 |
 | DZ-D3 | Widget form: tray popup plus optional corner box | closed | DZ-D4 |
 | DZ-D4 | Day 2 actions: system-level only, two stop modes, live status | closed | DZ-D3 |
-| DZ-D5 | Day 1 wizard covers every step; WSL feature not enabled by the app | closed | DZ-Q2, DZ-D6 |
+| DZ-D5 | Day 1 wizard covers every step; WSL feature not enabled by the app | closed | DZ-D18, DZ-D6 |
 | DZ-D6 | Settings: auto start, shortcuts, idle mode, browser, certificate | closed | DZ-D5, DZ-D7 |
-| DZ-D7 | Portainer `lts`, Update button, admin reset, uninstall danger zone | closed | DZ-Q2, DZ-D6 |
+| DZ-D7 | Portainer `lts`, Update button, admin reset, uninstall danger zone | closed | DZ-D18, DZ-D6 |
 | DZ-D8 | Adopt an existing manual setup | closed | DZ-D2 |
 | DZ-D9 | Wails3 and portable self-installing exe | closed | DZ-D11, DZ-D10 |
 | DZ-D10 | Exe policy spike runs before app code | closed | DZ-D9 |
@@ -31,12 +30,11 @@ code_ref: "d057e98"
 | DZ-D15 | Day 2 widget mechanics: hold, job object, polling, confirm, second launch | closed, job object part superseded | DZ-D3, DZ-D4, DZ-D6, DZ-D16 |
 | DZ-D16 | Settings mechanics and the hold-only job object | closed | DZ-D6, DZ-D9, DZ-D15 |
 | DZ-D17 | Lesson: a phase marked complete with its gate unmet | closed | DZ-D15, DZ-D16 |
+| DZ-D18 | Portainer admin: created through the init API with an app-chosen setup token, reset with the helper and a hash | closed | DZ-Q2, DZ-D5, DZ-D7 |
 
 ## Open questions
 
-### DZ-Q2: How does the app create and reset the Portainer admin?
-
-User requirement: the wizard asks for username and password and creates the admin; reset must exist, and if Portainer offers no account reset, the app resets Portainer itself. Candidates to verify against Portainer `lts` docs before Phase 6: the admin init API endpoint and whether it needs the setup token; the `portainer/helper-reset-password` image for a password reset; recreating `portainer_data` as the full reset (destroys Portainer settings). None verified.
+None.
 
 ## Closed decisions
 
@@ -84,7 +82,7 @@ Rejected: `docker stop portainer` as the only stop - keeps the distro's memory. 
 
 ### DZ-D5: The Day 1 wizard covers every step; the WSL feature is not enabled by the app
 
-Decision: the wizard runs, with live log and per-step status: detect WSL (stop with "ask IT to enable WSL" if absent), `wsl --install -d Ubuntu-24.04 --web-download --no-launch`, user `dev` and `wsl.conf` with systemd, Docker Engine from Docker's apt repository, the `GODEBUG=netdns=cgo` drop-in (PT-D3), the leaf certificate (PT-D19), the Portainer container with the certificate on `127.0.0.1:9443` with `unless-stopped` (PT-D2, PT-D7), the Portainer admin from a username and password the user types (DZ-Q2), and `docker` wrappers for `cmd` (`docker.cmd`) and PowerShell (`docker.ps1`) on the user PATH (PT-D20). Distro `Ubuntu-24.04` and user `dev` are fixed.
+Decision: the wizard runs, with live log and per-step status: detect WSL (stop with "ask IT to enable WSL" if absent), `wsl --install -d Ubuntu-24.04 --web-download --no-launch`, user `dev` and `wsl.conf` with systemd, Docker Engine from Docker's apt repository, the `GODEBUG=netdns=cgo` drop-in (PT-D3), the leaf certificate (PT-D19), the Portainer container with the certificate on `127.0.0.1:9443` with `unless-stopped` (PT-D2, PT-D7), the Portainer admin from a username and password the user types (DZ-D18), and `docker` wrappers for `cmd` (`docker.cmd`) and PowerShell (`docker.ps1`) on the user PATH (PT-D20). Distro `Ubuntu-24.04` and user `dev` are fixed.
 
 Why: every step ran without elevation by hand; the user wants all of them and no agent help.
 
@@ -110,7 +108,7 @@ Rejected: a Startup folder shortcut for auto start - `HKCU Run` is simpler to re
 
 ### DZ-D7: Portainer `lts`, Update button, admin reset, uninstall in a danger zone
 
-Decision: pin image `portainer/portainer-ce:lts`; an Update Portainer button pulls it and recreates the container on the same `portainer_data` volume and certificate; a Reset admin action per DZ-Q2; an Uninstall all action in a Danger zone, with two confirmations and an offered `wsl --export` backup, removing everything the app created.
+Decision: pin image `portainer/portainer-ce:lts`; an Update Portainer button pulls it and recreates the container on the same `portainer_data` volume and certificate; a Reset admin action per DZ-D18; an Uninstall all action in a Danger zone, with two confirmations and an offered `wsl --export` backup, removing everything the app created.
 
 Why: the user's answers.
 
@@ -242,3 +240,21 @@ Why: lesson - the Day 2 widget and Settings phases were first marked complete al
 What breaks if ignored: a roadmap that reports a gate as met which nobody observed; live containers or trust anchors changed without consent.
 
 Rejected: counting the throwaway-distro integration test as the gate - it does not show the real distro or store changing. Answering the certificate dialogs for the user through UI Automation - a trust decision the user owns.
+
+### DZ-D18: The admin is created through the init API with an app-chosen setup token and reset with the helper and a password hash
+
+Closes DZ-Q2.
+
+Decision: Day 1 starts Portainer with `--setup-token <random value made by the app>`, waits for the status endpoint, then calls `POST /api/users/admin/init` with the typed username and password and the same value in the `X-Setup-Token` header; the token and the password stay in memory and out of logs and command lines. Reset admin stops the container, runs `portainer/helper-reset-password --password-hash <bcrypt hash>` on the `portainer_data` volume and starts the container again; the helper updates the existing admin whatever its username. Recreating `portainer_data` stays the last resort.
+
+Why: the requirement (DZ-D5) is a typed username and password, and `--admin-password-file` can only create the user `admin`. Observed on throwaway distro `dz-test` (Alpine, Docker Engine 28.3.3, Portainer `lts` = `2.45.2`, fresh volume per run, published on `127.0.0.1` only):
+
+- `--admin-password-file`: admin check `204`, login `admin` `200`, wrong password `422`, no setup-token line and no password in the container log, the admin kept after a restart without the flag, username fixed `admin`.
+- init API with `--setup-token`: without the header `403` ("Provide the X-Setup-Token header"), with it `200`, login with a custom username `200`, neither token nor password found in the container log.
+- helper with `--password-hash` (bcrypt from `htpasswd -nbB -C 10`): on the default `admin` and on a custom-username admin it reported the password updated for that user, the new password logged in `200`, the old one `422`, and no `admin` user appeared.
+
+What breaks if ignored: a password on a command line (`--password`) or a token in the log; the helper run while the container is up (the official steps stop it first); a Day 1 flow that cannot honour the typed username.
+
+Rejected: `--admin-password-file` - works but fixes the username to `admin`; kept as the fallback if the init API changes. `--no-setup-token` - the official docs limit it to networks the user fully controls, and supplying the token costs nothing. Reading the token from the container log - needs log parsing; supplying it avoids that. Helper `--password` - a plain password on the command line. Recreating `portainer_data` as the default reset - destroys Portainer settings.
+
+Not verified: the whole flow on `Ubuntu-24.04` with systemd (the test distro is Alpine without systemd); combination with the `--sslcert` flags of the real container (tests used the default certificate); the third-party report of an authentication bypass on the init endpoints (CVE-2026-55761) was not checked against Portainer advisories, and the app calls init only on `127.0.0.1` with a token it chose; Docker Hub pull terms for organisations (PT-Q6; anonymous pulls of `portainer/portainer-ce:lts` and `portainer/helper-reset-password` succeeded).

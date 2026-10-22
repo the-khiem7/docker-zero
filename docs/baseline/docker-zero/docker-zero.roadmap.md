@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "d057e98"
+code_ref: "b057cbc"
 ---
 
 # docker-zero roadmap
@@ -16,7 +16,7 @@ code_ref: "d057e98"
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | complete | Settings apply and revert each item |
-| Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
+| Phase 6 | Phase 3 | planned | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | planned | Update Portainer, Reset admin, Uninstall all work |
 | Phase 9 | Phase 8, Phase 7 | planned | Release exe and README published |
@@ -81,7 +81,7 @@ Not verified: opening Portainer in Chrome; Apply now (`wsl --shutdown`) from the
 
 ## Phase 6: Day 1 wizard
 
-Status: blocked on DZ-Q2 (admin init and reset mechanism). Steps per DZ-D5. Gate: a full run on a throwaway distro name ends with Portainer login working with the typed credentials; the real distro is not touched.
+Status: planned; unblocked by DZ-D18 (admin creation and reset, observed on `dz-test`). Steps per DZ-D5. Gate: a full run on a throwaway distro name ends with Portainer login working with the typed credentials; the real distro is not touched.
 
 ## Phase 7: Adopt existing setup
 
@@ -107,4 +107,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 7: adopt the existing manual setup (Phase 6 stays blocked on the Portainer admin question).
+1. Phase 6 (wizard, admin per DZ-D18) or Phase 7 (adopt the existing setup): both are unblocked; the user picks the order.
