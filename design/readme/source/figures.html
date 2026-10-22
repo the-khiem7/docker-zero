@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Docker Zero README figures</title>
+<!--
+Signature
+- Concept: a sea poster for a tool that gets Docker running without admin rights; the logo is the letter o, the sea is the ground.
+- Shape language: flat fills, no gradients; thick red ring, two-tone teal waves, rounded cards with a flat 2 px line, no shadows.
+- Typeface: Dela Gothic One for the name and titles, Figtree for text, JetBrains Mono for commands.
+- Palette logic: from the logo. Cream is the paper, ink teal is the text, the red ring is the only warm accent, the two teals are the sea and the primary button. Dark theme: deep teal ground, cream text, same ring and sea.
+- Presentation: a centred wordmark over the sea, then three-panel and two-window figures with a few short labels, every label taken from the app or from Docker's own licence page.
+- Not: a screenshot, a gradient hero, an arched door or a chart; no counts drawn as objects.
+
+Render, from the repository root:
+uvx --from playwright --with pillow python -I <skill-dir>/scripts/render.py design/readme/source/figures.html --root . --out design/readme/asset
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Figtree:wght@600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sheet">
+
+<div class="item hero" id="hero" style="height:420px">
+  <div class="wm display">D<svg class="o" viewBox="0 0 100 100"><use href="#mark"/></svg>cker Zer<svg class="o" viewBox="0 0 100 100"><use href="#mark"/></svg></div>
+  <p class="quote">No admin prompt. No licence talk. No terminal marathon.</p>
+  <p class="tag">Docker and Portainer on Windows, set up for you and kept one click away.</p>
+  <svg class="sea" viewBox="0 0 1200 90" preserveAspectRatio="none" data-bleed>
+    <path d="M0,30 Q60,10 120,30 T240,30 T360,30 T480,30 T600,30 T720,30 T840,30 T960,30 T1080,30 T1200,30 L1200,90 L0,90 Z" fill="#7fd1c7"/>
+    <path d="M0,48 Q60,28 120,48 T240,48 T360,48 T480,48 T600,48 T720,48 T840,48 T960,48 T1080,48 T1200,48 L1200,90 L0,90 Z" fill="#2a9d8f"/>
+  </svg>
+</div>
+
+<div class="item cta" id="cta">
+  <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49" fill="#fff4e6"/><use href="#badge"/><use href="#g-down"/></svg>
+  <div><div class="t">Download for Windows</div><div class="s">docker-zero.exe · no admin rights</div></div>
+</div>
+
+<div class="item band" id="story-licence" style="height:300px">
+  <div class="txt">
+    <span class="chip">The licence</span>
+    <h3 class="display">Docker Desktop</h3>
+    <p>Needs a paid subscription for professional use in larger organizations.</p>
+  </div>
+  <div class="art lock">
+    <svg width="130" height="152" viewBox="0 0 120 140" aria-hidden="true">
+      <path d="M34,62 V44 a26,26 0 0 1 52,0 V62" fill="none" stroke="#12343b" stroke-width="12" stroke-linecap="round" style="stroke:var(--ink)"/>
+      <rect x="16" y="60" width="88" height="68" rx="14" fill="#e63946"/>
+      <circle cx="60" cy="90" r="9" fill="#fff4e6"/><rect x="56" y="94" width="8" height="20" rx="3" fill="#fff4e6"/>
+    </svg>
+  </div>
+  <svg class="edge" width="1200" height="26" data-bleed><use href="#edge" width="1200" height="26"/></svg>
+</div>
+
+<div class="item band" id="story-commands" style="height:300px">
+  <div class="txt">
+    <span class="chip">The commands</span>
+    <h3 class="display">Pure WSL</h3>
+    <p>Docker Engine in WSL is open source. Every step, and every day after, is a command.</p>
+  </div>
+  <div class="art term">
+    <div>wsl --install -d Ubuntu-24.04</div>
+    <div>apt-get install docker-ce</div>
+    <div>systemctl enable --now docker</div>
+    <div>docker logs portainer</div>
+    <div><span>...</span></div>
+  </div>
+  <svg class="edge" width="1200" height="26" data-bleed><use href="#edge" width="1200" height="26"/></svg>
+</div>
+
+<div class="item band" id="story-gui" style="height:300px">
+  <div class="txt">
+    <span class="chip">The GUI</span>
+    <h3 class="display">Docker Zero</h3>
+    <p>The same engine with a GUI: Portainer for containers, a tray popup for the engine.</p>
+  </div>
+  <div class="art mini">
+    <div class="head"><svg viewBox="0 0 100 100"><use href="#mark"/></svg>Docker Zero</div>
+    <div class="tiles"><div class="tile go">Start</div><div class="tile">Open Portainer</div><div class="tile">Stop distro</div><div class="tile">Shut down WSL</div></div>
+  </div>
+  <svg class="edge" width="1200" height="26" data-bleed><use href="#edge" width="1200" height="26"/></svg>
+</div>
+
+<div class="item setup" id="setup" style="height:540px">
+  <div class="win" style="left:48px; top:36px; width:520px">
+    <div class="bar display"><svg viewBox="0 0 100 100"><use href="#mark"/></svg>Set up Docker Zero</div>
+    <div class="body">
+      <h4>Portainer admin account</h4>
+      <div class="field">Username<i>admin</i></div>
+      <div class="field">Password<i>&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</i></div>
+      <div class="field">Repeat password<i>&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</i></div>
+      <p class="note">At least 12 characters. Docker Zero never stores it; Portainer keeps its own copy.</p>
+      <div class="btn">Start setup</div>
+    </div>
+  </div>
+  <svg class="arrow" style="left:578px; top:230px" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><path d="M6,22 H34 M24,10 L36,22 L24,34" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--red)"/></svg>
+  <div class="win" style="left:632px; top:36px; width:520px">
+    <div class="bar display"><svg viewBox="0 0 100 100"><use href="#mark"/></svg>All set</div>
+    <div class="body">
+      <h4>Steps</h4>
+      <ul class="steps">
+        <li>Check WSL</li>
+        <li>Install the Ubuntu distro</li>
+        <li>Install Docker Engine</li>
+        <li>Create the Linux user</li>
+        <li>Create the local certificate</li>
+        <li>Start Portainer</li>
+        <li>Create the Portainer admin</li>
+        <li>Add the docker command</li>
+      </ul>
+      <div class="btn">Open Portainer</div>
+    </div>
+  </div>
+</div>
+
+<div class="item tray" id="tray" style="height:410px">
+  <div class="win" style="left:48px; top:36px; width:400px">
+    <div class="bar display"><svg viewBox="0 0 100 100"><use href="#mark"/></svg>Docker Zero</div>
+    <div class="body" style="gap:14px">
+      <div class="rows">
+        <div>WSL<b>Available</b></div>
+        <div>Ubuntu-24.04<b>Running</b></div>
+        <div>Docker Engine<b>active</b></div>
+        <div>Portainer<b>Up</b></div>
+      </div>
+      <div class="mini" style="padding:0; border:0; background:none; gap:6px"><div class="tiles"><div class="tile go">Start</div><div class="tile">Open Portainer</div><div class="tile">Stop distro</div><div class="tile">Shut down WSL</div></div></div>
+    </div>
+  </div>
+  <p class="lead display" style="left:470px; top:40px; width:690px; font-size:30px">The tray icon shows the overall state</p>
+  <div class="states" style="left:470px; top:110px; width:690px">
+    <div class="state"><div class="icon"><svg class="mark" viewBox="0 0 100 100" width="96" height="96" style="color:#8d939c"><use href="#mark"/></svg></div>Stopped<small>grey</small></div>
+    <div class="state"><div class="icon"><svg class="mark" viewBox="0 0 100 100" width="96" height="96" style="color:#f6b64a"><use href="#mark"/></svg></div>Partly running<small>amber</small></div>
+    <div class="state"><div class="icon"><svg class="mark" viewBox="0 0 100 100" width="96" height="96" style="color:#22b35e"><use href="#mark"/></svg></div>Running<small>green</small></div>
+    <div class="state"><div class="icon"><svg class="mark" viewBox="0 0 100 100" width="96" height="96" style="color:#e63946"><use href="#mark"/></svg><svg class="dot" width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="14" fill="#d62828" stroke="#fff4e6" stroke-width="4"/></svg></div>Failed<small>red, with a dot</small></div>
+  </div>
+</div>
+
+<div class="item band keep" id="keep" style="height:400px">
+  <div class="modes">
+    <div class="mode">
+      <div class="mhead"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-term"/></svg><span class="chip">Default</span></div>
+      <h3 class="display">Keep running while Docker Zero runs</h3>
+      <div class="how">a hidden session</div>
+      <p><b>Scope</b> Only this app</p>
+    </div>
+    <div class="mode">
+      <div class="mhead"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-inf"/></svg></div>
+      <h3 class="display">Never stop idle distros</h3>
+      <div class="how">instanceIdleTimeout=-1</div>
+      <p><b>Scope</b> Every WSL2 distro of your account</p>
+    </div>
+    <div class="mode">
+      <div class="mhead"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-moon"/></svg></div>
+      <h3 class="display">WSL default</h3>
+      <div class="how">nothing</div>
+      <p><b>Scope</b> WSL stops the distro when nothing uses it</p>
+    </div>
+  </div>
+  <svg class="edge" width="1200" height="26" data-bleed><use href="#edge" width="1200" height="26"/></svg>
+</div>
+
+<div class="item band safe" id="safe" style="height:400px">
+  <h3 class="sh display">Everything runs as a standard user</h3>
+  <div class="nos">
+    <div class="no"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-shield"/><path d="M23.1,23.1 L76.9,76.9" stroke="currentColor" stroke-width="9"/></svg>No UAC prompt</div>
+    <div class="no"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-gear"/><path d="M23.1,23.1 L76.9,76.9" stroke="currentColor" stroke-width="9"/></svg>No Windows service</div>
+    <div class="no"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-folder"/><path d="M23.1,23.1 L76.9,76.9" stroke="currentColor" stroke-width="9"/></svg>Nothing under Program Files</div>
+    <div class="no"><svg viewBox="0 0 100 100" style="color:#1e7468"><use href="#badge"/><use href="#g-lock"/></svg>Certificate for localhost only</div>
+  </div>
+  <svg class="edge" width="1200" height="26" data-bleed><use href="#edge" width="1200" height="26"/></svg>
+</div>
+
+</div>
+<script src="shared.js"></script>
+</body>
+</html>

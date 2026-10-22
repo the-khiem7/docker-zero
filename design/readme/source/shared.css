@@ -1,0 +1,102 @@
+/* Docker Zero README figures. Tokens come from the logo: cream tile, ink teal, the red ring, two teals of the sea.
+   Contract with render.py: .item blocks of 1200 CSS px zoomed 2x, dark theme through html[data-theme="dark"], --cardline in both themes. */
+:root {
+  --paper: #fff4e6; --card: #fffaf2; --ink: #12343b; --muted: #35545b; --line: #e0cfb2; --cardline: #d9c9b0;
+  --teal: #2a9d8f; --teal-l: #7fd1c7; --red: #e63946; --term: #12343b; --term-ink: #fff4e6; --on-teal: #fff4e6; --chip: #12343b; --chip-ink: #fff4e6;
+}
+html[data-theme="dark"] {
+  --paper: #0f2a30; --card: #173a41; --ink: #fff4e6; --muted: #a9c2c4; --line: #2d4a50; --cardline: #2d4a50;
+  --term: #0a1c20; --term-ink: #fff4e6; --chip: #fff4e6; --chip-ink: #12343b;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #888; }
+.sheet { width: max-content; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.item { zoom: 2; position: relative; overflow: hidden; width: 1200px; color: var(--ink); background: var(--paper); font-family: "Figtree", sans-serif; font-weight: 600; }
+h1, h2, h3, p { margin: 0; }
+.display { font-family: "Dela Gothic One", sans-serif; font-weight: 400; }
+svg.mark { display: block; }
+
+/* hero */
+.hero { text-align: center; }
+.hero .wm { position: absolute; left: 0; right: 0; top: 52px; line-height: 1; white-space: nowrap; font-size: 118px; letter-spacing: -1px; }
+.hero .o { display: inline-block; width: 1.0885em; height: 1.0885em; vertical-align: -0.178em; margin: 0 -0.0762em; color: var(--red); }
+.hero .tag { position: absolute; left: 0; right: 0; top: 272px; font-size: 26px; color: var(--muted); }
+.hero .quote { position: absolute; left: 0; right: 0; top: 214px; font-size: 32px; font-weight: 700; color: var(--ink); }
+.hero .sea { position: absolute; left: 0; bottom: 0; width: 1200px; height: 90px; }
+
+/* section banners: text on the left, a drawn part on the right, the sea along the foot */
+.edge { position: absolute; left: 0; bottom: 0; width: 1200px; height: 26px; }
+.band .txt { position: absolute; left: 48px; top: 40px; width: 600px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.chip { background: var(--chip); color: var(--chip-ink); border-radius: 999px; padding: 4px 16px; font-size: 20px; letter-spacing: .02em; }
+.band h3 { font-size: 48px; line-height: 1.05; }
+.band .txt p { font-size: 26px; line-height: 1.35; color: var(--muted); }
+.band .art { position: absolute; right: 48px; top: 36px; width: 470px; height: 222px; border-radius: 18px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.band .term { background: var(--term); color: var(--term-ink); font: 500 22px/1.55 "JetBrains Mono", monospace; letter-spacing: -0.5px; padding: 18px 22px; flex-direction: column; justify-content: center; align-items: flex-start; }
+.term span { color: var(--teal-l); }
+.mini { width: 100%; background: var(--paper); border: 2px solid var(--line); padding: 10px 12px; flex-direction: column; align-items: stretch; gap: 8px; }
+.mini .head { display: flex; align-items: center; gap: 8px; font-size: 20px; }
+.mini .head svg { width: 28px; height: 28px; color: var(--red); }
+.mini .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mini .tile { background: var(--card); border: 2px solid var(--line); border-radius: 8px; padding: 5px 8px; font-size: 17px; text-align: center; line-height: 1.15; }
+.mini .tile.go { background: #1e7468; border-color: #1e7468; color: var(--on-teal); }
+.band .mini { padding: 18px 20px; gap: 14px; justify-content: center; }
+.band .mini .head { font-size: 28px; gap: 12px; }
+.band .mini .head svg { width: 44px; height: 44px; }
+.band .mini .tiles { gap: 10px; }
+.band .mini .tile { font-size: 22px; padding: 12px 8px; border-radius: 12px; }
+.lock { background: var(--paper); border: 2px dashed var(--line); }
+
+/* the three ways to keep the distro up */
+.modes { position: absolute; inset: 36px 48px auto 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.mode { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; height: 316px; }
+.mode .mhead { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.mode .mhead svg { width: 56px; height: 56px; color: var(--red); }
+.mode h3 { font-size: 28px; line-height: 1.1; min-height: 62px; }
+.mode .how { background: var(--term); color: var(--term-ink); border-radius: 12px; padding: 12px 14px; font: 500 20px/1.3 "JetBrains Mono", monospace; letter-spacing: -0.4px; }
+.mode p { font-size: 22px; line-height: 1.3; color: var(--muted); }
+.mode p b { color: var(--ink); font-weight: 700; }
+
+/* safe by design: what the app never does, and the one thing it trusts */
+.band .sh { position: absolute; left: 48px; top: 40px; font-size: 44px; line-height: 1.1; }
+.nos { position: absolute; left: 48px; right: 48px; top: 124px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.no { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 18px 12px 18px; height: 226px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; font-size: 26px; line-height: 1.2; font-weight: 700; }
+.no svg { width: 112px; height: 112px; color: var(--red); flex: none; }
+
+/* navigation buttons and section icons: small items, shown at a fixed size in the README */
+.item.nav { width: max-content; height: 64px; display: flex; align-items: center; gap: 8px; padding: 0 16px 0 8px; background: var(--card); font-size: 26px; font-weight: 700; white-space: nowrap; }
+.nav svg { width: 46px; height: 46px; color: var(--red); flex: none; }
+.item.ico { width: 100px; height: 100px; background: var(--card); display: flex; align-items: center; justify-content: center; }
+.ico svg { width: 88px; height: 88px; color: var(--red); }
+/* the download button: the same teal as the app's buttons in both themes, the badge on a cream coin so the red ring reads on teal */
+.item.cta { width: max-content; height: 124px; display: flex; align-items: center; gap: 22px; padding: 0 44px 0 22px; background: #1e7468; color: var(--on-teal); white-space: nowrap; }
+.cta svg { width: 92px; height: 92px; color: var(--red); flex: none; }
+.cta .t { font-size: 46px; font-weight: 700; line-height: 1.05; }
+.cta .s { font-size: 24px; margin-top: 6px; }
+
+/* windows */
+.win { position: absolute; background: var(--card); border: 2px solid var(--line); border-radius: 16px; overflow: hidden; }
+.win .bar { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 2px solid var(--line); font-size: 22px; }
+.win .bar svg { width: 30px; height: 30px; color: var(--red); }
+.win .body { padding: 18px 22px; display: flex; flex-direction: column; gap: 12px; }
+.win h4 { margin: 0; font-size: 22px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 18px; color: var(--muted); }
+.field i { display: block; font-style: normal; font-size: 20px; color: var(--ink); background: var(--paper); border: 2px solid var(--line); border-radius: 8px; padding: 6px 12px; }
+.note { font-size: 17px; line-height: 1.35; color: var(--muted); }
+.btn { align-self: flex-start; background: #1e7468; color: var(--on-teal); border-radius: 10px; padding: 8px 20px; font-size: 20px; }
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.steps li { display: flex; align-items: center; gap: 12px; font-size: 20px; }
+.steps li::before { content: ""; width: 24px; height: 24px; border-radius: 50%; background: var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 12.5l3.8 3.8 7.2-8' fill='none' stroke='%23fff4e6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 24px no-repeat; flex: none; }
+.arrow { position: absolute; }
+
+/* tray */
+.rows { display: flex; flex-direction: column; gap: 6px; }
+.rows div { display: flex; justify-content: space-between; font-size: 20px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+.rows b { color: #1e7468; font-weight: 700; }
+html[data-theme="dark"] .rows b { color: var(--teal-l); }
+.states { position: absolute; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.state { background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 18px 4px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 20px; white-space: nowrap; }
+.state svg.mark { width: 96px; height: 96px; }
+.state small { font-size: 18px; color: var(--muted); font-weight: 600; }
+.dot { position: absolute; top: -2px; right: -2px; }
+.icon { position: relative; width: 96px; height: 96px; }
+.lead { position: absolute; font-size: 26px; line-height: 1.3; }

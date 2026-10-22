@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Docker Zero README buttons and icons</title>
+<!--
+Signature (same as figures.html)
+- Concept: a sea poster for a tool that gets Docker running without admin rights; the logo is the letter o, the sea is the ground.
+- Shape language: flat fills, no gradients; every icon is the logo's red ring and two-tone sea around one line glyph in ink teal; rounded cards with a flat 2 px line, no shadows.
+- Typeface: Figtree for the button labels (Dela Gothic One and JetBrains Mono live in figures.html).
+- Palette logic: from the logo. Cream is the paper, ink teal is the glyph, the red ring is the only warm accent, the two teals are the sea. Dark theme: deep teal card, same ring, sea and glyph.
+- Presentation: a navigation button is a badge and a label; a section icon is the badge alone.
+- Not: a screenshot, a gradient, an emoji, a stock icon set.
+
+Render, from the repository root:
+uvx --from playwright --with pillow python -I <skill-dir>/scripts/render.py design/readme/source/icons.html --root . --out design/readme/asset
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sheet">
+
+<div class="item nav" id="nav-story"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-story"/></svg>Story</div>
+<div class="item nav" id="nav-what"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-get"/></svg>Features</div>
+<div class="item nav" id="nav-start"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-start"/></svg>Start</div>
+<div class="item nav" id="nav-day"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-day"/></svg>Daily</div>
+<div class="item nav" id="nav-safe"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-safe"/></svg>Safety</div>
+<div class="item nav" id="nav-faq"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-faq"/></svg>FAQ</div>
+<div class="item nav" id="nav-build"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-build"/></svg>Build</div>
+
+<div class="item ico" id="ico-setup"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-setup"/></svg></div>
+<div class="item ico" id="ico-state"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-state"/></svg></div>
+<div class="item ico" id="ico-open"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-open"/></svg></div>
+<div class="item ico" id="ico-up"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-up"/></svg></div>
+<div class="item ico" id="ico-upkeep"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-upkeep"/></svg></div>
+<div class="item ico" id="ico-take"><svg viewBox="0 0 100 100"><use href="#badge"/><use href="#g-take"/></svg></div>
+
+</div>
+<script src="shared.js"></script>
+</body>
+</html>
