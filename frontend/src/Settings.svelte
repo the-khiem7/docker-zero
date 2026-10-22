@@ -188,6 +188,8 @@
           {v.cert.trusted ? "Trusted by this Windows account." : "Not trusted: the browser shows a warning."}
         </p>
         <p class="muted small mono">{v.cert.thumbprint}</p>
+      {:else if v.certUnread}
+        <p class="small">Start Ubuntu-24.04 to read its certificate.</p>
       {:else}
         <p class="small">No certificate in Ubuntu-24.04 yet.</p>
       {/if}
@@ -196,7 +198,7 @@
           >Install (trust)</button
         >
         <button disabled={!!busy || !v.cert.trusted} onclick={() => act("cert", () => S.UntrustCert())}>Remove</button>
-        <button disabled={!!busy} onclick={() => act("cert", () => S.RegenerateCert())}>Regenerate</button>
+        <button disabled={!!busy || v.certUnread} onclick={() => act("cert", () => S.RegenerateCert())}>Regenerate</button>
       </div>
       <p class="muted small">
         Windows asks you to confirm each change to your trusted certificates. The private key stays inside

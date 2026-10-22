@@ -11,6 +11,7 @@ import (
 	"github.com/the-khiem7/docker-zero/internal/control"
 	"github.com/the-khiem7/docker-zero/internal/settings"
 	"github.com/the-khiem7/docker-zero/internal/target"
+	"github.com/the-khiem7/docker-zero/internal/wsl"
 )
 
 // SettingsView is what the settings window renders. Auto start, shortcuts,
@@ -25,6 +26,7 @@ type SettingsView struct {
 	BrowserPath    string               `json:"browserPath"`
 	ChromePath     string               `json:"chromePath"`
 	Cert           settings.Cert        `json:"cert"`
+	CertUnread     bool                 `json:"certUnread"`
 	InstallPath    string               `json:"installPath"`
 	Problems       []string             `json:"problems"`
 	WSLConfigPath  string               `json:"wslConfigPath"`
@@ -85,6 +87,12 @@ func (s *SettingsService) Get(ctx context.Context) SettingsView {
 	v.WSLConfigIdle, err = s.wslcfg.IdleDisabled()
 	problem(".wslconfig", err)
 	v.ChromePath, _ = settings.FindChrome(os.Getenv, os.Stat)
+	// The window is loaded at launch, and reading the file from a stopped
+	// distro would start it, undoing a stop on every app start.
+	if state, err := s.ctrl.WSL.DistroState(ctx, target.Distro); err != nil || state != wsl.StateRunning {
+		v.CertUnread = true
+		return v
+	}
 	v.Cert, err = s.readCert(ctx)
 	if !errors.Is(err, settings.ErrNoCert) {
 		problem("certificate", err)
