@@ -1,10 +1,10 @@
 {
 	"fixed": {
-		"file_version": "0.1.0"
+		"file_version": "0.0.0"
 	},
 	"info": {
 		"0409": {
-			"ProductVersion": "0.1.0",
+			"ProductVersion": "0.0.0-dev",
 			"CompanyName": "Docker Zero",
 			"FileDescription": "Docker Engine in WSL2 with Portainer, without admin rights",
 			"LegalCopyright": "Copyright (c) 2026 Docker Zero contributors",
