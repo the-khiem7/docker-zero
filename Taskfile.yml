@@ -1,0 +1,42 @@
+version: '3'
+
+vars:
+  APP_NAME: "docker-zero"
+  BIN_DIR: "bin"
+  PACKAGE_MANAGER: '{{.PACKAGE_MANAGER | default "npm"}}'
+  VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+  GOLANGCI_LINT: github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
+
+includes:
+  common: ./packaging/Taskfile.yml
+  windows: ./packaging/windows/Taskfile.yml
+
+tasks:
+  build:
+    summary: Builds the application
+    cmds:
+      - task: windows:build
+
+  run:
+    summary: Runs the application
+    cmds:
+      - task: windows:run
+
+  dev:
+    summary: Runs the application in development mode
+    cmds:
+      - wails3 dev -config ./packaging/config.yml -port {{.VITE_PORT}}
+
+  test:
+    summary: Runs the Go unit tests
+    cmds:
+      - go test ./...
+
+  lint:
+    summary: Runs go vet, golangci-lint and the Svelte type check
+    cmds:
+      - go vet ./...
+      - go run {{.GOLANGCI_LINT}} run ./...
+      - task: common:frontend:run
+        vars:
+          SCRIPT: check
