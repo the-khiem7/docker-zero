@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "b330ba1"
+code_ref: "84ba537"
 ---
 
 # docker-zero roadmap
@@ -20,7 +20,7 @@ code_ref: "b330ba1"
 | Phase 7 | Phase 5 | complete | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | complete | Update Portainer, Reset admin, Uninstall all work |
 | Phase 9 | Phase 8, Phase 7, Phase 10 | active | Release exe and README published |
-| Phase 10 | Phase 8 | planned | Brand logo used as the app icon, UI upgraded, illustrated README, landing page |
+| Phase 10 | Phase 8 | active | Brand logo used as the app icon, UI upgraded, illustrated README, landing page |
 
 ## Phase 1: Exe policy spike
 
@@ -182,7 +182,7 @@ Not verified: SmartScreen or policy behaviour on another machine; the release do
 
 ## Phase 10: Design
 
-Status: planned. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before.
+Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief is pending.
 
 | Item | Output | Review point |
 |---|---|---|
@@ -192,6 +192,19 @@ Status: planned. Brand, app UI and front door before the first release (DZ-D27).
 | 4. Apply the design | Svelte and CSS changes under `frontend/`, the window sizes in `internal/ui` if a design needs them; no behaviour change | `wails3 task test`, `wails3 task lint`, `wails3 task build` pass; every inventory state re-shot from the built exe in light and dark and matched to its approved mockup |
 | 5. README banner | Hero banner and scenes as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten around them, screenshots re-shot from the new UI, no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
 | 6. Landing page | One `index.html` for GitHub Pages (`frontdoor-landing`), social preview image, favicon from the mark, no-affiliation statement (DZ-D30) | User picks a direction and the placement; the skill's axe and Lighthouse checks; the user switches on Pages in the repository settings |
+
+Item 2 evidence, awaiting the user's review:
+
+| Check | Result |
+|---|---|
+| Mock harness | `frontend/vite.inventory.config.ts` (`npm run inventory`, port 9246) swaps the six bound service modules for `frontend/inventory/mock/*`; scenarios in `frontend/inventory/fixtures.ts`; each mock `satisfies` the generated binding's signatures, so a new or changed Go method fails `svelte-check` |
+| Render | `design/ui-inventory/shoot.py` (Playwright on the installed Edge): 50 states over popup, corner box, settings, maintenance and setup, light and dark, WebP at 2x, 4.4 MB |
+| Page | `design/ui-inventory/index.html`: filters by window, screenshot theme and review state, Keep / Revise / Discuss with a note per state kept in the browser, Copy review as Markdown; no horizontal scroll at 390 px; no page errors |
+| Real references | `design/ui-inventory/real.ps1` captured the popup, corner box, settings and setup windows of the installed exe; account paths painted over |
+| Observations on the page | 10; among them a failed Start in the corner box shows nothing (the error line is squeezed to zero height), and Setup opened after setup shows Existing setup found / Nothing left to replace above a form that would run setup again |
+| `wails3 task lint`, `wails3 task test`, `wails3 task build` | 0 issues, 0 svelte-check errors; tests ok; build ok, the production bundle does not import the mocks |
+
+Not verified: the mocks against the Go services at run time beyond the type check; the page in browsers other than Edge.
 
 ## Risks
 
@@ -206,7 +219,8 @@ Status: planned. Brand, app UI and front door before the first release (DZ-D27).
 
 ## Next action
 
-1. Phase 10 item 1: waits for the user's logo brief; then write the signature note and show two or three rough logo directions on the local board; the user picks or mixes one.
-2. Phase 10 items 2 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
-3. Phase 9: rebuild the release exe from the commit that ends Phase 10, re-run the full clean-profile gate (DZ-D29), then publish GitHub release `v0.1.0` from that commit with the rebuilt exe and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
-4. Then mark Phase 9 complete with the release URL.
+1. Phase 10 item 2: the user reviews `design/ui-inventory/index.html` and confirms the list of states is complete.
+2. Phase 10 item 1: waits for the user's logo brief; then write the signature note and show two or three rough logo directions on the local board; the user picks or mixes one.
+3. Phase 10 items 3 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
+4. Phase 9: rebuild the release exe from the commit that ends Phase 10, re-run the full clean-profile gate (DZ-D29), then publish GitHub release `v0.1.0` from that commit with the rebuilt exe and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
+5. Then mark Phase 9 complete with the release URL.
