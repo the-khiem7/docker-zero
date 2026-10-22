@@ -86,7 +86,7 @@ func newHarness(state wsl.State, upAfter int) *harness {
 
 func TestStartHoldsEnsuresAndOpens(t *testing.T) {
 	h := newHarness(wsl.StateStopped, 2)
-	if err := h.c.Start(t.Context()); err != nil {
+	if err := h.c.Start(t.Context(), false); err != nil {
 		t.Fatal(err)
 	}
 	if len(h.holds) != 1 || !h.c.Holding() {
@@ -99,7 +99,7 @@ func TestStartHoldsEnsuresAndOpens(t *testing.T) {
 		t.Fatalf("opened %q", h.opened)
 	}
 	// A second Start reuses the live hold.
-	if err := h.c.Start(t.Context()); err != nil {
+	if err := h.c.Start(t.Context(), false); err != nil {
 		t.Fatal(err)
 	}
 	if len(h.holds) != 1 {
@@ -109,7 +109,7 @@ func TestStartHoldsEnsuresAndOpens(t *testing.T) {
 
 func TestStartNotInstalled(t *testing.T) {
 	h := newHarness(wsl.StateNotInstalled, 0)
-	if err := h.c.Start(t.Context()); !errors.Is(err, ErrNotInstalled) {
+	if err := h.c.Start(t.Context(), false); !errors.Is(err, ErrNotInstalled) {
 		t.Fatalf("got %v", err)
 	}
 	if len(h.holds) != 0 {
@@ -120,7 +120,7 @@ func TestStartNotInstalled(t *testing.T) {
 func TestStartTimesOut(t *testing.T) {
 	h := newHarness(wsl.StateRunning, 1<<30)
 	h.c.StartTimeout = 20 * time.Millisecond
-	if err := h.c.Start(t.Context()); !errors.Is(err, ErrTimeout) {
+	if err := h.c.Start(t.Context(), false); !errors.Is(err, ErrTimeout) {
 		t.Fatalf("got %v", err)
 	}
 	if len(h.opened) != 0 {
@@ -130,7 +130,7 @@ func TestStartTimesOut(t *testing.T) {
 
 func TestStopAndShutdownReleaseHold(t *testing.T) {
 	h := newHarness(wsl.StateRunning, 0)
-	if err := h.c.Start(t.Context()); err != nil {
+	if err := h.c.Start(t.Context(), false); err != nil {
 		t.Fatal(err)
 	}
 	if err := h.c.StopDistro(t.Context()); err != nil {
@@ -139,7 +139,7 @@ func TestStopAndShutdownReleaseHold(t *testing.T) {
 	if !h.holds[0].released || h.c.Holding() {
 		t.Fatal("stop kept the hold")
 	}
-	if err := h.c.Start(t.Context()); err != nil {
+	if err := h.c.Start(t.Context(), false); err != nil {
 		t.Fatal(err)
 	}
 	if err := h.c.ShutdownWSL(t.Context()); err != nil {
@@ -163,7 +163,7 @@ func TestOneActionAtATime(t *testing.T) {
 	h := newHarness(wsl.StateRunning, 0)
 	h.wsl.block = make(chan struct{})
 	done := make(chan error)
-	go func() { done <- h.c.Start(context.Background()) }()
+	go func() { done <- h.c.Start(context.Background(), false) }()
 	for h.c.Busy() == "" {
 		time.Sleep(time.Millisecond)
 	}
@@ -173,5 +173,39 @@ func TestOneActionAtATime(t *testing.T) {
 	close(h.wsl.block)
 	if err := <-done; err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIdleModeControlsHold(t *testing.T) {
+	h := newHarness(wsl.StateRunning, 0)
+	keep := false
+	h.c.KeepAlive = func() bool { return keep }
+	if err := h.c.Start(t.Context(), true); err != nil {
+		t.Fatal(err)
+	}
+	if len(h.holds) != 0 || len(h.opened) != 0 {
+		t.Fatalf("holds %d, opened %q: want no hold and no browser", len(h.holds), h.opened)
+	}
+	keep = true
+	if err := h.c.SyncHold(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if !h.c.Holding() {
+		t.Fatal("SyncHold did not hold a running distro in keepalive mode")
+	}
+	keep = false
+	if err := h.c.SyncHold(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if h.c.Holding() {
+		t.Fatal("SyncHold kept the hold after leaving keepalive mode")
+	}
+	h.wsl.state = wsl.StateStopped
+	keep = true
+	if err := h.c.SyncHold(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if h.c.Holding() {
+		t.Fatal("SyncHold started a stopped distro")
 	}
 }

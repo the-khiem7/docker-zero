@@ -52,6 +52,9 @@ type Controller struct {
 	Wait time.Duration
 	// StartTimeout bounds how long Start waits for Portainer.
 	StartTimeout time.Duration
+	// KeepAlive reports whether the app should hold the distro (the
+	// keepalive idle mode). Nil means always.
+	KeepAlive func() bool
 
 	mu   sync.Mutex
 	busy string
@@ -101,9 +104,10 @@ systemctl start docker
 docker start ` + target.PortainerContainer + ` >/dev/null
 `
 
-// Start boots the distro, keeps it running with a hold, makes sure Docker
-// and Portainer run, waits for Portainer to answer, then opens it.
-func (c *Controller) Start(ctx context.Context) error {
+// Start boots the distro, keeps it running with a hold in keepalive mode,
+// makes sure Docker and Portainer run, waits for Portainer to answer, then
+// opens it unless quiet is set.
+func (c *Controller) Start(ctx context.Context, quiet bool) error {
 	if err := c.begin("start"); err != nil {
 		return err
 	}
@@ -116,8 +120,10 @@ func (c *Controller) Start(ctx context.Context) error {
 	if state == wsl.StateNotInstalled {
 		return ErrNotInstalled
 	}
-	if err := c.ensureHold(); err != nil {
-		return err
+	if c.keepAlive() {
+		if err := c.ensureHold(); err != nil {
+			return err
+		}
 	}
 	if _, err := c.WSL.Script(ctx, target.Distro, "root", ensureScript); err != nil {
 		return err
@@ -125,7 +131,29 @@ func (c *Controller) Start(ctx context.Context) error {
 	if err := c.waitPortainer(ctx); err != nil {
 		return err
 	}
+	if quiet {
+		return nil
+	}
 	return c.OpenURL(target.PortainerURL)
+}
+
+// SyncHold applies the idle mode to a distro that is already running:
+// in keepalive mode it takes a hold, otherwise it releases one. It never
+// starts a stopped distro.
+func (c *Controller) SyncHold(ctx context.Context) error {
+	if !c.keepAlive() {
+		c.releaseHold()
+		return nil
+	}
+	state, err := c.WSL.DistroState(ctx, target.Distro)
+	if err != nil || state != wsl.StateRunning {
+		return err
+	}
+	return c.ensureHold()
+}
+
+func (c *Controller) keepAlive() bool {
+	return c.KeepAlive == nil || c.KeepAlive()
 }
 
 // OpenPortainer opens the Portainer page without starting anything.
