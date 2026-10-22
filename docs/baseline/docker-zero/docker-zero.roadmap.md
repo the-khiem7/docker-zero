@@ -15,7 +15,7 @@ code_ref: "uncommitted"
 | Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
-| Phase 5 | Phase 4 | planned | Settings apply and revert each item |
+| Phase 5 | Phase 4 | complete | Settings apply and revert each item |
 | Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | planned | Update Portainer, Reset admin, Uninstall all work |
@@ -52,7 +52,25 @@ Not verified: Stop distro and Shut down WSL clicked in the app against `Ubuntu-2
 
 ## Phase 5: Settings
 
-Status: planned. Items per DZ-D6. Gate: each setting applied and reverted, with the resulting registry value, file or shortcut observed.
+Status: complete, except the certificate store changes (see below). Built: `internal/settings` (settings store, `HKCU` Run value, shortcuts, `.wslconfig` editor, Chrome lookup and browser opener, certificate read, trust, untrust and regenerate, self-copy to the install folder), `internal/ui` `Prefs` and `SettingsService`, a framed settings window opened from the tray menu and the popup gear, corner box choice remembered, `--start-distro` launch option, hold taken at launch in keepalive mode. Design: DZ-D16.
+
+Evidence, each item applied and reverted through the settings window by UI Automation on this machine:
+
+| Item | Observed |
+|---|---|
+| Auto start on, with start distro | Run value `Docker Zero` = quoted install path plus `--start-distro`; exe copied to the install folder (12 032 000 bytes) |
+| Auto start off | Run value gone; the seven other Run values untouched |
+| Desktop and Start Menu shortcuts on | Both `Docker Zero.lnk` target the installed exe, icon `exe,0` |
+| Shortcuts off | Both files gone |
+| Browser Chrome, then System default | `settings.json` `browser` `chrome`, then `default` |
+| Idle WSL default | `.wslconfig` removed (it held only the line), `settings.json` `default`, hold gone |
+| Idle `.wslconfig` | File recreated as `[general]` plus `instanceIdleTimeout=-1` |
+| Idle keepalive | Line removed, hold back in the distro; the original `.wslconfig` was then restored byte for byte (hash equal) |
+| Corner box on, then off | `settings.json` `cornerBox` `true`, then absent |
+| Certificate read | Thumbprint `270FF7DCB695691011F84F72E477E4D799FE11FE`, expires 2031-10-14, trusted `true` (matches PT-D19) |
+| Regenerate script on throwaway `dz-test` | New key `600`, certificate `644`, parsed; reported "not configured" because no Portainer container there |
+
+Not verified: Install (trust), Remove and Regenerate against the real store and the real Portainer, because each store change needs the user to answer Windows' confirmation dialog and Regenerate restarts the live Portainer; opening Portainer in Chrome; Apply now (`wsl --shutdown`). Test state was cleaned up afterwards: install folder and `settings.json` deleted, the hold ended with the app.
 
 ## Phase 6: Day 1 wizard
 
@@ -83,5 +101,7 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 5: build the settings (auto start, shortcuts, idle mode, browser, certificate) with apply and revert.
+1. Phase 7: adopt the existing manual setup (Phase 6 stays blocked on the Portainer admin question).
 2. Ask the user before clicking Stop distro and Shut down WSL in the app against `Ubuntu-24.04`; both stop the live containers there.
+3. Ask the user to run Install (trust), Remove and Regenerate in the settings window and answer Windows' dialogs; Regenerate restarts the live Portainer.
+4. Ask the user whether `packaging/windows/wails.exe.manifest` may be committed; the commit scan flags its public Common-Controls token.

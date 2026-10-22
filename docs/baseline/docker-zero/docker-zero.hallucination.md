@@ -28,7 +28,8 @@ code_ref: "uncommitted"
 | DZ-D12 | Wails3 Svelte template name and tray spike result | closed | DZ-D10, DZ-D11 |
 | DZ-D13 | Scaffold shape: `packaging/` folder, pinned tools, Windows only | closed | DZ-D9 |
 | DZ-D14 | How the WSL runner reads state and probes status | closed | DZ-D4 |
-| DZ-D15 | Day 2 widget mechanics: hold, job object, polling, confirm, second launch | closed | DZ-D3, DZ-D4, DZ-D6 |
+| DZ-D15 | Day 2 widget mechanics: hold, job object, polling, confirm, second launch | closed, job object part superseded | DZ-D3, DZ-D4, DZ-D6, DZ-D16 |
+| DZ-D16 | Settings mechanics and the hold-only job object | closed | DZ-D6, DZ-D9, DZ-D15 |
 
 ## Open questions
 
@@ -200,7 +201,7 @@ Rejected: parsing `--list --verbose` - localised. A TLS-verified probe - fails u
 Decision:
 
 - Start holds the distro with a hidden `wsl.exe --distribution Ubuntu-24.04 --exec /bin/sleep infinity` child for as long as the app runs (the keepalive idle mode of DZ-D6, built now because Start needs it); Stop distro and Shut down WSL release it first; app exit releases it.
-- The app puts itself in a job object with `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` before the first hold, so every child dies with the app.
+- The app puts itself in a job object with `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` before the first hold, so every child dies with the app. Superseded by DZ-D16: only the hold joins the job.
 - Polling: every 5 s while the popup or the corner box is visible, every 1 s for 15 s after an action, never otherwise; one reading at launch. Hiding a window re-sends the last reading without probing.
 - Shut down WSL asks for confirmation inside the popup, not with a native dialog.
 - A second launch of the exe opens the popup (`SingleInstance.OnSecondInstanceLaunch`).
@@ -211,3 +212,22 @@ Why: observed - a force-killed build without the job object left `/bin/sleep inf
 What breaks if ignored: the distro never idles out after a crash; the confirmation dialog closes the popup that asked for it; a hidden app polls `wsl.exe` forever.
 
 Rejected: assigning only the hold's `wsl.exe` to a job after `Start` - races with its own child. A native confirmation dialog - hides the popup. Polling while hidden - wastes CPU in an app meant to sit idle in the tray.
+
+### DZ-D16: Settings mechanics; only the hold joins the kill-on-close job
+
+Decision:
+
+- Only the hold joins the job object: `wsl.exe` starts with `CREATE_SUSPENDED`, is assigned, then resumed with `NtResumeProcess`, so its own child inherits the job with no race.
+- Auto start is the `HKCU\...\Run` value `Docker Zero` = `"<install exe>"`, plus `--start-distro` for the sub-option, which starts the runtime quietly (no browser).
+- Shortcuts are `Docker Zero.lnk` in the Desktop and Programs known folders, written through `WScript.Shell`.
+- Before writing either, the app copies itself to `%LOCALAPPDATA%\Programs\docker-zero\docker-zero.exe` unless it already runs from there.
+- Auto start, shortcuts, the `.wslconfig` line and the certificate are read from the machine each time the window loads; `%APPDATA%\docker-zero\settings.json` stores only idle mode, browser and corner box.
+- Idle mode: keepalive holds a running distro at launch and on selection; WSL default and `.wslconfig` release it. Choosing `.wslconfig` adds `instanceIdleTimeout=-1` under `[general]`, any other mode removes it (a file left with only `[general]` is deleted); a pending change is applied only by a confirmed Apply now (`wsl --shutdown`).
+- Browser: Chrome by full path from `ProgramFiles`, `ProgramFiles(x86)` or `LOCALAPPDATA` (PT-D17), or a chosen exe.
+- Certificate: trust state read from `Cert:\CurrentUser\Root` through `CertFindCertificateInStore` by SHA-1 thumbprint (no dialog); trust and removal through `certutil -user -addstore|-delstore Root`, which shows Windows' confirmation dialog (PT-D21); regenerate rewrites the P-256 leaf in `/etc/portainer-certs` with the PT-D19 profile and restarts Portainer only when its container has `--sslcert`, else exit 3, reported as "run setup first".
+
+Why: lesson - DZ-D15 put the whole app process in the job; a browser that Open Portainer starts is then a member too and would be killed when Docker Zero quits. Reading machine state avoids a stored flag that drifts when the user deletes a shortcut by hand. The Run value and the shortcuts must survive a cleaned Downloads folder (DZ-D9). `Import-Certificate` and `Remove-Item` on the root store fail without UI (PT-D19, PT-D21), and the dialog is the user's consent.
+
+What breaks if ignored: closing the app closes the user's browser; a shortcut to a deleted download; a `.wslconfig` change that silently does nothing until a reboot.
+
+Rejected: the whole process in the job (DZ-D15) - kills the browser. A Startup folder shortcut for auto start - `HKCU Run` is simpler to read and remove (DZ-D6). Storing auto start and shortcut flags in `settings.json` - drift. `Import-Certificate` - fails without UI.
