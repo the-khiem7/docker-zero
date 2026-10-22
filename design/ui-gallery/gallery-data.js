@@ -6,7 +6,7 @@ window.GALLERY = {
   "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/gallery.json"
  ],
  "generated": "2026-10-22",
- "commit": "5c6d486",
+ "commit": "9c4baf1",
  "storageKey": "docker-zero-ui-gallery",
  "views": {
   "popup": {
@@ -303,7 +303,7 @@ window.GALLERY = {
    "light": {
     "w": 360,
     "h": 420,
-    "kb": 20
+    "kb": 21
    },
    "dark": {
     "w": 360,
