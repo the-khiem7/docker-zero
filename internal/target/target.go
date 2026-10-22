@@ -9,6 +9,8 @@ const (
 	User = "dev"
 	// PortainerContainer is the name of the Portainer CE container.
 	PortainerContainer = "portainer"
+	// PortainerPort is the host port Portainer is published on.
+	PortainerPort = 9443
 	// PortainerURL is the page Open Portainer shows. Portainer is published
 	// on 127.0.0.1:9443 only; the engine has no TCP port.
 	PortainerURL = "https://localhost:9443/"
