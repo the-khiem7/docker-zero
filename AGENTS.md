@@ -9,3 +9,4 @@
 - Never log or print the Portainer setup token or admin password.
 - Container, image and volume management belongs to Portainer; the app only handles system-level actions.
 - `docs/baseline/` holds internal planning notes; never reference those files or their entry IDs from code.
+- The frontdoor skills' design board lives in `design/brand/gallery/` (committed, public), not `.frontdoor/`: pass that folder to `board.py` and build each round under it.

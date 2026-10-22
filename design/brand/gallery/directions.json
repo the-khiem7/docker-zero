@@ -1,0 +1,1168 @@
+{
+  "project": "docker-zero",
+  "rounds": [
+    {
+      "id": 1,
+      "created": "2026-10-22",
+      "title": "Round 1: whale passing the zero",
+      "note": "Every direction combines a whale (the animal, never Docker's container whale) with a complete circle (the zero). Each sheet shows the app icon tile, the bare mark on light and dark, and the tile and mark at taskbar sizes. Rough sketches: shapes and colours are starting points, and any mark can take any palette. Pick one or mix several (for example 'shape of 6, colours of 9').",
+      "directions": [
+        {
+          "id": "1",
+          "title": "Breach",
+          "concept": "The whale leaps through the zero: its head passes in front of the ring, its tail stays behind it.",
+          "strengths": "Reads as motion and as 'passing through'; the woven overlap is the signature move.",
+          "risks": "A diagonal whale is close in spirit to many 'jumping whale' marks.",
+          "flaws": "Tail detail blurs at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/breach.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "2",
+          "title": "Orbit",
+          "concept": "The zero is a full orbit; a small whale swims along it, leaving a three-dot wake.",
+          "strengths": "The ring stays perfect and dominant, so it reads as 0 first.",
+          "risks": "Whale is small; the mark can read as a planet with a moon.",
+          "flaws": "Whale vanishes below 24 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/orbit.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "3",
+          "title": "Cut-out",
+          "concept": "A solid disc is the zero; the whale is cut out of it as negative space.",
+          "strengths": "One shape, one colour: strongest at tray size, easy to recolour for states.",
+          "risks": "The circle is a disc, not a ring.",
+          "flaws": "Thin tail flukes close up at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/negative.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "4",
+          "title": "Dive",
+          "concept": "Inside the ring the whale dives: only the tail flukes stand above the water line.",
+          "strengths": "The flukes are unmistakably a whale and nothing like the side-view container whale.",
+          "risks": "Static rather than passing through.",
+          "flaws": "Waves turn to noise at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/fluke.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "5",
+          "title": "Bubble ring",
+          "concept": "Whales blow bubble rings; here the zero is a ring of bubbles the whale rises through.",
+          "strengths": "Real whale behaviour gives the ring a story; dotted ring is distinctive.",
+          "risks": "Dots read as a loading spinner.",
+          "flaws": "Dots merge at 16 px into a grey ring.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/bubble.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "6",
+          "title": "Curl",
+          "concept": "The whale itself bends into the zero, its flukes closing the circle at its head.",
+          "strengths": "Whale and zero are literally one shape; bold and very ownable.",
+          "risks": "Reads as a 'C' or a snake if the flukes are too small.",
+          "flaws": "Eye is lost below 24 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/ouroboros.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "7",
+          "title": "Porthole",
+          "concept": "The zero is a ship's porthole; the whale swims out of it, head over the brass rim.",
+          "strengths": "Rich, illustrative, a nod to 'dock' without any container.",
+          "risks": "Most detailed option; feels nautical-themed rather than tech.",
+          "flaws": "Bolts and rim crowd at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/porthole.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "8",
+          "title": "Monoline",
+          "concept": "Single-weight line drawing: an outlined whale woven through an accent ring.",
+          "strengths": "Calm, editorial, works well in a README header.",
+          "risks": "Line marks are weak as an app icon.",
+          "flaws": "Strokes go hairline at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/monoline.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "9",
+          "title": "Horizon",
+          "concept": "The zero is a setting sun; the whale breaches across it in silhouette.",
+          "strengths": "Warm and striking, very 'stunning' at large size.",
+          "risks": "Gradient and silhouette depend on the tile colour.",
+          "flaws": "Gradient flattens and the silhouette merges at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/sunset.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "10",
+          "title": "Orca",
+          "concept": "Breach composition with an orca: black body, white belly and eye patch, red ring.",
+          "strengths": "High contrast, clearly not Docker's blue whale.",
+          "risks": "Orca patches add detail.",
+          "flaws": "Patches disappear at 16 px; still a black shape.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/orca.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "11",
+          "title": "Pixel",
+          "concept": "Built on a 16 x 16 grid: a pixel whale crossing a pixel ring, the ring passing over its tail.",
+          "strengths": "Pixel-exact at 16 px, so the tray icon is the logo itself; terminal flavour.",
+          "risks": "Retro look may feel like a game.",
+          "flaws": "Large sizes look blocky by design.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/pixel.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "12",
+          "title": "Surface",
+          "concept": "The ring frames the sea; the whale's back and fin break the surface.",
+          "strengths": "Simple, friendly, clear horizon line.",
+          "risks": "Back and fin can read as a shark or a hill.",
+          "flaws": "Fin lost at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/wave.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "13",
+          "title": "Badge",
+          "concept": "A heavy ring like a stamp; the whale crosses the band with a gap cut around it.",
+          "strengths": "Bold, badge-like, very legible.",
+          "risks": "Whale fully in front: 'passing' is implied, not woven.",
+          "flaws": "Holds well; gap closes at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/badge.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "14",
+          "title": "Geometric",
+          "concept": "Whale made of a half-disc and a triangle tail, woven through the ring.",
+          "strengths": "Construction-grid look, clean at every size.",
+          "risks": "Abstract enough to read as a fish or a bird.",
+          "flaws": "Fine at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/geometric.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "15",
+          "title": "Hoop",
+          "concept": "The ring seen at an angle, like a hoop; the whale dives straight down through it.",
+          "strengths": "Real depth: back of the hoop behind, front over the whale.",
+          "risks": "The ring looks like an ellipse, not a 0.",
+          "flaws": "Hoop thins to a line at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/hoop.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "16",
+          "title": "Twin",
+          "concept": "Two whales chase each other around the zero, like a slow cycle.",
+          "strengths": "Suggests start / stop, a loop that keeps running.",
+          "risks": "Two whales double the detail.",
+          "flaws": "Both whales shrink to blobs at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/twin.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "17",
+          "title": "Gradient",
+          "concept": "Breach composition on a modern gradient tile: white whale, golden ring.",
+          "strengths": "Looks at home next to modern app icons.",
+          "risks": "Gradients are common; less distinctive.",
+          "flaws": "Fine at 16 px on the tile; the bare mark needs a dark background.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/glass.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "18",
+          "title": "Shift",
+          "concept": "The whale changes colour where it is inside the zero: what passes through Docker Zero comes out different.",
+          "strengths": "A clever idea that carries a message.",
+          "risks": "The idea is lost at small sizes.",
+          "flaws": "Two-colour split unreadable at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-1/duotone.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [
+        "9",
+        "10"
+      ],
+      "choice_note": "Horizon sun idea + Orca whale and red ring"
+    },
+    {
+      "id": 2,
+      "created": "2026-10-22",
+      "title": "Round 2: orca + sunset sun + clear ring",
+      "note": "Mix of Horizon (the zero as a sunset sun over the sea) and Orca (the only mark that reads as a whale, and the strong red ring). Each sheet adds the tray states (running, stopped, starting, error) recoloured from the logo itself. Pick a shape and a palette, or mix.",
+      "directions": [
+        {
+          "id": "19",
+          "title": "Sun inside a red ring",
+          "concept": "The sunset sun sits inside a crisp red ring; the orca breaches through, head in front of the ring, tail behind it.",
+          "strengths": "Keeps both strengths whole: the sun on the sea and a clear ring.",
+          "risks": "Three layers (sun, ring, orca) is the most detail.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/sunring.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "20",
+          "title": "Sun inside a red ring, coral dusk",
+          "concept": "Same shape, navy sea and coral sky.",
+          "strengths": "Cooler tile reads well on light and dark taskbars.",
+          "risks": "Navy sea and black orca are close in value.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/sunring-coral.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "21",
+          "title": "Sun inside a white ring, night",
+          "concept": "Same shape, deep night tile and a white ring.",
+          "strengths": "White ring is the clearest edge at 16 px on dark.",
+          "risks": "White ring vanishes on a light taskbar.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/sunring-dusk.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "22",
+          "title": "Sun inside a red ring, beach day",
+          "concept": "Same shape, light sand tile and a teal sea.",
+          "strengths": "Brightest, most 'beach'.",
+          "risks": "Light tile is weak on a light taskbar.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/sunring-beach.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "23",
+          "title": "The ring is the sun",
+          "concept": "The ring itself is stroked with the sunset gradient, so the zero is the sun's outline; the sea fills its lower half.",
+          "strengths": "One idea instead of two: ring and sun are the same shape.",
+          "risks": "A gradient ring is less crisp than the solid red.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/gradring.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "24",
+          "title": "Ring and its reflection",
+          "concept": "A clear ring rises over the horizon like the sun, its lower half drawn as a reflection on the water; the orca leaps above.",
+          "strengths": "Most 'sunset on the beach'; the horizon line is a strong second shape.",
+          "risks": "The ring is no longer a complete circle at small sizes.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/reflect.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "25",
+          "title": "Ring and its reflection, night",
+          "concept": "Same shape on the night tile.",
+          "strengths": "Very atmospheric.",
+          "risks": "Reflection bars merge at 16 px.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/reflect-dusk.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "26",
+          "title": "Sunset disc with an outer ring",
+          "concept": "A full sunset disc with sea, framed by a heavy outer ring; the orca crosses the disc and the ring.",
+          "strengths": "The outer ring gives a clean edge on any background.",
+          "risks": "Orca does not pass behind anything: 'through' is implied.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/badge.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "27",
+          "title": "Orca dives into the sunset sea",
+          "concept": "The orca dives steeply into the sea inside the ring, its head behind the ring's upper-right edge.",
+          "strengths": "Different motion from the breach: diving 'into' Docker Zero.",
+          "risks": "Steep angle reads less like a whale at a glance.",
+          "flaws": "Rough sketch; orca patches and sea lines thin out at 16 px.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-2/dive.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [
+        "19"
+      ],
+      "choice_note": "Too much detail when combining; wants orca right to left, back to front, simpler"
+    },
+    {
+      "id": 3,
+      "created": "2026-10-22",
+      "title": "Round 3: fewer shapes, orca from back right to front left",
+      "note": "Two or three flat shapes each, no gradients or wave lines; the orca always travels right to left and comes from behind the ring or the sea towards the viewer.",
+      "directions": [
+        {
+          "id": "28",
+          "title": "Ring and orca only",
+          "concept": "Two shapes: a red ring and the orca, which comes from behind the ring at the lower right and leaps out to the upper left.",
+          "strengths": "The cleanest version of what you liked; the sunset survives only as the colour.",
+          "risks": "Loses the beach scene.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-breach.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "29",
+          "title": "Half sun",
+          "concept": "The upper half of the ring is filled like a setting sun, the lower half stays open as the sea; the orca crosses the horizon from back right to front left.",
+          "strengths": "Sunset read with one fill and no gradient or waves.",
+          "risks": "The fill line can read as a pie chart.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-halfsun.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "30",
+          "title": "Fin at sunset",
+          "concept": "Only the orca's tall dorsal fin cuts the horizon inside the sun ring, travelling left.",
+          "strengths": "Very few shapes, very recognisable silhouette, strong at 16 px.",
+          "risks": "A fin alone can read as a shark.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-fin.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "31",
+          "title": "Surfacing",
+          "concept": "Front view: the orca rises out of the sea towards you through the ring, only its head and white eye patches showing.",
+          "strengths": "Literally 'back to front'; the eye patches make it unmistakably an orca, and friendly.",
+          "risks": "Front view is unusual and can look like a character or mascot.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-face.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "32",
+          "title": "Sky and sea disc",
+          "concept": "One disc split by the horizon, red sky above and black sea below; the black orca leaps from the sea into the sky.",
+          "strengths": "Three flat colours; the orca disappears into the sea and appears against the sun, which is the 'through' effect.",
+          "risks": "The circle is a disc, not an open ring.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-split.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "33",
+          "title": "Orca on the rim",
+          "concept": "A thin sun ring with the orca swimming along its top, heading left.",
+          "strengths": "The ring stays a perfect zero.",
+          "risks": "Orca is small; detail lost at 16 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-orbit.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "34",
+          "title": "Bursting out",
+          "concept": "One heavy ring; the orca is larger than it and bursts from inside towards the front left, its tail still behind the rim.",
+          "strengths": "Strong depth and motion with two shapes.",
+          "risks": "Orca covers much of the ring.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-thick.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "35",
+          "title": "Sun inside the zero",
+          "concept": "A red ring with a small orange sun in the middle; the orca leaps in front of the sun towards the left.",
+          "strengths": "The sun and the zero are separate, each kept simple.",
+          "risks": "Three round shapes compete at small sizes.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-3/r3-sundot.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [
+        "34"
+      ],
+      "choice_note": "Bursting out, with a better whale"
+    },
+    {
+      "id": 4,
+      "created": "2026-10-22",
+      "title": "Round 4: Bursting out, orca redrawn",
+      "note": "Direction 34 kept; the orca is redrawn with real orca anatomy. Variants change the angle, the ring weight, the outline and the palette. Tray states recolour the ring (error also darkens the orca).",
+      "directions": [
+        {
+          "id": "36",
+          "title": "Bursting out, new orca",
+          "concept": "Direction 34 with the orca redrawn: blunt head, tall dorsal fin, paddle flipper, horizontal flukes, white chin, flank and eye patch, grey saddle. It comes from behind the ring at the lower right and bursts out to the front left.",
+          "strengths": "Reads as an orca at a glance, not a fish.",
+          "risks": "Red ring with a dark diagonal can still read as a 'no' sign.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-base.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "37",
+          "title": "With a light outline",
+          "concept": "Same, on a dark tile, with a thin outline in the tile colour cut around the orca so it separates from the ring.",
+          "strengths": "Works on a dark taskbar; the cut gives depth.",
+          "risks": "Outline adds a little detail.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-outline.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "38",
+          "title": "Bigger orca, thinner ring",
+          "concept": "The orca dominates; the ring is a thinner frame it leaves behind.",
+          "strengths": "Strongest orca, least like a 'no' sign (shallower angle).",
+          "risks": "Ring weaker at 16 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-big.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "39",
+          "title": "Heavy ring, smaller orca",
+          "concept": "Heavier sun-orange ring, orca kept inside the frame except head and tail.",
+          "strengths": "The zero reads first.",
+          "risks": "Orca details smaller.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-heavy.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "40",
+          "title": "Level flight",
+          "concept": "Shallow angle on a navy sea tile with a coral sun ring: the orca swims out of the ring rather than leaping.",
+          "strengths": "Avoids the diagonal 'no' sign reading entirely.",
+          "risks": "Less energetic.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-level.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "41",
+          "title": "Steep breach",
+          "concept": "A steeper leap, nose pointing high to the upper left.",
+          "strengths": "Most energetic.",
+          "risks": "Closest to the 'no' sign diagonal.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-steep.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "42",
+          "title": "Black ring on red",
+          "concept": "Same shape on a red tile with a black ring: the tile itself becomes the sunset.",
+          "strengths": "Bold, poster-like.",
+          "risks": "Black ring and black orca merge where they overlap.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-inverse.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "43",
+          "title": "Beach sand",
+          "concept": "Sand tile and deep red ring, light outline around the orca.",
+          "strengths": "Warmest beach feel with flat colours.",
+          "risks": "Low contrast tile on light taskbars.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-4/r4-sand.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [],
+      "choice_note": ""
+    },
+    {
+      "id": 5,
+      "created": "2026-10-22",
+      "title": "Round 5: stylised arched orca",
+      "note": "The orca is redrawn in the style of the references: one smooth arched silhouette, one white belly sweep, one eye patch, no small marks. Original drawing, nothing traced from the references.",
+      "directions": [
+        {
+          "id": "44",
+          "title": "Arched orca through the ring",
+          "concept": "New orca in the style of your references: one smooth arched body, a single white belly sweep and eye patch, big flipper, flukes curling down at the lower right behind the ring; the head bursts out to the front left.",
+          "strengths": "Silhouette reads as an orca at every size; far fewer details than round 4.",
+          "risks": "Red ring with a dark shape across it can still hint at a 'no' sign.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-base.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "45",
+          "title": "Dark tile, cut outline",
+          "concept": "Same, on a dark tile, with an outline in the tile colour cut around the orca.",
+          "strengths": "Separates the black orca from a dark background.",
+          "risks": "Outline only helps on the tile, not on the bare mark.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-outline.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "46",
+          "title": "Sun inside the ring",
+          "concept": "The inside of the ring is filled as a flat sunset sun, so the black orca reads against it.",
+          "strengths": "Brings back the sunset with one flat fill; orca contrast is highest.",
+          "risks": "Disc plus ring plus orca is three shapes again.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-sun.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "47",
+          "title": "Bigger orca, thin ring",
+          "concept": "Orca larger than the ring, ring thinner.",
+          "strengths": "Most orca, least 'no' sign.",
+          "risks": "Ring weak at 16 px.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-big.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "48",
+          "title": "Heavy ring",
+          "concept": "Heavier orange ring; the zero reads first.",
+          "strengths": "Strong tray icon.",
+          "risks": "Orca smaller.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-heavy.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "49",
+          "title": "Navy tile, sun inside",
+          "concept": "Sun-filled ring on a navy night-sea tile.",
+          "strengths": "Good on both taskbars.",
+          "risks": "Warm sun and red-orange ring are close in hue.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-navy.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "50",
+          "title": "Sunset disc with sea",
+          "concept": "Closest to your first reference: a sun disc with a flat red sea and one wave line, the orca leaping out of it.",
+          "strengths": "Beach-sunset scene with only flat shapes.",
+          "risks": "No open ring; the zero is the disc.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-sea.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "51",
+          "title": "Teal ocean",
+          "concept": "A cooler palette: teal ring, cream moon-like sun, navy orca on a deep-sea tile.",
+          "strengths": "Calm, techy, unlike other whale logos in red.",
+          "risks": "Loses the red ring you liked.",
+          "flaws": "Rough sketch; error state shows a red dot in the corner.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-5/r5-ocean.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [
+        "44"
+      ],
+      "choice_note": "Base for beach detail round"
+    },
+    {
+      "id": 6,
+      "created": "2026-10-22",
+      "title": "Round 6: beach detail inside the ring (direction 44)",
+      "note": "Direction 44 unchanged; each sheet adds at most two flat beach elements inside the ring below the orca, drawn behind the orca and clipped to the ring.",
+      "directions": [
+        {
+          "id": "52",
+          "title": "One wave line",
+          "concept": "A single teal wave stroke under the orca's head.",
+          "strengths": "The least detail that still says 'sea'.",
+          "risks": "Easy to miss at small sizes, which is fine.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-wave1.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "53",
+          "title": "Two wave lines",
+          "concept": "Two wave strokes, the lower one lighter.",
+          "strengths": "Reads as water more surely.",
+          "risks": "Two lines start to look busy at 24 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-wave2.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "54",
+          "title": "Flat sea",
+          "concept": "The lower part of the ring's inside is filled with one flat teal sea shape with a soft wave edge.",
+          "strengths": "One shape, strong at every size; the orca leaps out of the water.",
+          "risks": "Adds a third colour.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-seafill.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "55",
+          "title": "Setting sun on the sea",
+          "concept": "A small orange sun half sunk behind the flat sea.",
+          "strengths": "Brings back the sunset with two flat shapes.",
+          "risks": "Sun sits close to the flipper.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-sunsea.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "56",
+          "title": "Sun on a horizon line",
+          "concept": "A half sun on one red horizon line, no sea fill.",
+          "strengths": "Very light, ties to the red ring.",
+          "risks": "Horizon line can read as a slash.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-sunhorizon.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "57",
+          "title": "Sea and sand",
+          "concept": "Flat sea with a sand strip in front: the beach.",
+          "strengths": "Most 'beach' with two flat shapes.",
+          "risks": "Three fills inside a small circle; messiest at 16 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-seasand.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "58",
+          "title": "Sand dune",
+          "concept": "Only a soft sand slope in the lower left.",
+          "strengths": "Warm and calm.",
+          "risks": "Without water it can read as a hill.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-dune.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "59",
+          "title": "Wave and gulls",
+          "concept": "One wave line and two tiny gulls.",
+          "strengths": "Story-like and light.",
+          "risks": "Gulls vanish below 32 px and add noise.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-gulls.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "60",
+          "title": "Sea with sun reflection",
+          "concept": "Flat sea with two short orange bars, the reflection of a sunset.",
+          "strengths": "Sunset hinted without drawing the sun.",
+          "risks": "Bars may look like a menu icon.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-6/r6-reflection.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [
+        "52"
+      ],
+      "choice_note": "Beach detail explored further in round 7"
+    },
+    {
+      "id": 7,
+      "created": "2026-10-22",
+      "title": "Round 7: more beach details (direction 44)",
+      "note": "More options for the space inside the ring under the orca; still one to three flat shapes.",
+      "directions": [
+        {
+          "id": "61",
+          "title": "Sun only",
+          "concept": "Only a small orange sun behind the orca, no sea.",
+          "strengths": "Sunset with one shape.",
+          "risks": "Without water the beach is implied by colour only.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-sun.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "62",
+          "title": "Two-tone sea",
+          "concept": "A light and a dark teal band of sea.",
+          "strengths": "Depth without lines.",
+          "risks": "Two fills.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-twoband.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "63",
+          "title": "Sea with foam edge",
+          "concept": "Flat sea with a white foam line on its edge.",
+          "strengths": "Crisper water edge.",
+          "risks": "Foam line thin at 16 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-foam.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "64",
+          "title": "Sea and splash",
+          "concept": "Flat sea with three droplets where the orca leaves the water.",
+          "strengths": "Motion: the orca has just jumped out.",
+          "risks": "Droplets are noise below 32 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-splash.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "65",
+          "title": "Sunset sky and sea",
+          "concept": "The whole inside of the ring is a peach sunset sky over a flat sea.",
+          "strengths": "The ring becomes a window onto a sunset; works on dark backgrounds.",
+          "risks": "Peach close to the cream tile.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-sky.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "66",
+          "title": "Sky, sun and sea",
+          "concept": "Peach sky, an orange sun and flat sea.",
+          "strengths": "Full sunset scene with three flat fills.",
+          "risks": "At the limit of detail.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-skysun.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "67",
+          "title": "Red sun, night sea",
+          "concept": "A red sun matching the ring over a navy sea.",
+          "strengths": "Only two colours with the ring; bold.",
+          "risks": "Navy and black orca close in value.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-redsun.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "68",
+          "title": "Orange sun, navy sea",
+          "concept": "An orange sun over a navy sea.",
+          "strengths": "Warm and deep, high contrast with the white belly.",
+          "risks": "Dark sea merges with the orca's back.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-navy.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "69",
+          "title": "Higher sea",
+          "concept": "Sea level raised so more water shows.",
+          "strengths": "One shape, more presence.",
+          "risks": "Less sky; less sunset.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-highsea.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "70",
+          "title": "Ripples",
+          "concept": "Two ripple rings on the water where the orca broke the surface.",
+          "strengths": "Echoes the ring shape: zeros in the water.",
+          "risks": "Thin strokes vanish at 16 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-ripple.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "71",
+          "title": "Curling wave",
+          "concept": "One curling wave shape in the lower left.",
+          "strengths": "Beach surf with one shape.",
+          "risks": "Curl can read as a hook.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-curl.svg"
+            }
+          ],
+          "links": []
+        },
+        {
+          "id": "72",
+          "title": "Sun and one wave",
+          "concept": "A small sun and a single wave line.",
+          "strengths": "Light and airy.",
+          "risks": "Wave line thin at 16 px.",
+          "flaws": "Rough sketch.",
+          "images": [
+            {
+              "label": "Sheet",
+              "file": "round-7/r7-sunwave.svg"
+            }
+          ],
+          "links": []
+        }
+      ],
+      "chosen": [
+        "62"
+      ],
+      "choice_note": "Final logo: two-tone sea, inside of the ring filled with the tile colour"
+    }
+  ]
+}

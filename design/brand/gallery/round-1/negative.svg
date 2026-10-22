@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 960 430" width="960" height="430" font-family="Segoe UI, sans-serif">
+<defs><linearGradient id="tileg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#000"/></linearGradient><symbol id="tile" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#fff3ea"/><g transform="translate(9,9) scale(.82)"><defs><mask id="neg"><rect width="100" height="100" fill="#fff"/><g transform="translate(50,52) rotate(-18) scale(0.82) translate(-48,-46)"><path d="M94,52 C94,40 84,34 70,34 C54,34 40,40 31,44 C23,47 18,43 16,38 C11,35 6,33 1,28 C8,27 12,28 15,31 C17,28 21,25 27,24 C23,29 20,33 20,38 C22,52 30,62 48,64 C68,66 88,63 94,52 Z" fill="#000" /><path d="M58,60 C60,66 56,72 50,74 C52,68 52,64 54,60 Z" fill="#000"/><path d="M94,53 C88,55 82,55 76,54" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="80" cy="46" r="2.6" fill="#fff"/></g></mask></defs><circle cx="50" cy="50" r="40" fill="#ff5a4e" mask="url(#neg)"/></g></symbol><symbol id="bare" viewBox="0 0 100 100"><defs><mask id="neg"><rect width="100" height="100" fill="#fff"/><g transform="translate(50,52) rotate(-18) scale(0.82) translate(-48,-46)"><path d="M94,52 C94,40 84,34 70,34 C54,34 40,40 31,44 C23,47 18,43 16,38 C11,35 6,33 1,28 C8,27 12,28 15,31 C17,28 21,25 27,24 C23,29 20,33 20,38 C22,52 30,62 48,64 C68,66 88,63 94,52 Z" fill="#000" /><path d="M58,60 C60,66 56,72 50,74 C52,68 52,64 54,60 Z" fill="#000"/><path d="M94,53 C88,55 82,55 76,54" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="80" cy="46" r="2.6" fill="#fff"/></g></mask></defs><circle cx="50" cy="50" r="40" fill="#ff5a4e" mask="url(#neg)"/></symbol></defs>
+<rect width="320" height="300" fill="#e9e8e3"/><rect x="320" width="320" height="300" fill="#fbfaf7"/><rect x="640" width="320" height="300" fill="#15171c"/>
+<use href="#tile" x="70" y="40" width="180" height="180"/>
+<use href="#bare" x="390" y="40" width="180" height="180"/>
+<use href="#bare" x="710" y="40" width="180" height="180"/>
+<g font-size="13" fill="#555"><text x="160" y="262" text-anchor="middle">App icon</text><text x="480" y="262" text-anchor="middle">Mark on light</text></g>
+<text x="800" y="262" text-anchor="middle" font-size="13" fill="#aaa">Mark on dark</text>
+<rect y="300" width="480" height="130" fill="#f3f3f3"/><rect x="480" y="300" width="480" height="130" fill="#202020"/>
+<use href="#tile" x="24" y="340.0" width="48" height="48"/>
+<use href="#tile" x="90" y="348.0" width="32" height="32"/>
+<use href="#tile" x="140" y="352.0" width="24" height="24"/>
+<use href="#tile" x="182" y="356.0" width="16" height="16"/>
+<use href="#bare" x="236" y="348.0" width="32" height="32"/>
+<use href="#bare" x="286" y="352.0" width="24" height="24"/>
+<use href="#bare" x="328" y="356.0" width="16" height="16"/>
+<text x="24" y="410" font-size="12" fill="#555">Tile 48 / 32 / 24 / 16 px, then bare mark 32 / 24 / 16 px (light taskbar)</text>
+<use href="#tile" x="504" y="340.0" width="48" height="48"/>
+<use href="#tile" x="570" y="348.0" width="32" height="32"/>
+<use href="#tile" x="620" y="352.0" width="24" height="24"/>
+<use href="#tile" x="662" y="356.0" width="16" height="16"/>
+<use href="#bare" x="716" y="348.0" width="32" height="32"/>
+<use href="#bare" x="766" y="352.0" width="24" height="24"/>
+<use href="#bare" x="808" y="356.0" width="16" height="16"/>
+<text x="504" y="410" font-size="12" fill="#aaa">Tile 48 / 32 / 24 / 16 px, then bare mark 32 / 24 / 16 px (dark taskbar)</text>
+</svg>
