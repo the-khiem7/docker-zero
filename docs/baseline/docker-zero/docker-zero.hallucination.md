@@ -27,6 +27,7 @@ code_ref: "uncommitted"
 | DZ-D11 | Frontend framework: Svelte | closed | DZ-Q1, DZ-D9, DZ-D12 |
 | DZ-D12 | Wails3 Svelte template name and tray spike result | closed | DZ-D10, DZ-D11 |
 | DZ-D13 | Scaffold shape: `packaging/` folder, pinned tools, Windows only | closed | DZ-D9 |
+| DZ-D14 | How the WSL runner reads state and probes status | closed | DZ-D4 |
 
 ## Open questions
 
@@ -175,3 +176,20 @@ Why: the agent session's permission policy denies Read and Edit inside any `buil
 What breaks if ignored: `wails3 build` looks for `build/` and fails; an unpinned runtime drifts from the Go module.
 
 Rejected: keeping `build/` and editing it through shell commands - works around the permission policy instead of respecting it. Installing `golangci-lint` globally - an extra setup step for every contributor.
+
+### DZ-D14: The WSL runner reads state from `--list --quiet`, decodes both encodings, and the probe never starts a stopped distro
+
+Decision:
+
+- Distro state comes from `wsl.exe --list --quiet` (installed) and `--list --quiet --running`; a non-zero exit of the `--running` form means none running.
+- Every `wsl.exe` child gets `WSL_UTF8=1`; output is still decoded as UTF-16LE when most odd bytes are zero, and BOMs are stripped.
+- Children start with `CREATE_NO_WINDOW` and `HideWindow`.
+- `Script` sends the script on stdin to `bash -s` with CRLF turned into LF.
+- `Probe` runs Docker and Portainer checks only when the distro is already running, as `root`, then reads `https://127.0.0.1:9443/api/system/status` with certificate checks skipped.
+- `go 1.26.0` in `go.mod` for `errors.AsType`.
+
+Why: observed on this machine - `wsl.exe -l -v` wrote UTF-16LE without a BOM (`20 00 20 00 4e 00 ...`) and UTF-8 with `WSL_UTF8=1`; the verbose table's header and state words are localised on non-English Windows while names are not. A GUI-subsystem exe that starts a console program flashes a console window without the flag. Running anything inside a stopped distro boots it, which would defeat Stop. The probe must work before the leaf certificate exists; it is loopback only and sends nothing secret. A probe script piped from PowerShell (CRLF line ends) printed nothing for its `systemctl is-active docker` line while the LF-only lines after it worked; a trailing `\r` in an argument is the likely cause, not proven.
+
+What breaks if ignored: wrong state on localised Windows; console flashes every 5 seconds; a status poll that restarts the distro the user just stopped.
+
+Rejected: parsing `--list --verbose` - localised. A TLS-verified probe - fails until the certificate is installed. Probing as `dev` - depends on group membership that the wizard sets up later.

@@ -13,7 +13,7 @@ code_ref: "uncommitted"
 |---|---|---|---|
 | Phase 1 | - | complete | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
 | Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
-| Phase 3 | Phase 2 | planned | Go WSL runner and status detection tested against the real distro |
+| Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | planned | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | planned | Settings apply and revert each item |
 | Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
@@ -31,7 +31,7 @@ Status: complete. Wails3 project from the `svelte` template (DZ-D11, DZ-D12) tri
 
 ## Phase 3: WSL runner and status
 
-Status: planned. Go package that runs `wsl.exe` with UTF-16 output decoded, sends scripts on stdin or as files (PT-D15), reports distro state and Portainer HTTPS health. Gate: unit tests plus a run against the real `Ubuntu-24.04`.
+Status: complete. Packages: `internal/wsl` (`Client` with `Available`, `Distros`, `RunningDistros`, `DistroState`, `Start`, `Terminate`, `Shutdown`, `Script` on stdin; UTF-16LE and UTF-8 decoding; hidden console), `internal/status` (`Prober.Probe` returning a `Snapshot` of WSL, distro, Docker service, Portainer container and HTTPS version), `internal/target` (fixed distro, user, container and URLs). Design: DZ-D14. Evidence: `go test ./...` ok for `wsl`, `status`, `paths`; `golangci-lint` 0 issues with and without the `integration` tag; `go test -tags integration ./internal/status` against the real `Ubuntu-24.04` read `WSLAvailable:true Distro:running Docker:active Portainer:running PortainerUp:true PortainerVersion:2.45.2` in 0.58 s. `Start`, `Terminate` and `Shutdown` are unit-tested for their arguments only; their effect on a real distro is Phase 4's gate.
 
 ## Phase 4: Day 2 widget
 
@@ -70,4 +70,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 3: build the Go WSL runner and status detection.
+1. Phase 4: build the tray popup and corner box with Start, Stop, Shut down, Open and live status.

@@ -33,7 +33,7 @@ The runtime this app automates was built and verified by hand in another reposit
 
 | Item | State |
 |---|---|
-| Repository | Module `github.com/the-khiem7/docker-zero` (`go 1.25.0`), remote `origin` on GitHub; Wails assets in `packaging/` (DZ-D13) |
+| Repository | Module `github.com/the-khiem7/docker-zero` (`go 1.26.0`), remote `origin` on GitHub; Wails assets in `packaging/` (DZ-D13) |
 | App code | See `roadmap` for the phases built; `main.go` wires the tray and popup, Go packages under `internal/`, Svelte UI under `frontend/` |
 | Toolchain on this workstation | Go `1.27.2`, Node `v24.18.0`, `wails3` CLI `v3.0.0-beta.30` in the user profile; `wails3 task build` produces `bin/docker-zero.exe` |
 | Runtime on this workstation | `Ubuntu-24.04` Running under WSL2, set up by hand per the `portainer` pack; the adoption target for DZ-D8 |
