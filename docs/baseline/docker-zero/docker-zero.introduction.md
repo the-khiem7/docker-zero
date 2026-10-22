@@ -1,0 +1,59 @@
+---
+baseline_schema: "2.0"
+pack: "docker-zero"
+document: "introduction"
+status: "draft"
+updated: "2026-10-22"
+code_ref: "uncommitted"
+---
+
+# docker-zero - Wails3 companion app for Docker Engine in WSL2 with Portainer
+
+## Scope
+
+Build Docker Zero, a light Windows desktop app (Go + Wails3) that bootstraps and operates Docker Engine in a WSL2 distro with Portainer CE as the GUI, for any user on a business machine who cannot use Docker Desktop and has only standard-user rights. Docker Zero is also the brand of this repository (DZ-D1).
+
+In scope:
+
+- Day 1 wizard: detect WSL, install the distro, user, Docker Engine, DNS drop-in, certificate, Portainer container with the certificate, Portainer admin account, `docker` wrappers for `cmd` and PowerShell (DZ-D5).
+- Day 2 widget: tray icon plus an Action Center style popup, and an optional always-on-top box in the bottom-right corner, with Start, Stop (terminate distro or shut down WSL), Open Portainer and live status (DZ-D3, DZ-D4).
+- Settings: auto start, shortcuts, idle mode, browser choice, certificate install/remove/regenerate, Portainer update and admin reset, uninstall (DZ-D6, DZ-D7).
+- Adopting an existing manual setup made from the source guide (DZ-D8).
+
+Out of scope: anything Portainer already does (containers, images, volumes, logs) - DZ-D4; enabling the WSL Windows feature (needs admin) - DZ-D5; Kubernetes; machine-wide install.
+
+## Source material
+
+The runtime this app automates was built and verified by hand in another repository and imported here as reference only; it sets no rules for this repository (DZ-D2):
+
+- `docs/baseline/portainer/` - pack `portainer`, entries `PT-D*` hold the verified commands, lessons and rejected options.
+- `docs/guides/docker-engine-wsl/README.md` and `open-portainer.ps1` - the manual procedure and launcher the app replaces.
+
+## Current truth
+
+| Item | State |
+|---|---|
+| Repository | Brand new, no commit on `main`, nothing staged; files: the `portainer` pack, the guide under `docs/guides/`, this pack |
+| App code | None (planned) |
+| Toolchain on this workstation | Go `1.27.2`, Node `v24.18.0`, `wails3` CLI `v3.0.0-beta.30` in the user profile; observed by `version` commands, no build run yet |
+| Runtime on this workstation | `Ubuntu-24.04` Running under WSL2, set up by hand per the `portainer` pack; the adoption target for DZ-D8 |
+| Exe policy on business machines | Unverified; gated in Phase 1 (DZ-D10) |
+
+## Target
+
+- A single portable `.exe` that copies itself to `%LOCALAPPDATA%\Programs\docker-zero` and needs no admin at any step (DZ-D9).
+- A user never needs a terminal or an agent for Day 1 or Day 2 operations.
+- Idle memory and CPU stay small: status polling only while the popup is open or right after an action (DZ-D4).
+
+## Constraints
+
+| Constraint | Reason |
+|---|---|
+| Standard user only: no UAC, no `Program Files`, no `HKLM`, no services | Target users cannot elevate; any elevation step breaks Day 1 |
+| WSL feature must already be enabled | Enabling it needs admin; the app detects and stops with guidance (DZ-D5) |
+| App never prints or logs the setup token or admin password | Credentials; the password lives only in memory for the API call (DZ-D5) |
+| Certificate private key stays inside the distro | A key on the Windows side lets anyone impersonate `localhost` to the account's browsers (PT-D19) |
+| Portainer published on `127.0.0.1:9443` only, no engine TCP port | Socket is root-equivalent; TCP `2375` is unauthenticated (PT-D2) |
+| Commands into WSL go as script files or stdin, not nested quoting | PowerShell and `wsl.exe` quoting truncates scripts silently (PT-D15) |
+| Public repository: no usernames, company names, absolute user paths | Audience is anyone (DZ-D1) |
+| Follow Wails3 and modern Go practice | User instruction (DZ-D2) |
