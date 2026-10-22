@@ -2,6 +2,7 @@ package ui
 
 import (
 	"context"
+	"sync"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"github.com/wailsapp/wails/v3/pkg/events"
@@ -11,6 +12,7 @@ import (
 	"github.com/the-khiem7/docker-zero/internal/settings"
 	"github.com/the-khiem7/docker-zero/internal/setup"
 	"github.com/the-khiem7/docker-zero/internal/trayicon"
+	"github.com/the-khiem7/docker-zero/internal/wsl"
 )
 
 // Window names; the frontend picks its layout from the ?view= query.
@@ -57,6 +59,8 @@ type Shell struct {
 	settings   *application.WebviewWindow
 	setup      *application.WebviewWindow
 	cornerItem *application.MenuItem
+	// setupReady is closed once the setup window's frontend has loaded.
+	setupReady chan struct{}
 }
 
 // Install registers the services and creates the tray icon, the popup, the
@@ -145,6 +149,13 @@ func Install(app *application.App, o Options) *Shell {
 		w.OnWindowEvent(events.Common.WindowShow, func(*application.WindowEvent) { svc.setVisible(name, true) })
 		w.OnWindowEvent(events.Common.WindowHide, func(*application.WindowEvent) { svc.setVisible(name, false) })
 	}
+	// Focusing a window whose WebView2 is not created yet crashes the app,
+	// and at launch the setup offer can be ready before the window is.
+	sh.setupReady = make(chan struct{})
+	var readyOnce sync.Once
+	sh.setup.OnWindowEvent(events.Common.WindowRuntimeReady, func(*application.WindowEvent) {
+		readyOnce.Do(func() { close(sh.setupReady) })
+	})
 
 	menu := app.NewMenu()
 	menu.Add("Open Portainer").OnClick(func(*application.Context) { _ = svc.OpenPortainer() })
@@ -167,7 +178,7 @@ func Install(app *application.App, o Options) *Shell {
 		if o.Prefs.Get().CornerBox {
 			sh.setCorner(true)
 		}
-		go sh.offerAdoption(adoptSvc)
+		go sh.offerSetup(adoptSvc)
 	})
 	return sh
 }
@@ -182,18 +193,28 @@ func (sh *Shell) showSetup() {
 	sh.setup.Focus()
 }
 
-// offerAdoption opens the setup window once when a setup made by hand exists.
-func (sh *Shell) offerAdoption(s *AdoptService) {
-	if sh.prefs.Get().AdoptPrompted {
-		return
-	}
+// offerSetup opens the setup window at launch while the distro is not
+// installed, since a tray icon alone tells a first-time user nothing, and
+// once per profile when a setup made by hand has launchers to replace. A
+// running container alone is no reason: the app's own setup leaves one.
+func (sh *Shell) offerSetup(s *AdoptService) {
 	ctx, cancel := context.WithTimeout(context.Background(), adoptTimeout)
 	defer cancel()
 	r, err := s.Detect(ctx)
-	if err != nil || !r.Found() {
+	if err != nil {
 		return
 	}
-	if err := sh.prefs.Update(func(p *settings.Settings) { p.AdoptPrompted = true }); err != nil {
+	if r.Distro != string(wsl.StateNotInstalled) {
+		if sh.prefs.Get().AdoptPrompted || len(r.Findings) == 0 {
+			return
+		}
+		if err := sh.prefs.Update(func(p *settings.Settings) { p.AdoptPrompted = true }); err != nil {
+			return
+		}
+	}
+	select {
+	case <-sh.setupReady:
+	case <-ctx.Done():
 		return
 	}
 	application.InvokeAsync(sh.showSetup)
