@@ -166,6 +166,10 @@
     padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
   }
   .empty { color: var(--muted); padding: 30px 0; text-align: center; }
+  .skipped { margin-top: 10px; color: var(--muted); font-size: 13px; }
+  .skipped summary { cursor: pointer; }
+  .skipped ul { margin: 6px 0 0; padding-left: 20px; }
+  .skipped b { color: var(--text); font-weight: 600; }
   .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); }
   .lightbox {
     position: fixed; inset: 0; z-index: 20; background: rgb(0 0 0 / .72);
@@ -201,17 +205,17 @@
     <div class="group filter" id="viewFilter" role="group" aria-label="View"></div>
     <div class="group seg" id="schemeSeg" role="group" aria-label="Screenshot theme">
       <span>Shots</span>
-      <button data-s="light">Light</button><button data-s="dark">Dark</button><button data-s="both">Both</button>
+      <button type="button" data-s="light">Light</button><button type="button" data-s="dark">Dark</button><button type="button" data-s="both">Both</button>
     </div>
     <div class="group seg" id="reviewSeg" role="group" aria-label="Review filter">
       <span>Show</span>
-      <button data-r="all">All</button><button data-r="todo">Unreviewed</button><button data-r="notes">Observed</button><button data-r="revise">Revise</button>
+      <button type="button" data-r="all">All</button><button type="button" data-r="todo">Unreviewed</button><button type="button" data-r="notes">Observed</button><button type="button" data-r="revise">Revise</button>
     </div>
     <input type="search" id="q" placeholder="Search states" aria-label="Search states">
     <span class="spacer"></span>
     <span class="chip" id="progress"></span>
-    <button class="act" id="exportBtn" title="Copy every verdict and note as Markdown">Copy review</button>
-    <button class="act" id="themeBtn" title="Page theme">Page theme</button>
+    <button type="button" class="act" id="exportBtn" title="Copy every verdict and note as Markdown">Copy review</button>
+    <button type="button" class="act" id="themeBtn" title="Page theme">Page theme</button>
   </div>
 </div>
 
@@ -263,7 +267,7 @@
     el("span", { class: "chip" }, el("b", {}, String(D.states.length)), " states"),
     el("span", { class: "chip" }, el("b", {}, String(views.length)), " views"),
     el("span", { class: "chip" }, el("b", {}, String(noted)), " observations"),
-    el("span", { class: "chip" }, el("b", {}, String(D.real.length)), " real references"),
+    D.real.length ? el("span", { class: "chip" }, el("b", {}, String(D.real.length)), " real references") : null,
     el("span", { class: "chip" }, "rendered ", el("b", {}, D.generated), D.commit ? " at " : "", D.commit ? el("code", {}, D.commit) : null),
   );
 
@@ -273,7 +277,7 @@
 
   const vf = document.getElementById("viewFilter");
   const addFilter = (key, label, n) =>
-    vf.append(el("button", { "data-v": key, onclick: () => { prefs.view = key; render(); } }, label, el("span", { class: "n" }, String(n))));
+    vf.append(el("button", { type: "button", "data-v": key, onclick: () => { prefs.view = key; render(); } }, label, el("span", { class: "n" }, String(n))));
   addFilter("all", "All", D.states.length);
   for (const [key, v] of views) addFilter(key, v.short || v.title, byView(key).length);
   if (D.real.length) addFilter("real", "Real app", D.real.length);
@@ -339,7 +343,7 @@
       el("span", { class: "chip" }, el("code", {}, `?state=${s.state}`)),
       el("span", { class: "chip" }, crop),
       s.actions.map((a) => el("span", { class: "chip step" }, a)));
-    const verdict = (val, text) => el("button", {
+    const verdict = (val, text) => el("button", { type: "button",
       "data-v": val, "aria-pressed": String(r.v === val),
       onclick: () => { const cur = review[s.id] || {}; cur.v = cur.v === val ? "" : val; review[s.id] = cur; save(KEY, review); render(); },
     }, text);
@@ -354,6 +358,15 @@
       el("div", { class: "review" }, verdict("keep", "Keep"), verdict("revise", "Revise"), verdict("discuss", "Discuss")),
       el("div", { class: "review" }, ta)));
     return card;
+  }
+
+  // States the list leaves out on purpose, with the reason, so a missing one reads as a decision.
+  function skippedList(key) {
+    const rows = (D.skipped || []).filter((k) => k.view === key);
+    if (!rows.length) return null;
+    return el("details", { class: "skipped" },
+      el("summary", {}, `Not shown on purpose (${rows.length})`),
+      el("ul", {}, rows.map((k) => el("li", {}, el("b", {}, k.state), " - ", k.why))));
   }
 
   function visible(s) {
@@ -410,7 +423,8 @@
           v.source ? el("span", { class: "chip" }, el("code", {}, v.source)) : null,
           el("span", { class: "chip" }, `${list.length} of ${byView(key).length} states`)),
         v.opens ? el("p", { class: "win-opens" }, v.opens) : null,
-        el("div", { class: "grid", style: `--col:${Math.min(col, 900)}px` }, list.map(stateCard))));
+        el("div", { class: "grid", style: `--col:${Math.min(col, 900)}px` }, list.map(stateCard)),
+        skippedList(key)));
     }
     // The real references carry no review, so the review filter and the search do not apply to them.
     if (D.real.length && (prefs.view === "real" || (prefs.view === "all" && prefs.show === "all" && !query))) main.append(realSection());

@@ -150,6 +150,20 @@
       ]
     },
     {
+      "id": "popup-start-hover",
+      "view": "popup",
+      "state": "stopped",
+      "title": "Pointer on Start",
+      "how": "The pointer rests on the Start tile, as it does right after a click.",
+      "note": "The hover rule (.tile:hover:not(:disabled)) outranks .tile.primary, so the tile turns light while its label stays white: Start becomes unreadable.",
+      "actions": [
+        {
+          "hover": "Start"
+        }
+      ],
+      "keepHover": true
+    },
+    {
       "id": "corner-running",
       "view": "corner",
       "state": "running",

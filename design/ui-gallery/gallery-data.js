@@ -6,7 +6,7 @@ window.GALLERY = {
   "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/gallery.json"
  ],
  "generated": "2026-10-22",
- "commit": "0b789e2",
+ "commit": "5c6d486",
  "storageKey": "docker-zero-ui-gallery",
  "views": {
   "popup": {
@@ -309,6 +309,32 @@ window.GALLERY = {
     "w": 360,
     "h": 420,
     "kb": 20
+   }
+  },
+  {
+   "id": "popup-start-hover",
+   "view": "popup",
+   "state": "stopped",
+   "title": "Pointer on Start",
+   "how": "The pointer rests on the Start tile, as it does right after a click.",
+   "note": "The hover rule (.tile:hover:not(:disabled)) outranks .tile.primary, so the tile turns light while its label stays white: Start becomes unreadable.",
+   "actions": [
+    "hover Start"
+   ],
+   "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
+   "light": {
+    "w": 360,
+    "h": 420,
+    "kb": 17
+   },
+   "dark": {
+    "w": 360,
+    "h": 420,
+    "kb": 17
    }
   },
   {
@@ -1321,6 +1347,7 @@ window.GALLERY = {
    }
   }
  ],
+ "skipped": [],
  "real": [
   {
    "id": "real-popup",
