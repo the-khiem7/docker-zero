@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "4e0b13c"
+code_ref: "b330ba1"
 ---
 
 # docker-zero roadmap
@@ -19,7 +19,8 @@ code_ref: "4e0b13c"
 | Phase 6 | Phase 3 | complete | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | complete | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | complete | Update Portainer, Reset admin, Uninstall all work |
-| Phase 9 | Phase 8, Phase 7 | active | Release exe and README published |
+| Phase 9 | Phase 8, Phase 7, Phase 10 | active | Release exe and README published |
+| Phase 10 | Phase 8 | planned | Brand logo used as the app icon, UI upgraded, illustrated README, landing page |
 
 ## Phase 1: Exe policy spike
 
@@ -162,7 +163,7 @@ Not verified: the backup option from the window; a declined certificate dialog.
 
 ## Phase 9: Release
 
-Status: active. Gate met; publishing the GitHub release is pending. Built: README rewritten for users with five screenshots in `docs/images/` (account paths cut out or restated), MIT `LICENSE` (DZ-D22), app icon in the tray tile's style replacing the Wails placeholder (`494b924`), and the fixes the release run found: DZ-D23 (`7446db6`), DZ-D21 card (`21ee8a5`), DZ-D25 (`8ca3a6c`), DZ-D24 (`f171d3a`). Release exe: `bin/docker-zero.exe` built by `wails3 task build` at `4e0b13c`, 12 240 384 bytes, SHA-256 `c0f34fc6027dfb499d29dcc263736e9cc6fdb61065188775556aed3d27a3fe21`, version info `0.1.0`.
+Status: active. Gate met at `4e0b13c`; publishing deferred until Phase 10 is done (DZ-D27), so the exe below will be rebuilt and its hash will not name the published file. Built: README rewritten for users with five screenshots in `docs/images/` (account paths cut out or restated), MIT `LICENSE` (DZ-D22), app icon in the tray tile's style replacing the Wails placeholder (`494b924`), and the fixes the release run found: DZ-D23 (`7446db6`), DZ-D21 card (`21ee8a5`), DZ-D25 (`8ca3a6c`), DZ-D24 (`f171d3a`). Release exe: `bin/docker-zero.exe` built by `wails3 task build` at `4e0b13c`, 12 240 384 bytes, SHA-256 `c0f34fc6027dfb499d29dcc263736e9cc6fdb61065188775556aed3d27a3fe21`, version info `0.1.0`.
 
 Gate: the release exe runs on a clean profile. This account was cleaned with Uninstall all, so no distro, settings, install folder, Run value, shortcuts, PATH entry or `.wslconfig`; `dz-test` kept. Evidence:
 
@@ -179,6 +180,19 @@ Side effects left for the user: `wsl --unregister` made `dz-test` the default di
 
 Not verified: SmartScreen or policy behaviour on another machine; the release download from GitHub; a machine without WSL.
 
+## Phase 10: Design
+
+Status: planned. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before.
+
+| Item | Output | Review point |
+|---|---|---|
+| 1. Brand logo | Signature note and two or three rough logo directions on the local board (`frontdoor-illustrate`); the chosen mark as a vector source, rendered to `packaging/appicon.png`, `packaging/windows/icon.ico` (`wails3 generate icons`) and the status tray icons of `internal/trayicon` | User picks or mixes a direction; the mark reads at 16, 20, 24 and 32 px; tray states stay distinguishable on light and dark taskbars |
+| 2. UI inventory | One HTML page listing every window and state (popup, corner box, settings, maintenance, setup with the take-over card, confirmations, errors), each with a screenshot: mocked frontend for every state, real exe for the main windows, committed (DZ-D28) | User confirms the list is complete |
+| 3. UI evaluation and design | Findings per screen; redesigned mockups in the logo's signature for the screens that need it | User approves each changed screen |
+| 4. Apply the design | Svelte and CSS changes under `frontend/`, the window sizes in `internal/ui` if a design needs them; no behaviour change | `wails3 task test`, `wails3 task lint`, `wails3 task build` pass; every inventory state re-shot from the built exe in light and dark and matched to its approved mockup |
+| 5. README banner | Hero banner and scenes as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten around them, screenshots re-shot from the new UI, no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
+| 6. Landing page | One `index.html` for GitHub Pages (`frontdoor-landing`), social preview image, favicon from the mark, no-affiliation statement (DZ-D30) | User picks a direction and the placement; the skill's axe and Lighthouse checks; the user switches on Pages in the repository settings |
+
 ## Risks
 
 | Risk | State |
@@ -188,8 +202,11 @@ Not verified: SmartScreen or policy behaviour on another machine; the release do
 | `.wslconfig` and `wsl --shutdown` affect every distro of the account | Confirmation dialogs; keepalive mode is the default (DZ-D6) |
 | Trusting a root certificate on a managed device may raise a security alert | Optional step, user-initiated (DZ-D6) |
 | Docker Hub anonymous pull terms for organisations | Unresolved in the source pack (PT-Q6) |
+| Logo or name read as Docker Inc. or Portainer branding | Phase 10 logo avoids the whale and both projects' marks; README and landing page state no affiliation (DZ-D30); Docker's trademark guidelines not checked, the user checks them before the release |
 
 ## Next action
 
-1. Phase 9: publish GitHub release `v0.1.0` at `4e0b13c` with `bin/docker-zero.exe` (SHA-256 above) and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
-2. Then mark Phase 9 complete with the release URL.
+1. Phase 10 item 1: waits for the user's logo brief; then write the signature note and show two or three rough logo directions on the local board; the user picks or mixes one.
+2. Phase 10 items 2 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
+3. Phase 9: rebuild the release exe from the commit that ends Phase 10, re-run the full clean-profile gate (DZ-D29), then publish GitHub release `v0.1.0` from that commit with the rebuilt exe and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
+4. Then mark Phase 9 complete with the release URL.

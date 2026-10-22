@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "4e0b13c"
+code_ref: "b330ba1"
 ---
 
 # docker-zero hallucination journal
@@ -39,6 +39,10 @@ code_ref: "4e0b13c"
 | DZ-D24 | Launch opens the setup window when nothing is installed; the take-over offer needs launchers to replace | closed | DZ-D21, DZ-D5 |
 | DZ-D25 | WebView2 data beside the settings, both folders removed after exit | closed | DZ-D20, DZ-D9 |
 | DZ-D26 | Lesson: Windows line endings and a shared WebView2 folder broke checks during the release run | closed | DZ-D13, DZ-D25 |
+| DZ-D27 | The first release waits for the design phase | closed | DZ-D22, DZ-D29 |
+| DZ-D28 | UI inventory: mocked frontend for every state, real exe for the main windows, committed | closed | DZ-Q4, DZ-D27 |
+| DZ-D29 | The rebuilt release exe re-runs the full clean-profile gate | closed | DZ-Q5, DZ-D27 |
+| DZ-D30 | README and landing page state no affiliation with Docker Inc. or Portainer | closed | DZ-D1, DZ-D27 |
 
 ## Open questions
 
@@ -387,3 +391,47 @@ What breaks if ignored: lint fails on files whose content is correct; a release 
 Rejected: nothing; these were process mistakes, each fixed by converting the files back to LF or by ending the stray processes.
 
 Observed: `gofumpt` flagged `settings_service.go`, then `paths.go` and `host_windows.go` after a stash; the release exe exited twice while a console build named `dz-dbg.exe` still held `%APPDATA%\docker-zero\webview`.
+
+### DZ-D27: The first release waits for the design phase
+
+Decision: do not publish `v0.1.0` until Phase 10 (brand logo as app icon, UI upgrade, illustrated README, landing page) is done; the release exe is rebuilt from the commit that ends Phase 10.
+
+Why: the user's instruction; Phase 10 replaces the app icon, the look of every window and the README screenshots.
+
+What breaks if ignored: the first public download carries an icon and a UI about to change, and the README images stop matching the published exe.
+
+Rejected: publish `v0.1.0` at `4e0b13c` now and ship the design in a later version - the user declined it.
+
+### DZ-D28: UI inventory: mocked frontend for every state, real exe for the main windows, committed
+
+Decision: Phase 10 item 2 renders every window and state from the Svelte frontend in a browser with the Wails bindings replaced by per-state mocks, in light and dark; the built exe, driven by UI Automation, supplies reference screenshots of the main windows; the inventory page and its images are committed to the repository.
+
+Closes DZ-Q4.
+
+Why: several states exist only under real conditions (distro not installed, setup running, a failed pull, a stopped distro); mocks make each one repeatable for the before and after compare of item 4, and the real screenshots catch where the mock and WebView2 differ. Committed at the user's choice.
+
+What breaks if ignored: real-exe-only capture needs an uninstall or a blocked Docker Hub per state and per redesign; mock-only capture hides a drift between the mock and the Go services.
+
+Rejected: real exe only, and mocks only - the costs above. The inventory as a gitignored private Artifact, or a local file only - the user chose to commit it. Committed images must carry no account path, user name or machine name (public repository).
+
+### DZ-D29: The rebuilt release exe re-runs the full clean-profile gate
+
+Decision: before `v0.1.0` is published, the exe built from the commit that ends Phase 10 passes the Phase 9 gate again: Uninstall all, then setup from scratch through the window, on this account.
+
+Closes DZ-Q5.
+
+Why: Phase 10 changes the setup window and every other window the first gate exercised with the exe built at `4e0b13c`.
+
+What breaks if ignored: the published file is one whose setup flow was never run end to end.
+
+Rejected: a smoke run on the existing setup (launch, each window, Start and Stop, Settings actions) - leaves the setup window flow unrun on the published exe. Cost accepted: about 8 min of setup plus an uninstall, and the Portainer admin password is random again afterwards.
+
+### DZ-D30: README and landing page state no affiliation with Docker Inc. or Portainer
+
+Decision: the README (Phase 10 item 5) and the landing page (item 6) carry one plain statement that Docker Zero is not affiliated with or endorsed by Docker Inc. or Portainer; the logo avoids the whale and both projects' marks.
+
+Why: the name contains a Docker trademark and the app installs Docker Engine and Portainer CE, so a reader can take it for a vendor product.
+
+What breaks if ignored: an implied endorsement on a public page.
+
+Rejected: no statement - leaves the implication standing. Docker's trademark guidelines were not checked; the user checks them before the release.
