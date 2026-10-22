@@ -1,4 +1,4 @@
-// Scenarios for the UI inventory: each one is the data the Go services would
+// Scenarios for the UI gallery: each one is the data the Go services would
 // return in one state of the app. The page picks one with ?state=<name>.
 import type { SettingsView, SetupView, StepView, View } from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/models";
 import type { Report } from "../bindings/github.com/the-khiem7/docker-zero/internal/adopt/models";
@@ -6,8 +6,9 @@ import { Item } from "../bindings/github.com/the-khiem7/docker-zero/internal/ado
 import { BrowserKind, IdleMode } from "../bindings/github.com/the-khiem7/docker-zero/internal/settings/models";
 import { Status, StepID } from "../bindings/github.com/the-khiem7/docker-zero/internal/setup/models";
 import { State } from "../bindings/github.com/the-khiem7/docker-zero/internal/wsl/models";
+import { caller, stateName, type Behaviour, type Mocked } from "./mock-kit";
 
-export interface Scenario {
+export interface Scenario extends Behaviour {
   view?: Partial<View>;
   settings?: Partial<SettingsView>;
   setup?: SetupView;
@@ -15,10 +16,6 @@ export interface Scenario {
   report?: Report;
   /** Report returned by Detect after a successful Adopt. */
   reportAfterAdopt?: Report;
-  /** Calls that reject, by "<service>.<method>", with the error text. */
-  fail?: Record<string, string>;
-  /** Calls that never resolve, to hold a busy state on screen. */
-  hang?: string[];
   updateReplaced?: boolean;
   /** Path the file pickers return. */
   pick?: string;
@@ -276,20 +273,7 @@ export const scenarios: Record<string, Scenario> = {
   },
 };
 
-export const stateName = new URLSearchParams(location.search).get("state") ?? "running";
-export const scenario: Scenario = scenarios[stateName] ?? {};
+export const scenario: Scenario = scenarios[stateName || "running"] ?? {};
+export const call = caller(scenario);
 
-/** Resolves like a bound call, or rejects or hangs as the scenario says. */
-export function call<T>(name: string, value: T | (() => T)): Promise<T> {
-  if (scenario.hang?.includes(name)) return new Promise<T>(() => {});
-  const failure = scenario.fail?.[name];
-  if (failure) return new Promise<T>((_, reject) => setTimeout(() => reject(new Error(failure)), 150));
-  return new Promise<T>((resolve) =>
-    setTimeout(() => resolve(typeof value === "function" ? (value as () => T)() : value), 150),
-  );
-}
-
-/** The mock of every exported function of a bound service module. */
-export type Mocked<T> = {
-  [K in keyof T]: T[K] extends (...args: infer A) => PromiseLike<infer R> ? (...args: A) => Promise<R> : never;
-};
+export type { Mocked };

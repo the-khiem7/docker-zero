@@ -1,65 +1,85 @@
-window.INVENTORY = {
+window.GALLERY = {
+ "title": "Docker Zero UI gallery",
+ "lede": "Every window and state of the app as it looks today, rendered from the real Svelte frontend with the Go services replaced by fixed data. Mark each state Keep, Revise or Discuss to drive the redesign.",
+ "regenerate": [
+  "cd frontend && npm run gallery",
+  "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/gallery.json"
+ ],
  "generated": "2026-10-22",
- "commit": "1559594",
- "scale": 2,
- "windows": {
+ "commit": "0b789e2",
+ "storageKey": "docker-zero-ui-gallery",
+ "views": {
   "popup": {
+   "scroller": "main",
    "title": "Tray popup",
    "size": [
     360,
     420
    ],
-   "component": "frontend/src/Popup.svelte",
-   "opens": "Click the tray icon, or launch the exe while it already runs."
+   "source": "frontend/src/Popup.svelte",
+   "opens": "Click the tray icon, or launch the exe while it already runs.",
+   "url": "/?view=popup"
   },
   "corner": {
+   "scroller": "main",
    "title": "Corner box",
    "size": [
     280,
     96
    ],
-   "component": "frontend/src/Corner.svelte",
-   "opens": "Corner box switch in the popup, or Show corner box in the tray menu; stays on top at the bottom right."
+   "source": "frontend/src/Corner.svelte",
+   "opens": "Corner box switch in the popup, or Show corner box in the tray menu; stays on top at the bottom right.",
+   "url": "/?view=corner"
   },
   "settings": {
+   "scroller": "main",
    "title": "Settings",
    "size": [
     520,
     680
    ],
-   "component": "frontend/src/Settings.svelte",
-   "opens": "Gear in the popup, or Settings... in the tray menu."
+   "source": "frontend/src/Settings.svelte",
+   "opens": "Gear in the popup, or Settings... in the tray menu.",
+   "url": "/?view=settings"
   },
   "maintenance": {
+   "scroller": "main",
    "title": "Settings: Portainer and Danger zone",
    "size": [
     520,
     680
    ],
-   "component": "frontend/src/Maintenance.svelte",
+   "source": "frontend/src/Maintenance.svelte",
    "opens": "Bottom of the Settings window, below the certificate.",
-   "view": "settings"
+   "url": "/?view=settings",
+   "short": "Portainer and Danger zone"
   },
   "setup": {
+   "scroller": "main",
    "title": "Setup",
    "size": [
     520,
     700
    ],
-   "component": "frontend/src/Setup.svelte",
-   "opens": "Opens by itself at launch while Ubuntu-24.04 is missing; Set up tile or Set up... link in the popup; Set up Docker Zero... in the tray menu."
+   "source": "frontend/src/Setup.svelte",
+   "opens": "Opens by itself at launch while Ubuntu-24.04 is missing; Set up tile or Set up... link in the popup; Set up Docker Zero... in the tray menu.",
+   "url": "/?view=setup"
   }
  },
- "shots": [
+ "states": [
   {
    "id": "popup-loading",
-   "window": "popup",
+   "view": "popup",
    "state": "loading",
    "title": "Loading",
    "how": "The first moment after the popup opens, before a status arrives.",
    "note": "Start is enabled and the pill reads Stopped before any status is known.",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -73,13 +93,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-running",
-   "window": "popup",
+   "view": "popup",
    "state": "running",
    "title": "Running",
    "how": "Distro, Docker and Portainer up; keepalive hold on.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -93,13 +117,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-starting",
-   "window": "popup",
+   "view": "popup",
    "state": "starting",
    "title": "Starting",
    "how": "Right after Start, until Portainer answers (up to 90 s).",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -113,13 +141,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-partial",
-   "window": "popup",
+   "view": "popup",
    "state": "partial",
    "title": "Distro up, Portainer down",
    "how": "The container exited while the distro runs.",
    "note": "The pill reads Starting although nothing is starting.",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -133,13 +165,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-stopping",
-   "window": "popup",
+   "view": "popup",
    "state": "stopping",
    "title": "Stopping",
    "how": "Right after Stop distro.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -153,13 +189,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-stopped",
-   "window": "popup",
+   "view": "popup",
    "state": "stopped",
    "title": "Stopped",
    "how": "Distro stopped by the user or by the WSL idle timeout.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -173,13 +213,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-not-installed",
-   "window": "popup",
+   "view": "popup",
    "state": "not-installed",
    "title": "Not installed",
    "how": "Before setup, or after Uninstall all.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -193,13 +237,17 @@ window.INVENTORY = {
   },
   {
    "id": "popup-no-wsl",
-   "window": "popup",
+   "view": "popup",
    "state": "no-wsl",
    "title": "WSL missing",
    "how": "WSL is not enabled on the machine.",
    "note": "The raw Go error is the only guidance; nothing says how to get WSL.",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -213,15 +261,19 @@ window.INVENTORY = {
   },
   {
    "id": "popup-confirm-shutdown",
-   "window": "popup",
+   "view": "popup",
    "state": "running",
    "title": "Confirm Shut down WSL",
    "how": "Shut down WSL clicked.",
    "note": "",
    "actions": [
-    "Shut down WSL"
+    "click Shut down WSL"
    ],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -235,15 +287,19 @@ window.INVENTORY = {
   },
   {
    "id": "popup-start-error",
-   "window": "popup",
+   "view": "popup",
    "state": "start-error",
    "title": "Start failed",
    "how": "Start clicked and Portainer did not answer in time.",
    "note": "",
    "actions": [
-    "Start"
+    "click Start"
    ],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 360,
     "h": 420,
@@ -257,13 +313,17 @@ window.INVENTORY = {
   },
   {
    "id": "corner-running",
-   "window": "corner",
+   "view": "corner",
    "state": "running",
    "title": "Running",
    "how": "Portainer up.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 280,
     "h": 96,
@@ -277,13 +337,17 @@ window.INVENTORY = {
   },
   {
    "id": "corner-starting",
-   "window": "corner",
+   "view": "corner",
    "state": "starting",
    "title": "Working",
    "how": "Any action in progress.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 280,
     "h": 96,
@@ -297,13 +361,17 @@ window.INVENTORY = {
   },
   {
    "id": "corner-stopped",
-   "window": "corner",
+   "view": "corner",
    "state": "stopped",
    "title": "Stopped",
    "how": "Distro stopped.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 280,
     "h": 96,
@@ -317,15 +385,19 @@ window.INVENTORY = {
   },
   {
    "id": "corner-start-error",
-   "window": "corner",
+   "view": "corner",
    "state": "start-error",
    "title": "Start failed",
    "how": "Start clicked and Portainer did not answer in time.",
    "note": "The error line is squeezed to zero height in the 96 px box, so a failed Start shows nothing.",
    "actions": [
-    "Start"
+    "click Start"
    ],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 280,
     "h": 96,
@@ -339,15 +411,19 @@ window.INVENTORY = {
   },
   {
    "id": "corner-not-installed",
-   "window": "corner",
+   "view": "corner",
    "state": "not-installed-start",
    "title": "Not installed",
    "how": "Corner box on while the distro is missing; Start clicked.",
    "note": "Offers Start, which can only fail, and the failure is not visible; no way to set up from here.",
    "actions": [
-    "Start"
+    "click Start"
    ],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 280,
     "h": 96,
@@ -361,13 +437,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-loading",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-loading",
    "title": "Loading",
    "how": "The first moment after the window opens.",
    "note": "",
    "actions": [],
    "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 680,
@@ -381,13 +461,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings",
-   "window": "settings",
+   "view": "settings",
    "state": "settings",
    "title": "All settings",
    "how": "Typical state after setup: auto start, shortcuts, keepalive, trusted certificate.",
    "note": "",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 1271,
@@ -401,13 +485,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-off",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-off",
    "title": "Everything off",
    "how": "Fresh portable run: no auto start, no shortcuts, WSL default idle.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 553,
@@ -421,13 +509,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-wslconfig",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-wslconfig",
    "title": ".wslconfig mode pending",
    "how": "Never stop idle distros chosen; WSL has not restarted yet.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 339,
@@ -441,15 +533,19 @@ window.INVENTORY = {
   },
   {
    "id": "settings-wslconfig-confirm",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-wslconfig",
    "title": "Confirm Apply now",
    "how": "Apply now... clicked.",
    "note": "",
    "actions": [
-    "Apply now..."
+    "click Apply now..."
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 359,
@@ -463,13 +559,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-browser",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-browser",
    "title": "Custom browser, no Chrome",
    "how": "Other browser chosen with Browse...; Chrome not installed.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 160,
@@ -483,13 +583,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-untrusted",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-untrusted",
    "title": "Certificate not trusted",
    "how": "After setup, before Install (trust).",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 228,
@@ -503,13 +607,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-no-cert",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-no-cert",
    "title": "No certificate",
    "how": "Distro running but setup did not reach the certificate step.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 199,
@@ -523,13 +631,17 @@ window.INVENTORY = {
   },
   {
    "id": "settings-cert-unread",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-cert-unread",
    "title": "Distro stopped",
    "how": "Settings opened while Ubuntu-24.04 is stopped; the certificate is not read.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 199,
@@ -543,15 +655,19 @@ window.INVENTORY = {
   },
   {
    "id": "settings-busy",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-busy",
    "title": "Working",
    "how": "A setting is being applied.",
    "note": "Working... appears at the very bottom, out of view of the 680 px window.",
    "actions": [
-    "Desktop"
+    "click Desktop"
    ],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 1300,
@@ -565,15 +681,19 @@ window.INVENTORY = {
   },
   {
    "id": "settings-problems",
-   "window": "settings",
+   "view": "settings",
    "state": "settings-problems",
    "title": "Errors",
    "how": "A setting failed to apply, and two settings could not be read.",
    "note": "Errors land below the Danger zone, out of view of the item that failed.",
    "actions": [
-    "Desktop"
+    "click Desktop"
    ],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 1381,
@@ -587,13 +707,17 @@ window.INVENTORY = {
   },
   {
    "id": "maint",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint",
    "title": "Idle",
    "how": "Settings window scrolled to the bottom.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 296,
@@ -607,15 +731,19 @@ window.INVENTORY = {
   },
   {
    "id": "maint-updating",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-updating",
    "title": "Updating",
    "how": "Update Portainer clicked; pull in progress.",
    "note": "",
    "actions": [
-    "Update Portainer"
+    "click Update Portainer"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 325,
@@ -629,15 +757,19 @@ window.INVENTORY = {
   },
   {
    "id": "maint-updated",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-updated",
    "title": "Updated",
    "how": "A newer lts image was pulled and Portainer restarted.",
    "note": "",
    "actions": [
-    "Update Portainer"
+    "click Update Portainer"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 325,
@@ -651,15 +783,19 @@ window.INVENTORY = {
   },
   {
    "id": "maint-current",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-current",
    "title": "Already latest",
    "how": "Update clicked with the image current.",
    "note": "",
    "actions": [
-    "Update Portainer"
+    "click Update Portainer"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 325,
@@ -673,15 +809,19 @@ window.INVENTORY = {
   },
   {
    "id": "maint-update-failed",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-update-failed",
    "title": "Update failed",
    "how": "Docker Hub unreachable.",
    "note": "",
    "actions": [
-    "Update Portainer"
+    "click Update Portainer"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 342,
@@ -695,15 +835,19 @@ window.INVENTORY = {
   },
   {
    "id": "maint-reset-open",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint",
    "title": "Reset form",
    "how": "Reset admin password... clicked.",
    "note": "",
    "actions": [
-    "Reset admin password..."
+    "click Reset admin password..."
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 577,
@@ -717,16 +861,20 @@ window.INVENTORY = {
   },
   {
    "id": "maint-reset-invalid",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint",
    "title": "Reset form: short password",
    "how": "Reset password clicked with the fields empty.",
    "note": "",
    "actions": [
-    "Reset admin password...",
-    "Reset password"
+    "click Reset admin password...",
+    "click Reset password"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 618,
@@ -740,19 +888,23 @@ window.INVENTORY = {
   },
   {
    "id": "maint-reset-wrong-user",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-reset-wrong-user",
    "title": "Reset: wrong username",
    "how": "Password replaced, but the username check failed.",
    "note": "",
    "actions": [
-    "Reset admin password...",
+    "click Reset admin password...",
     "type Admin username",
     "type New password",
     "type Repeat new password",
-    "Reset password"
+    "click Reset password"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 635,
@@ -766,18 +918,22 @@ window.INVENTORY = {
   },
   {
    "id": "maint-reset-done",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-reset-done",
    "title": "Reset done",
    "how": "Password replaced and checked.",
    "note": "",
    "actions": [
-    "Reset admin password...",
+    "click Reset admin password...",
     "type New password",
     "type Repeat new password",
-    "Reset password"
+    "click Reset password"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 325,
@@ -791,15 +947,19 @@ window.INVENTORY = {
   },
   {
    "id": "maint-plan",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint",
    "title": "Uninstall plan",
    "how": "Uninstall all... clicked; backup on, no file yet.",
    "note": "",
    "actions": [
-    "Uninstall all..."
+    "click Uninstall all..."
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 528,
@@ -813,16 +973,20 @@ window.INVENTORY = {
   },
   {
    "id": "maint-plan-file",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-plan-file",
    "title": "Uninstall plan with backup file",
    "how": "Choose file... used.",
    "note": "",
    "actions": [
-    "Uninstall all...",
-    "Choose file..."
+    "click Uninstall all...",
+    "click Choose file..."
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 528,
@@ -836,17 +1000,21 @@ window.INVENTORY = {
   },
   {
    "id": "maint-confirm",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint",
    "title": "Uninstall confirmation",
    "how": "Backup unticked, Continue clicked.",
    "note": "",
    "actions": [
-    "Uninstall all...",
-    "Save a backup of Ubuntu-24.04 first",
-    "Continue"
+    "click Uninstall all...",
+    "click Save a backup of Ubuntu-24.04 first",
+    "click Continue"
    ],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 347,
@@ -860,13 +1028,17 @@ window.INVENTORY = {
   },
   {
    "id": "maint-uninstalling",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-uninstalling",
    "title": "Uninstalling",
    "how": "Uninstall now clicked; backup export running.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 457,
@@ -880,13 +1052,17 @@ window.INVENTORY = {
   },
   {
    "id": "maint-uninstall-failed",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-uninstall-failed",
    "title": "Uninstall failed",
    "how": "The Windows certificate dialog was answered No.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 502,
@@ -900,13 +1076,17 @@ window.INVENTORY = {
   },
   {
    "id": "maint-uninstalled",
-   "window": "maintenance",
+   "view": "maintenance",
    "state": "maint-uninstalled",
    "title": "Uninstalled",
    "how": "Every step finished; only Quit is left.",
    "note": "",
    "actions": [],
    "crop": "cards",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 449,
@@ -920,13 +1100,17 @@ window.INVENTORY = {
   },
   {
    "id": "setup-fresh",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-fresh",
    "title": "First run",
    "how": "First launch on a machine without Ubuntu-24.04.",
    "note": "",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 739,
@@ -940,15 +1124,19 @@ window.INVENTORY = {
   },
   {
    "id": "setup-invalid",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-fresh",
    "title": "Form error",
    "how": "Start setup clicked with the password empty.",
    "note": "",
    "actions": [
-    "Start setup"
+    "click Start setup"
    ],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 771,
@@ -962,13 +1150,17 @@ window.INVENTORY = {
   },
   {
    "id": "setup-running",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-running",
    "title": "Running",
    "how": "Setup in progress, third step.",
    "note": "",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 700,
@@ -982,13 +1174,17 @@ window.INVENTORY = {
   },
   {
    "id": "setup-failed",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-failed",
    "title": "Failed",
    "how": "A step failed; the form returns with Try again.",
    "note": "",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 909,
@@ -1002,13 +1198,17 @@ window.INVENTORY = {
   },
   {
    "id": "setup-done",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-done",
    "title": "All set",
    "how": "Every step finished.",
    "note": "The steps, the log and the form fields stay above the result; the All set card is last.",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 752,
@@ -1022,13 +1222,17 @@ window.INVENTORY = {
   },
   {
    "id": "setup-existing",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-existing",
    "title": "Existing setup found",
    "how": "A setup made by hand from the old guide is detected.",
    "note": "The take-over card and the full setup form show together, though the card says setup is not needed.",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 1078,
@@ -1042,15 +1246,19 @@ window.INVENTORY = {
   },
   {
    "id": "setup-adopted",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-existing",
    "title": "Taken over",
    "how": "Take over clicked; every item replaced.",
    "note": "",
    "actions": [
-    "Take over"
+    "click Take over"
    ],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 929,
@@ -1064,15 +1272,19 @@ window.INVENTORY = {
   },
   {
    "id": "setup-adopt-error",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-adopt-error",
    "title": "Take over failed",
    "how": "A legacy file was locked by another process.",
    "note": "",
    "actions": [
-    "Take over"
+    "click Take over"
    ],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 1159,
@@ -1086,13 +1298,17 @@ window.INVENTORY = {
   },
   {
    "id": "setup-installed",
-   "window": "setup",
+   "view": "setup",
    "state": "setup-installed",
    "title": "Opened after setup",
    "how": "Set up... opened again on a machine Docker Zero already set up.",
    "note": "Reads Existing setup found / Nothing left to replace, above a form that would run setup again.",
    "actions": [],
    "crop": "full",
+   "themes": [
+    "light",
+    "dark"
+   ],
    "light": {
     "w": 520,
     "h": 900,
@@ -1108,7 +1324,7 @@ window.INVENTORY = {
  "real": [
   {
    "id": "real-popup",
-   "window": "popup",
+   "view": "popup",
    "pair": "popup-running",
    "title": "Popup, built exe",
    "w": 360,
@@ -1116,7 +1332,7 @@ window.INVENTORY = {
   },
   {
    "id": "real-corner",
-   "window": "corner",
+   "view": "corner",
    "pair": "corner-running",
    "title": "Corner box, built exe",
    "w": 280,
@@ -1124,7 +1340,7 @@ window.INVENTORY = {
   },
   {
    "id": "real-settings",
-   "window": "settings",
+   "view": "settings",
    "pair": "settings",
    "title": "Settings, built exe, first screen",
    "w": 520,
@@ -1132,7 +1348,7 @@ window.INVENTORY = {
   },
   {
    "id": "real-setup",
-   "window": "setup",
+   "view": "setup",
    "pair": "setup-installed",
    "title": "Setup, built exe, opened after setup",
    "w": 520,

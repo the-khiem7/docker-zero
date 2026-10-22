@@ -9,7 +9,7 @@
     "build": "vite build --mode production",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "inventory": "vite --config vite.inventory.config.ts"
+    "gallery": "vite --config vite.gallery.config.ts"
   },
   "dependencies": {
     "@wailsio/runtime": "3.0.0-beta.30"
