@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "introduction"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "uncommitted"
+code_ref: "5a4774d"
 ---
 
 # docker-zero - Wails3 companion app for Docker Engine in WSL2 with Portainer

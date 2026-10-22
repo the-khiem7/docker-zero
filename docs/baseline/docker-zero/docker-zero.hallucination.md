@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "uncommitted"
+code_ref: "5a4774d"
 ---
 
 # docker-zero hallucination journal
@@ -24,7 +24,8 @@ code_ref: "uncommitted"
 | DZ-D8 | Adopt an existing manual setup | closed | DZ-D2 |
 | DZ-D9 | Wails3 and portable self-installing exe | closed | DZ-D11, DZ-D10 |
 | DZ-D10 | Exe policy spike runs before app code | closed | DZ-D9 |
-| DZ-D11 | Frontend framework: Svelte | closed | DZ-Q1, DZ-D9 |
+| DZ-D11 | Frontend framework: Svelte | closed | DZ-Q1, DZ-D9, DZ-D12 |
+| DZ-D12 | Wails3 Svelte template name and tray spike result | closed | DZ-D10, DZ-D11 |
 
 ## Open questions
 
@@ -146,10 +147,20 @@ Rejected: building first and testing policy at the end - the whole delivery form
 
 Closes DZ-Q1.
 
-Decision: use Svelte 5 with TypeScript from the Wails3 `svelte-ts` template.
+Decision: use Svelte 5 with TypeScript from the Wails3 `svelte` template (DZ-D12).
 
 Why: the user asked for a light, fast app; Svelte compiles away its runtime (a few KB against about 35 KB for Vue 3, typical sizes, not measured on this app), and the popup is a handful of buttons and status values that need no large component library.
 
 What breaks if ignored: a heavier framework adds memory to an app meant to sit resident in the tray.
 
 Rejected: Vue 3 - larger runtime, its bigger UI ecosystem is not needed here. Vanilla TS and React - offered in the first interview and not picked.
+
+### DZ-D12: The Wails3 `v3.0.0-beta.30` Svelte TypeScript template is named `svelte`; the unsigned tray exe runs from `%LOCALAPPDATA%\Programs`
+
+Decision: scaffold with `wails3 init -t svelte` (Svelte + TypeScript + Vite); `svelte-js` is the JavaScript variant. Keep the portable self-copying exe (DZ-D9) as the delivery form.
+
+Why: lesson - `svelte-ts` looked right from the v2 template naming and was written into DZ-D11 and Phase 2; `wails3 init -t svelte-ts` failed with `invalid template name` and `wails3 init -l` listed `svelte` as "Svelte + TypeScript + Vite". The Phase 1 spike (unsigned, built with `-H windowsgui`) started from `%LOCALAPPDATA%\Programs\docker-zero` on this business machine with no SmartScreen, AppLocker or antivirus prompt, and its frameless popup opened anchored at the bottom-right corner (screenshot observed).
+
+What breaks if ignored: a scaffold step with `svelte-ts` fails before any file is created.
+
+Rejected: NSIS per-user installer as a fallback delivery form - not needed while the unsigned exe runs.

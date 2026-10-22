@@ -4,14 +4,14 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "uncommitted"
+code_ref: "5a4774d"
 ---
 
 # docker-zero roadmap
 
 | Phase | Depends on | Status | Acceptance |
 |---|---|---|---|
-| Phase 1 | - | planned | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
+| Phase 1 | - | complete | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
 | Phase 2 | Phase 1 | planned | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | planned | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | planned | Tray popup and corner box drive Start, Stop, Shut down, Open |
@@ -23,11 +23,11 @@ code_ref: "uncommitted"
 
 ## Phase 1: Exe policy spike
 
-Status: planned. Build a hello-world Wails3 tray app with `wails3` `v3.0.0-beta.30`, copy it to `%LOCALAPPDATA%\Programs\docker-zero`, run it, and record whether SmartScreen, AppLocker or Defender intervene (DZ-D10). Gate: the tray icon appears and a popup window opens. A block stops the plan until a delivery form is chosen.
+Status: complete. Built a hello-world Wails3 tray app (`wails3` `v3.0.0-beta.30`, `svelte` template, frameless popup attached to the tray icon) in a throwaway directory, copied it to `%LOCALAPPDATA%\Programs\docker-zero` and ran it (DZ-D10). Evidence: the process started and kept responding (about 32 MB working set), no SmartScreen, AppLocker or antivirus prompt appeared, and a screenshot showed the popup open at the bottom-right corner. The spike exe was removed; no spike code is kept. Template name lesson: DZ-D12.
 
 ## Phase 2: Repository scaffold
 
-Status: planned. Wails3 project from the `svelte-ts` template (DZ-D11), Go module, `go vet` and `golangci-lint`, `go test`, `README.md`, `AGENTS.md`, `.gitignore`. Gate: `wails3 build` produces the exe; tests and lint pass.
+Status: planned. Wails3 project from the `svelte` template (DZ-D11, DZ-D12), Go module, `go vet` and `golangci-lint`, `go test`, `README.md`, `AGENTS.md`, `.gitignore`. Gate: `wails3 build` produces the exe; tests and lint pass.
 
 ## Phase 3: WSL runner and status
 
@@ -61,7 +61,7 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 | Risk | State |
 |---|---|
-| Unsigned exe blocked on managed machines | Open; tested in Phase 1 (DZ-D10) |
+| Unsigned exe blocked on managed machines | Passed on this machine in Phase 1 (DZ-D12); other machines unverified |
 | Wails3 is pre-release | Pinned version (DZ-D9) |
 | `.wslconfig` and `wsl --shutdown` affect every distro of the account | Confirmation dialogs; keepalive mode is the default (DZ-D6) |
 | Trusting a root certificate on a managed device may raise a security alert | Optional step, user-initiated (DZ-D6) |
@@ -69,4 +69,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 1: after the user approves it, build and run the Wails3 tray spike from `%LOCALAPPDATA%\Programs\docker-zero` on this machine.
+1. Phase 2: scaffold the Wails3 project in the repository root.
