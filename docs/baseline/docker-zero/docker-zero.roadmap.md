@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "b057cbc"
+code_ref: "eba5748"
 ---
 
 # docker-zero roadmap
@@ -16,7 +16,7 @@ code_ref: "b057cbc"
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | complete | Settings apply and revert each item |
-| Phase 6 | Phase 3 | planned | Wizard installs a working setup on a throwaway distro |
+| Phase 6 | Phase 3 | complete | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | planned | Update Portainer, Reset admin, Uninstall all work |
 | Phase 9 | Phase 8, Phase 7 | planned | Release exe and README published |
@@ -81,7 +81,21 @@ Not verified: opening Portainer in Chrome; Apply now (`wsl --shutdown`) from the
 
 ## Phase 6: Day 1 wizard
 
-Status: planned; unblocked by DZ-D18 (admin creation and reset, observed on `dz-test`). Steps per DZ-D5. Gate: a full run on a throwaway distro name ends with Portainer login working with the typed credentials; the real distro is not touched.
+Status: complete. Built: `internal/setup` (`Wizard` with eight resumable steps, `Config`, `Credentials`, `AddToUserPath`), `wsl.Client` `Install` and `Unregister`, `settings.Generate` (create the certificate only when missing), `ui.SetupService` and a framed setup window opened from the tray menu and from the popup (a Set up tile while the distro is missing, a "Set up..." link always), Svelte `Setup`. Design: admin creation and reset DZ-D18, mechanics DZ-D19.
+
+Gate: a full run on a throwaway distro name ends with Portainer login working with the typed credentials; the real distro is not touched. Evidence:
+
+| Check | Result |
+|---|---|
+| `go test -tags integration ./internal/setup` with `DZ_SETUP_DISTRO=dz-setup-test` | New distro registered, Docker 29.9.2 and Portainer 2.45.2 installed, admin created; first run 2 min 35 s, test 169.8 s |
+| Independent sign-in to `https://127.0.0.1:19443/api/auth` with the typed credentials | `200`; a wrong password was not `200` |
+| `docker inspect` of the container after the run | No setup token in the environment or the arguments |
+| Second run on the same distro | Distro, Docker, user, Portainer and admin steps `skipped`; sign-in still `200` |
+| Real setup | `Ubuntu-24.04` untouched, its Portainer answered `200` after the run; `dz-setup-test` unregistered |
+| `wails3 task test`, `wails3 task lint` | All packages ok; `golangci-lint` 0 issues; `svelte-check` 0 errors |
+| Setup window through UI Automation on the built exe | The popup link opened it; form fields and the eight steps listed; Start with empty fields showed the password-length message and started nothing |
+
+Not verified: the window during a live run and its finish card (a screenshot captured the Windows lock screen); `AddToUserPath` on the real registry (the integration run kept it off); a machine without WSL, or behind a proxy that blocks Docker Hub or the apt hosts; a distro whose `wsl.conf` holds other settings.
 
 ## Phase 7: Adopt existing setup
 
@@ -107,4 +121,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 
 ## Next action
 
-1. Phase 6 (wizard, admin per DZ-D18) or Phase 7 (adopt the existing setup): both are unblocked; the user picks the order.
+1. Phase 7: adopt the existing manual setup, or Phase 8: Update Portainer, Reset admin and Uninstall all (Phase 8 follows from DZ-D18 and DZ-D7); both are ready and the user picks the order.

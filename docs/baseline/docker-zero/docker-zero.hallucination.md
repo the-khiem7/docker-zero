@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "b057cbc"
+code_ref: "eba5748"
 ---
 
 # docker-zero hallucination journal
@@ -31,6 +31,7 @@ code_ref: "b057cbc"
 | DZ-D16 | Settings mechanics and the hold-only job object | closed | DZ-D6, DZ-D9, DZ-D15 |
 | DZ-D17 | Lesson: a phase marked complete with its gate unmet | closed | DZ-D15, DZ-D16 |
 | DZ-D18 | Portainer admin: created through the init API with an app-chosen setup token, reset with the helper and a hash | closed | DZ-Q2, DZ-D5, DZ-D7 |
+| DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed | DZ-D5, DZ-D18 |
 
 ## Open questions
 
@@ -257,4 +258,23 @@ What breaks if ignored: a password on a command line (`--password`) or a token i
 
 Rejected: `--admin-password-file` - works but fixes the username to `admin`; kept as the fallback if the init API changes. `--no-setup-token` - the official docs limit it to networks the user fully controls, and supplying the token costs nothing. Reading the token from the container log - needs log parsing; supplying it avoids that. Helper `--password` - a plain password on the command line. Recreating `portainer_data` as the default reset - destroys Portainer settings.
 
-Not verified: the whole flow on `Ubuntu-24.04` with systemd (the test distro is Alpine without systemd); combination with the `--sslcert` flags of the real container (tests used the default certificate); the third-party report of an authentication bypass on the init endpoints (CVE-2026-55761) was not checked against Portainer advisories, and the app calls init only on `127.0.0.1` with a token it chose; Docker Hub pull terms for organisations (PT-Q6; anonymous pulls of `portainer/portainer-ce:lts` and `portainer/helper-reset-password` succeeded).
+Not verified: the third-party report of an authentication bypass on the init endpoints (CVE-2026-55761) was not checked against Portainer advisories, and the app calls init only on `127.0.0.1` with a token it chose; Docker Hub pull terms for organisations (PT-Q6; anonymous pulls of `portainer/portainer-ce:lts` and `portainer/helper-reset-password` succeeded).
+
+### DZ-D19: Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1`
+
+Decision:
+
+- The wizard runs eight steps in order (check WSL, install the distro, install Docker Engine, create the user, create the certificate, start Portainer, create the admin, add `docker.cmd`); each step checks what exists and reports `skipped`, so a run after a failure resumes and a run on a finished setup changes nothing.
+- The distro is installed with `wsl --install --distribution Ubuntu-24.04 --web-download --no-launch`, plus `--name` and `--location` only when the name or folder differs from the default.
+- The one-time setup token reaches Portainer through `PORTAINER_SETUP_TOKEN` in a root-only env file (`/run`, removed on exit), not through `--setup-token`; after the admin exists the container is recreated without it, so `docker inspect` shows no token.
+- Admin API calls go to `127.0.0.1` over TLS verified against the leaf certificate read from the distro; the wizard never skips verification.
+- Distro name, user, port, `docker.cmd` folder and PATH update are configuration; the production defaults are `Ubuntu-24.04`, `dev`, `9443`, and tests use a throwaway name with port `19443`.
+- The wizard writes `docker.cmd` only, not `docker.ps1`; it overwrites `/etc/wsl.conf` with systemd and the default user.
+
+Why: a failed apt or Docker Hub step must not force a reinstall; the flag form of the token would sit on a `docker run` line and in the container config for good (refines DZ-D18, which said the token stays off command lines); the status probe skips certificate checks because it sends nothing secret, while the admin call sends the password, so it pins the certificate; port `9443` belongs to the real Portainer, so a second distro in tests needs another port; PowerShell prefers a `.ps1` over a `.cmd` of the same name and a Restricted execution policy would then break `docker`, while `docker.cmd` alone was verified in PowerShell and `cmd` (PT-D20; the precedence is not tested here).
+
+What breaks if ignored: a non-resumable wizard repeats a 100 MB download after any late failure; a token in the container config outlives its purpose; skipping certificate verification sends the admin password to whatever answers on the port; a test on port `9443` collides with the real setup; a `docker.ps1` can disable `docker` in PowerShell on a locked-down machine.
+
+Rejected: `--setup-token` on the command line - persists in the config. `--no-setup-token` - see DZ-D18. `InsecureSkipVerify` for the admin call - password to an unverified peer. Writing `docker.ps1` as DZ-D5 listed - risk above, no gain over `docker.cmd`. Skipping the recreate after init - leaves the token behind.
+
+Observed: `go test -tags integration ./internal/setup` with `DZ_SETUP_DISTRO` on a new distro took 169.8 s (first run 2 min 35 s): Ubuntu image registered, Docker Engine 29.9.2 from Docker's apt repository, the DNS drop-in, user in the `docker` group, the certificate served with `--sslcert`, Portainer 2.45.2, admin created, sign-in with the typed credentials `200`, a wrong password rejected, no setup token in the container config, a second run skipping the five steps that had work, and the distro unregistered afterwards. This also covers the flow on `Ubuntu-24.04` with systemd and the certificate flags, which DZ-D18 had left open.
