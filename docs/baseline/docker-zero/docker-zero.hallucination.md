@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "84ba537"
+code_ref: "1aeb16d"
 ---
 
 # docker-zero hallucination journal
@@ -42,7 +42,8 @@ code_ref: "84ba537"
 | DZ-D27 | The first release waits for the design phase | closed | DZ-D22, DZ-D29 |
 | DZ-D28 | UI inventory: mocked frontend for every state, real exe for the main windows, committed | closed | DZ-Q4, DZ-D27 |
 | DZ-D29 | The rebuilt release exe re-runs the full clean-profile gate | closed | DZ-Q5, DZ-D27 |
-| DZ-D30 | README and landing page state no affiliation with Docker Inc. or Portainer | closed | DZ-D1, DZ-D27 |
+| DZ-D30 | README and landing page state no affiliation with Docker Inc. or Portainer | closed, logo rule amended by DZ-D31 | DZ-D1, DZ-D27, DZ-D31 |
+| DZ-D31 | Logo: an orca leaping out of a red ring over a two-tone sea; design rounds kept as a public gallery | closed | DZ-D30, DZ-D27 |
 
 ## Open questions
 
@@ -428,10 +429,28 @@ Rejected: a smoke run on the existing setup (launch, each window, Start and Stop
 
 ### DZ-D30: README and landing page state no affiliation with Docker Inc. or Portainer
 
-Decision: the README (Phase 10 item 5) and the landing page (item 6) carry one plain statement that Docker Zero is not affiliated with or endorsed by Docker Inc. or Portainer; the logo avoids the whale and both projects' marks.
+Decision: the README (Phase 10 item 5) and the landing page (item 6) carry one plain statement that Docker Zero is not affiliated with or endorsed by Docker Inc. or Portainer; the logo avoids the whale and both projects' marks (amended by DZ-D31: a whale as an animal is allowed, Docker's whale graphic is not).
 
 Why: the name contains a Docker trademark and the app installs Docker Engine and Portainer CE, so a reader can take it for a vendor product.
 
 What breaks if ignored: an implied endorsement on a public page.
 
 Rejected: no statement - leaves the implication standing. Docker's trademark guidelines were not checked; the user checks them before the release.
+
+### DZ-D31: Logo: an orca leaping out of a red ring over a two-tone sea; design rounds kept as a public gallery
+
+Decision:
+
+- The mark is a stylised orca (one arched silhouette, one white belly sweep, one eye patch) leaping from behind a red ring (the zero) towards the front left, its flukes behind the ring's lower right; inside the ring, below the orca, a light and a dark teal band of sea on a cream fill.
+- Sources: `design/brand/logo.svg` (mark) and `design/brand/logo-tile.svg` (app icon on a cream tile); `packaging/appicon.png` at 1024 px and `packaging/windows/icon.ico` are rendered from them.
+- Tray: the mark at 32 px, embedded as PNG in `internal/trayicon`; the ring is grey when stopped, amber when partly up, green when running (a red ring would read as a fault), and a red dot in the corner marks a failure.
+- The seven design rounds (sheets, notes, choices) live in `design/brand/gallery/`, committed and public, linked from the landing page; the frontdoor design board is built there directly, never in `.frontdoor/` (rule in `AGENTS.md`).
+- `board.py build` rewrites the page subtitle to "Local file, not committed"; after each build it is edited back to "Design rounds of the Docker Zero logo".
+
+Amends DZ-D30: a whale as an animal is allowed; Docker's whale graphic (side view, containers on the back) is not.
+
+Why: the user's brief (a whale passing a complete ring: Docker plus Zero) and choices over seven rounds: the sunset-and-sea idea and the orca, the orca travelling right to left from back to front, an arched orca in the style of the user's reference images, at most two flat beach elements so the mark stays clean at 16 px. The gallery is the user's request, to show visitors how the logo was reached.
+
+What breaks if ignored: a mark redrawn from memory drifts from the chosen one; tray icons drawn in code stop matching the app icon; detail added inside the ring makes the 16 px tray icon unreadable.
+
+Rejected: the blue tile with a white Z (the placeholder look); 17 other first-round concepts; gradient sunset scenes (round 2, too much detail); a front-view or fin-only orca (round 3); the first stylised orca (round 4, user disliked the vector); tray icons drawn in Go (cannot reproduce the mark); the gallery kept only in the ignored local board (lost to visitors); the board in `.frontdoor/` with a copy in the repository (two identical trees that drift once either is rebuilt); the gallery under `docs/brand/` (user moved it to `design/`, beside the UI inventory); stock reference images in the gallery (copyrighted, used only as a style brief, nothing traced).

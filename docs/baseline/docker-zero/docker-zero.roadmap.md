@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "84ba537"
+code_ref: "1aeb16d"
 ---
 
 # docker-zero roadmap
@@ -182,7 +182,7 @@ Not verified: SmartScreen or policy behaviour on another machine; the release do
 
 ## Phase 10: Design
 
-Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief is pending.
+Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief was pending. Item 1 done: logo chosen after seven rounds (DZ-D31).
 
 | Item | Output | Review point |
 |---|---|---|
@@ -192,6 +192,18 @@ Status: active. Brand, app UI and front door before the first release (DZ-D27). 
 | 4. Apply the design | Svelte and CSS changes under `frontend/`, the window sizes in `internal/ui` if a design needs them; no behaviour change | `wails3 task test`, `wails3 task lint`, `wails3 task build` pass; every inventory state re-shot from the built exe in light and dark and matched to its approved mockup |
 | 5. README banner | Hero banner and scenes as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten around them, screenshots re-shot from the new UI, no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
 | 6. Landing page | One `index.html` for GitHub Pages (`frontdoor-landing`), social preview image, favicon from the mark, no-affiliation statement (DZ-D30) | User picks a direction and the placement; the skill's axe and Lighthouse checks; the user switches on Pages in the repository settings |
+
+Item 1 evidence (`1aeb16d` icons, `974c56d` gallery):
+
+| Check | Result |
+|---|---|
+| Logo | Round 7 direction 62 chosen after seven rounds (DZ-D31); `design/brand/logo.svg`, `design/brand/logo-tile.svg` |
+| App icon | `packaging/appicon.png` 1024 px rendered from the tile; `packaging/windows/icon.ico` 16 to 256 px by `wails3 generate icons` (its macOS step fails on the missing `build/darwin`, after the `.ico` is written) |
+| Tray icon | `internal/trayicon` embeds `stopped`, `partial`, `running`, `failed` PNGs at 32 px; `PNG(level)` unchanged |
+| Checks | `wails3 task test` ok, `wails3 task lint` 0 issues, `svelte-check` 0 errors; icons viewed at 32 and 16 px on light and dark |
+| Gallery | `design/brand/gallery/` (72 sheets, `directions.json`, `directions.html`); `.frontdoor/` deleted and dropped from `.gitignore`; `AGENTS.md` rule added |
+
+Not verified: the icons in the real Windows tray and in Explorer from a built exe.
 
 Item 2 evidence, awaiting the user's review:
 
@@ -215,12 +227,11 @@ Not verified: the mocks against the Go services at run time beyond the type chec
 | `.wslconfig` and `wsl --shutdown` affect every distro of the account | Confirmation dialogs; keepalive mode is the default (DZ-D6) |
 | Trusting a root certificate on a managed device may raise a security alert | Optional step, user-initiated (DZ-D6) |
 | Docker Hub anonymous pull terms for organisations | Unresolved in the source pack (PT-Q6) |
-| Logo or name read as Docker Inc. or Portainer branding | Phase 10 logo avoids the whale and both projects' marks; README and landing page state no affiliation (DZ-D30); Docker's trademark guidelines not checked, the user checks them before the release |
+| Logo or name read as Docker Inc. or Portainer branding | Phase 10 logo uses an orca, not Docker's whale graphic (DZ-D31); README and landing page state no affiliation (DZ-D30); Docker's trademark guidelines not checked, the user checks them before the release |
 
 ## Next action
 
 1. Phase 10 item 2: the user reviews `design/ui-inventory/index.html` and confirms the list of states is complete.
-2. Phase 10 item 1: waits for the user's logo brief; then write the signature note and show two or three rough logo directions on the local board; the user picks or mixes one.
-3. Phase 10 items 3 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
-4. Phase 9: rebuild the release exe from the commit that ends Phase 10, re-run the full clean-profile gate (DZ-D29), then publish GitHub release `v0.1.0` from that commit with the rebuilt exe and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
-5. Then mark Phase 9 complete with the release URL.
+2. Phase 10 items 3 to 6 in order, each after the review point of the one before; one commit per item after its checks pass.
+3. Phase 9: rebuild the release exe from the commit that ends Phase 10, re-run the full clean-profile gate (DZ-D29), then publish GitHub release `v0.1.0` from that commit with the rebuilt exe and the release notes; the agent's attempt was refused by its permission mode, so the user runs it or allows it.
+4. Then mark Phase 9 complete with the release URL.
