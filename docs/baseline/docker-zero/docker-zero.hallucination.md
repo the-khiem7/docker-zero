@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "hallucination"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "uncommitted"
+code_ref: "779e82c"
 ---
 
 # docker-zero hallucination journal

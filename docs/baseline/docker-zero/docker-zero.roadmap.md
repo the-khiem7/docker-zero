@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "uncommitted"
+code_ref: "779e82c"
 ---
 
 # docker-zero roadmap
@@ -14,7 +14,7 @@ code_ref: "uncommitted"
 | Phase 1 | - | complete | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
 | Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
-| Phase 4 | Phase 3 | active | Tray popup and corner box drive Start, Stop, Shut down, Open |
+| Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | active | Settings apply and revert each item |
 | Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
@@ -35,7 +35,7 @@ Status: complete. Packages: `internal/wsl` (`Client` with `Available`, `Distros`
 
 ## Phase 4: Day 2 widget
 
-Status: active; gate not met: Stop distro and Shut down WSL not yet clicked against the real distro (see below), waiting on the user. Built: `internal/control` (one action at a time: Start = keepalive hold + `systemctl start docker` + `docker start portainer` + wait up to 90 s for the status endpoint + open browser; Stop distro; Shut down WSL; Open Portainer), `wsl.Hold` (hidden `sleep infinity` session), `internal/trayicon` (status-coloured icon drawn at run time), `internal/ui` (bound `Service`, poll loop, `Shell` with tray menu, popup and corner box), Svelte `Popup`, `Corner` and a shared status store. Design: DZ-D15.
+Status: complete. Built: `internal/control` (one action at a time: Start = keepalive hold + `systemctl start docker` + `docker start portainer` + wait up to 90 s for the status endpoint + open browser; Stop distro; Shut down WSL; Open Portainer), `wsl.Hold` (hidden `sleep infinity` session), `internal/trayicon` (status-coloured icon drawn at run time), `internal/ui` (bound `Service`, poll loop, `Shell` with tray menu, popup and corner box), Svelte `Popup`, `Corner` and a shared status store. Design: DZ-D15.
 
 Evidence:
 
@@ -47,8 +47,12 @@ Evidence:
 | App force-killed with `taskkill /F` | The hold ended (`pgrep` exit 1); the build before the job object left an orphan hold |
 | `go test -tags integration ./internal/wsl` on throwaway distro `dz-test` | Terminate stops, Start runs, a hold keeps it running and ends with Terminate, Release ends the sleep inside |
 | `wails3 task test`, `wails3 task lint` | All packages ok; `golangci-lint` 0 issues; `svelte-check` 0 errors |
+| Stop distro clicked on `Ubuntu-24.04`, user approved | After 8 s only `dz-test` running, no hold `wsl.exe`, Portainer HTTP `000`; popup showed Ubuntu-24.04 `Stopped` and Open Portainer disabled |
+| Start after Stop | Portainer HTTP `200` after 7 s, hold back in the distro |
+| Shut down WSL clicked, in-popup confirmation answered | Confirmation text and Shut down / Cancel buttons shown; after 10 s no distro running, no hold, Portainer HTTP `000` |
+| Start after Shut down | Portainer HTTP `200` after 12 s; `docker ps` showed only `portainer` (the `--rm` MCP containers ended with the distro, as expected) |
 
-Not verified: Stop distro and Shut down WSL clicked in the app against `Ubuntu-24.04`, because the user's live containers (several `hashicorp/terraform-mcp-server` sessions) run there; `wsl --shutdown` was not run anywhere because it stops every distro of the account. Their code paths call the `wsl.exe` commands checked above.
+Not verified: Open Portainer clicked on its own (Start opened the browser through the same call).
 
 ## Phase 5: Settings
 
@@ -94,7 +98,6 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 |---|---|
 | Unsigned exe blocked on managed machines | Passed on this machine in Phase 1 (DZ-D12); other machines unverified |
 | Wails3 is pre-release | Pinned version (DZ-D9) |
-| `packaging/windows/wails.exe.manifest` uncommitted: the commit secret scan flags the public Common-Controls assembly token on line 6 | Open; a clean clone cannot build until the user allows committing it |
 | `.wslconfig` and `wsl --shutdown` affect every distro of the account | Confirmation dialogs; keepalive mode is the default (DZ-D6) |
 | Trusting a root certificate on a managed device may raise a security alert | Optional step, user-initiated (DZ-D6) |
 | Docker Hub anonymous pull terms for organisations | Unresolved in the source pack (PT-Q6) |
@@ -102,6 +105,4 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 ## Next action
 
 1. Phase 7: adopt the existing manual setup (Phase 6 stays blocked on the Portainer admin question).
-2. Ask the user before clicking Stop distro and Shut down WSL in the app against `Ubuntu-24.04`; both stop the live containers there.
-3. Ask the user to run Install (trust), Remove and Regenerate in the settings window and answer Windows' dialogs; Regenerate restarts the live Portainer.
-4. Ask the user whether `packaging/windows/wails.exe.manifest` may be committed; the commit scan flags its public Common-Controls token.
+2. Phase 5: the user runs Remove, Install (trust) and Regenerate in the settings window and answers Windows' dialogs; then compare the store thumbprint with the distro certificate.
