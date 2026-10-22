@@ -67,8 +67,8 @@ func setShortcut(path string, want bool, exe string) error {
 	return createShortcut(path, exe)
 }
 
-// createShortcut writes a .lnk through the WScript.Shell COM object.
-func createShortcut(path, exe string) (err error) {
+// withShell runs fn with the WScript.Shell COM object.
+func withShell(fn func(shell *ole.IDispatch) error) error {
 	// COM is initialised per OS thread.
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
@@ -91,22 +91,52 @@ func createShortcut(path, exe string) (err error) {
 		return err
 	}
 	defer shell.Release()
-	res, err := oleutil.CallMethod(shell, "CreateShortcut", path)
-	if err != nil {
-		return err
-	}
-	link := res.ToIDispatch()
-	defer link.Release()
-	for name, value := range map[string]string{
-		"TargetPath":       exe,
-		"WorkingDirectory": filepath.Dir(exe),
-		"IconLocation":     exe + ",0",
-		"Description":      "Docker Engine in WSL2 with Portainer",
-	} {
-		if _, err := oleutil.PutProperty(link, name, value); err != nil {
+	return fn(shell)
+}
+
+// ReadShortcutTarget returns the target and the arguments of the .lnk at path.
+func ReadShortcutTarget(path string) (target, args string, err error) {
+	err = withShell(func(shell *ole.IDispatch) error {
+		res, err := oleutil.CallMethod(shell, "CreateShortcut", path)
+		if err != nil {
 			return err
 		}
-	}
-	_, err = oleutil.CallMethod(link, "Save")
-	return err
+		link := res.ToIDispatch()
+		defer link.Release()
+		t, err := oleutil.GetProperty(link, "TargetPath")
+		if err != nil {
+			return err
+		}
+		a, err := oleutil.GetProperty(link, "Arguments")
+		if err != nil {
+			return err
+		}
+		target, args = t.ToString(), a.ToString()
+		return nil
+	})
+	return target, args, err
+}
+
+// createShortcut writes a .lnk through the WScript.Shell COM object.
+func createShortcut(path, exe string) error {
+	return withShell(func(shell *ole.IDispatch) error {
+		res, err := oleutil.CallMethod(shell, "CreateShortcut", path)
+		if err != nil {
+			return err
+		}
+		link := res.ToIDispatch()
+		defer link.Release()
+		for name, value := range map[string]string{
+			"TargetPath":       exe,
+			"WorkingDirectory": filepath.Dir(exe),
+			"IconLocation":     exe + ",0",
+			"Description":      "Docker Engine in WSL2 with Portainer",
+		} {
+			if _, err := oleutil.PutProperty(link, name, value); err != nil {
+				return err
+			}
+		}
+		_, err = oleutil.CallMethod(link, "Save")
+		return err
+	})
 }
