@@ -14,7 +14,7 @@ The WSL Windows feature must already be enabled; enabling it needs admin rights,
 
 ## Build
 
-Requirements: Go 1.25 or newer, Node.js with npm, and the Wails CLI `v3.0.0-beta.30`:
+Requirements: Go 1.26 or newer, Node.js with npm, and the Wails CLI `v3.0.0-beta.30`:
 
 ```sh
 go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.30
@@ -27,6 +27,7 @@ Commands:
 | Build `bin/docker-zero.exe` | `wails3 task build` |
 | Run with live reload | `wails3 task dev` |
 | Unit tests | `wails3 task test` |
+| Read-only status probe against this machine | `go test -tags integration ./internal/status` |
 | `go vet`, `golangci-lint`, Svelte type check | `wails3 task lint` |
 
 Wails build assets (icon, manifest, version info) live in `packaging/` instead of the Wails default `build/`, so use `wails3 task build` rather than `wails3 build`.
