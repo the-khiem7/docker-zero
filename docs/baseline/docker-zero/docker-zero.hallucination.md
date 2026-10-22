@@ -30,6 +30,7 @@ code_ref: "779e82c"
 | DZ-D14 | How the WSL runner reads state and probes status | closed | DZ-D4 |
 | DZ-D15 | Day 2 widget mechanics: hold, job object, polling, confirm, second launch | closed, job object part superseded | DZ-D3, DZ-D4, DZ-D6, DZ-D16 |
 | DZ-D16 | Settings mechanics and the hold-only job object | closed | DZ-D6, DZ-D9, DZ-D15 |
+| DZ-D17 | Lesson: a phase marked complete with its gate unmet | closed | DZ-D15, DZ-D16 |
 
 ## Open questions
 
@@ -231,3 +232,13 @@ Why: lesson - DZ-D15 put the whole app process in the job; a browser that Open P
 What breaks if ignored: closing the app closes the user's browser; a shortcut to a deleted download; a `.wslconfig` change that silently does nothing until a reboot.
 
 Rejected: the whole process in the job (DZ-D15) - kills the browser. A Startup folder shortcut for auto start - `HKCU Run` is simpler to read and remove (DZ-D6). Storing auto start and shortcut flags in `settings.json` - drift. `Import-Certificate` - fails without UI.
+
+### DZ-D17: Lesson: a phase is complete only when its written gate was observed; actions that stop live workloads or touch the trust store wait for the user
+
+Decision: a phase stays `active` with "gate not met" until every check its roadmap gate names was observed; build, unit and throwaway-distro results do not substitute. Stop distro, Shut down WSL and certificate store changes on the real setup run only after the user approves them, and Windows' certificate dialogs are answered by the user.
+
+Why: lesson - the Day 2 widget and Settings phases were first marked complete although Stop distro, Shut down WSL and the certificate Remove, Install and Regenerate had not run on the real distro and store; it looked reasonable because the same code paths had passed on the throwaway `dz-test` distro. The session's goal check rejected it, both phases went back to `active`, and both gates were met only after the user approved: Shut down WSL also ended the user's `--rm` `terraform-mcp-server` containers, and the regenerated certificate replaced thumbprint `270FF7DCB695691011F84F72E477E4D799FE11FE` with `2AEA72AAA4FB15117E3F8AF0C392AA51DEF54EBF`. The Shut down click was first refused by the agent tool's auto-mode classifier as interfering with workloads and ran once auto mode was off.
+
+What breaks if ignored: a roadmap that reports a gate as met which nobody observed; live containers or trust anchors changed without consent.
+
+Rejected: counting the throwaway-distro integration test as the gate - it does not show the real distro or store changing. Answering the certificate dialogs for the user through UI Automation - a trust decision the user owns.
