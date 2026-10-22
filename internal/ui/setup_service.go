@@ -45,6 +45,7 @@ type SetupView struct {
 // SetupService is bound to the setup window.
 type SetupService struct {
 	newWizard func() *setup.Wizard
+	guard     *opGuard
 	// emit publishes a view to the window; nil until attach.
 	emit func(SetupView)
 	// onDone runs after a successful setup, to refresh the status.
@@ -55,8 +56,8 @@ type SetupService struct {
 }
 
 // NewSetupService builds the service. newWizard makes a fresh wizard for each run.
-func NewSetupService(newWizard func() *setup.Wizard) *SetupService {
-	s := &SetupService{newWizard: newWizard}
+func NewSetupService(newWizard func() *setup.Wizard, guard *opGuard) *SetupService {
+	s := &SetupService{newWizard: newWizard, guard: guard}
 	s.view = s.fresh()
 	return s
 }
@@ -94,11 +95,10 @@ func (s *SetupService) Start(username, secret string) error {
 	if err := cr.Validate(); err != nil {
 		return err
 	}
-	s.mu.Lock()
-	if s.view.Running {
-		s.mu.Unlock()
-		return setup.ErrBusy
+	if err := s.guard.acquire("setup"); err != nil {
+		return err
 	}
+	s.mu.Lock()
 	s.view = s.fresh()
 	s.view.Running = true
 	v := s.snapshot()
@@ -124,6 +124,9 @@ func (s *SetupService) run(cr setup.Credentials) {
 	}
 	v := s.snapshot()
 	s.mu.Unlock()
+	// Free the guard before the window learns the run ended, so its next
+	// click is not refused.
+	s.guard.release()
 	s.publish(v)
 	if err == nil && s.onDone != nil {
 		s.onDone()

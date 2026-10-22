@@ -63,12 +63,20 @@ func Install(app *application.App, o Options) *Shell {
 	svc.shell = sh
 	setSvc := NewSettingsService(app, o.Prefs, o.Controller, o.Scripter, o.WSLConfig, o.InstallExe)
 	setSvc.onChange = svc.Refresh
-	setupSvc := NewSetupService(o.NewWizard)
+	guard := &opGuard{}
+	setupSvc := NewSetupService(o.NewWizard, guard)
 	setupSvc.onDone = svc.Refresh
 	setupSvc.attach(app)
+	maintainSvc := NewMaintainService(o.NewWizard, guard)
+	maintainSvc.onDone = svc.Refresh
+	uninstallSvc := NewUninstallService(o.NewWizard, guard)
+	uninstallSvc.onDone = svc.Refresh
+	uninstallSvc.attach(app)
 	app.RegisterService(application.NewService(svc))
 	app.RegisterService(application.NewService(setSvc))
 	app.RegisterService(application.NewService(setupSvc))
+	app.RegisterService(application.NewService(maintainSvc))
+	app.RegisterService(application.NewService(uninstallSvc))
 
 	sh.popup = app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Name:            PopupWindow,

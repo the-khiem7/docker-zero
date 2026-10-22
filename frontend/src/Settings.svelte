@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Maintenance from "./Maintenance.svelte";
   import * as S from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/settingsservice";
   import type { SettingsView } from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/models";
   import { BrowserKind, IdleMode } from "../bindings/github.com/the-khiem7/docker-zero/internal/settings/models";
@@ -202,6 +203,8 @@
         Ubuntu-24.04. Regenerate restarts Portainer.
       </p>
     </section>
+
+    <Maintenance />
   {/if}
 
   {#if busy}

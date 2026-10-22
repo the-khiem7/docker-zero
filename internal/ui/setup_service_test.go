@@ -19,6 +19,8 @@ func (noWSL) DistroState(context.Context, string) (wsl.State, error) {
 	return wsl.StateNotInstalled, nil
 }
 func (noWSL) Install(context.Context, string, string, string) error { return nil }
+func (noWSL) Export(context.Context, string, string) error          { return nil }
+func (noWSL) Unregister(context.Context, string) error              { return nil }
 func (noWSL) Terminate(context.Context, string) error               { return nil }
 func (noWSL) Start(context.Context, string) error                   { return nil }
 func (noWSL) Script(context.Context, string, string, string) (string, error) {
@@ -29,7 +31,7 @@ func newTestSetupService() (*SetupService, chan SetupView) {
 	views := make(chan SetupView, 64)
 	s := NewSetupService(func() *setup.Wizard {
 		return &setup.Wizard{WSL: noWSL{}}
-	})
+	}, &opGuard{})
 	s.emit = func(v SetupView) { views <- v }
 	return s, views
 }

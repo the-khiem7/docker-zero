@@ -78,7 +78,15 @@ func main() {
 		WSLConfig:  settings.WSLConfig{Path: filepath.Join(home, ".wslconfig")},
 		InstallExe: installExe,
 		NewWizard: func() *setup.Wizard {
-			return setup.New(client, setup.Config{BinDir: setup.DefaultBinDir(installExe), AddToPath: true})
+			w := setup.New(client, setup.Config{BinDir: setup.DefaultBinDir(installExe), AddToPath: true})
+			w.Host = setup.NewHost(setup.HostConfig{
+				InstallDir:     filepath.Dir(installExe),
+				ConfigDir:      configDir,
+				WSLConfig:      settings.WSLConfig{Path: filepath.Join(home, ".wslconfig")},
+				IdleLineIsOurs: func() bool { return prefs.Get().IdleMode == settings.IdleWSLConfig },
+				ReleaseHold:    ctrl.Close,
+			})
+			return w
 		},
 		StartDistro: slices.Contains(os.Args[1:], settings.StartDistroFlag),
 	})
