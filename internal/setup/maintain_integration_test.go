@@ -66,7 +66,7 @@ func TestMaintenance(t *testing.T) {
 		RemoveShortcuts: record("shortcuts"),
 		RemoveIdleLine:  record("idle"),
 		RemoveConfig:    record("config"),
-		RemoveFromPath:  func(dir string) error { hostCalls = append(hostCalls, "path"); return nil },
+		RemoveFromPath:  func(string) error { hostCalls = append(hostCalls, "path"); return nil },
 		UntrustCert: func(pem []byte) (bool, error) {
 			hostCalls = append(hostCalls, "untrust")
 			return strings.Contains(string(pem), "BEGIN CERTIFICATE"), nil
