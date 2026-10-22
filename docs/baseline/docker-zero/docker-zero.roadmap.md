@@ -15,7 +15,7 @@ code_ref: "779e82c"
 | Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | complete | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | complete | Tray popup and corner box drive Start, Stop, Shut down, Open |
-| Phase 5 | Phase 4 | active | Settings apply and revert each item |
+| Phase 5 | Phase 4 | complete | Settings apply and revert each item |
 | Phase 6 | Phase 3, DZ-Q2 | blocked | Wizard installs a working setup on a throwaway distro |
 | Phase 7 | Phase 5 | planned | Existing manual setup adopted without data loss |
 | Phase 8 | Phase 6 | planned | Update Portainer, Reset admin, Uninstall all work |
@@ -56,7 +56,7 @@ Not verified: Open Portainer clicked on its own (Start opened the browser throug
 
 ## Phase 5: Settings
 
-Status: active; gate not met: certificate Install, Remove and Regenerate not yet run against the real store (see below), waiting on the user. Built: `internal/settings` (settings store, `HKCU` Run value, shortcuts, `.wslconfig` editor, Chrome lookup and browser opener, certificate read, trust, untrust and regenerate, self-copy to the install folder), `internal/ui` `Prefs` and `SettingsService`, a framed settings window opened from the tray menu and the popup gear, corner box choice remembered, `--start-distro` launch option, hold taken at launch in keepalive mode. Design: DZ-D16.
+Status: complete. Built: `internal/settings` (settings store, `HKCU` Run value, shortcuts, `.wslconfig` editor, Chrome lookup and browser opener, certificate read, trust, untrust and regenerate, self-copy to the install folder), `internal/ui` `Prefs` and `SettingsService`, a framed settings window opened from the tray menu and the popup gear, corner box choice remembered, `--start-distro` launch option, hold taken at launch in keepalive mode. Design: DZ-D16.
 
 Evidence, each item applied and reverted through the settings window by UI Automation on this machine:
 
@@ -74,7 +74,10 @@ Evidence, each item applied and reverted through the settings window by UI Autom
 | Certificate read | Thumbprint `270FF7DCB695691011F84F72E477E4D799FE11FE`, expires 2031-10-14, trusted `true` (matches PT-D19) |
 | Regenerate script on throwaway `dz-test` | New key `600`, certificate `644`, parsed; reported "not configured" because no Portainer container there |
 
-Not verified: Install (trust), Remove and Regenerate against the real store and the real Portainer, because each store change needs the user to answer Windows' confirmation dialog and Regenerate restarts the live Portainer; opening Portainer in Chrome; Apply now (`wsl --shutdown`). Test state was cleaned up afterwards: install folder and `settings.json` deleted, the hold ended with the app.
+| Remove, Install (trust), Regenerate on the real store, clicked by the user | Windows showed "Root Certificate Store" delete and "Security Warning" install dialogs naming thumbprint `270FF7DC...99FE11FE`; the user answered them (screenshots). Afterwards the store holds one `CN=portainer`, thumbprint `2AEA72AAA4FB15117E3F8AF0C392AA51DEF54EBF`, 2026-10-22 to 2031-10-21, equal to the SHA-1 fingerprint of `/etc/portainer-certs/portainer.crt`; key `600`, certificate `644`; the old certificate is gone |
+| Portainer after Regenerate | Container restarted; `curl.exe` without `-k` to `https://localhost:9443/api/system/status` returned `200` |
+
+Not verified: opening Portainer in Chrome; Apply now (`wsl --shutdown`) from the settings window (the same `ShutdownWSL` call was clicked in the popup in Phase 4). Test state was cleaned up afterwards: install folder and `settings.json` deleted, the hold ended with the app.
 
 ## Phase 6: Day 1 wizard
 
@@ -105,4 +108,3 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 ## Next action
 
 1. Phase 7: adopt the existing manual setup (Phase 6 stays blocked on the Portainer admin question).
-2. Phase 5: the user runs Remove, Install (trust) and Regenerate in the settings window and answers Windows' dialogs; then compare the store thumbprint with the distro certificate.
