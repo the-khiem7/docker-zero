@@ -86,10 +86,9 @@ subjectAltName = DNS:localhost,IP:127.0.0.1,IP:::1
 subjectKeyIdentifier = hash
 `
 
-// regenerateScript writes a new ECDSA P-256 key and a five-year leaf next
-// to the old pair, swaps them in, and restarts Portainer when its container
-// serves these files. Exit code 3 means the container is not configured.
-var regenerateScript = `set -e
+// generateScript writes a new ECDSA P-256 key and a five-year leaf next to
+// the old pair and swaps them in.
+const generateScript = `set -e
 d=` + CertDir + `
 mkdir -p "$d"
 cat > "$d/openssl.cnf" <<'EOF'
@@ -101,12 +100,28 @@ chmod 600 "$d/portainer.key.new"
 chmod 644 "$d/portainer.crt.new"
 mv -f "$d/portainer.key.new" "$d/portainer.key"
 mv -f "$d/portainer.crt.new" "$d/portainer.crt"
-if docker inspect -f '{{json .Args}}' ` + target.PortainerContainer + ` 2>/dev/null | grep -q -- --sslcert; then
+`
+
+// regenerateScript generates the pair and restarts Portainer when its
+// container serves these files. Exit code 3 means the container is not
+// configured.
+const regenerateScript = generateScript + `if docker inspect -f '{{json .Args}}' ` + target.PortainerContainer + ` 2>/dev/null | grep -q -- --sslcert; then
   docker restart ` + target.PortainerContainer + ` >/dev/null
 else
   exit 3
 fi
 `
+
+// Generate creates the certificate and key in distro unless both exist
+// already. It does not touch the Portainer container or the Windows store.
+func Generate(ctx context.Context, w Scripter, distro string) error {
+	script := `if [ -s ` + CertDir + `/portainer.crt ] && [ -s ` + CertDir + `/portainer.key ]; then exit 0; fi
+` + generateScript
+	if _, err := w.Script(ctx, distro, "root", script); err != nil {
+		return fmt.Errorf("generate certificate: %w", err)
+	}
+	return nil
+}
 
 // Regenerate replaces the certificate and key in distro and restarts
 // Portainer. The caller removes the old certificate from the Windows store
