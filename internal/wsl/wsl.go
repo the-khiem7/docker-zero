@@ -196,6 +196,13 @@ func (c *Client) Install(ctx context.Context, image, name, location string) erro
 	return err
 }
 
+// Export writes distro to a tar file at file. WSL stops the distro first, and
+// every container in it with it.
+func (c *Client) Export(ctx context.Context, distro, file string) error {
+	_, err := c.wsl(ctx, nil, "--export", distro, file)
+	return err
+}
+
 // Unregister deletes distro with its disk, every image and every volume.
 func (c *Client) Unregister(ctx context.Context, distro string) error {
 	_, err := c.wsl(ctx, nil, "--unregister", distro)

@@ -160,6 +160,17 @@ func TestStopActionsArgs(t *testing.T) {
 	}
 }
 
+func TestExportArgs(t *testing.T) {
+	f := &fake{answers: map[string]Result{}}
+	c := NewWithRunner(f.run)
+	if err := c.Export(t.Context(), "dz-throwaway", `C:\b\backup.tar`); err != nil {
+		t.Fatal(err)
+	}
+	if want := []string{"--export", "dz-throwaway", `C:\b\backup.tar`}; !slices.Equal(f.calls[0].args, want) {
+		t.Fatalf("got %q, want %q", f.calls[0].args, want)
+	}
+}
+
 func TestInstallAndUnregisterArgs(t *testing.T) {
 	f := &fake{answers: map[string]Result{}}
 	c := NewWithRunner(f.run)
