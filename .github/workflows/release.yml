@@ -28,9 +28,6 @@ jobs:
       - name: Install the Wails CLI
         run: go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-beta.30
 
-      - name: Test
-        run: wails3 task test
-
       # The tag is the only source of the version; the stamp is not committed back.
       # file_version takes digits only, so a suffix such as -alpha stays in ProductVersion.
       - name: Stamp the version
@@ -50,6 +47,10 @@ jobs:
 
       - name: Build
         run: wails3 task build
+
+      # After the build: main.go embeds frontend/dist, which the build creates and git does not track.
+      - name: Test
+        run: wails3 task test
 
       - name: Checksum
         run: |
