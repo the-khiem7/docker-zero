@@ -3,7 +3,7 @@ baseline_schema: "2.0"
 pack: "docker-zero"
 document: "roadmap"
 status: "draft"
-updated: "2026-10-22"
+updated: "2026-10-23"
 code_ref: "uncommitted"
 ---
 
@@ -184,7 +184,7 @@ Not verified: SmartScreen or policy behaviour on another machine; the release do
 
 ## Phase 10: Design
 
-Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief was pending. Item 1 done: logo chosen after seven rounds (DZ-D31).
+Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief was pending. Item 1 done: logo chosen after seven rounds (DZ-D31). Items 5 and 6 were built ahead of items 3 and 4 at the user's request; item 6 is built and awaits review (DZ-D35).
 
 | Item | Output | Review point |
 |---|---|---|
@@ -233,6 +233,20 @@ Item 5 evidence, built and awaiting the user's review:
 
 Not verified: the README on github.com in light, dark and phone width (including the picture elements); the text fragment of the Docker link in a browser; the figures against the redesigned UI.
 
+Item 6 evidence, built and committed but not pushed, awaiting the user's review (DZ-D35):
+
+| Check | Result |
+|---|---|
+| Files | `index.html` (50 363 bytes, inline CSS and JS, no analytics, no third-party script), `.nojekyll`, `design/landing/source/og.html`, `design/landing/asset/og.png` (1200x630, 79 869 bytes, viewed); favicon is `design/brand/logo-tile.svg` |
+| Structure, links, metadata | `shoot.py check` at 390, 820 and 1280 px in light and dark, with axe in both schemes: 0 FAIL, 0 WARN; title, description, Open Graph, Twitter, icon and both theme colours present |
+| Controls | Start, Stop distro, the compare buttons, Start setup, Replay and two ring tabs each changed the screen with and without reduced motion |
+| Ambient leaps | Over 20 s after the first pod: with motion, one orca appeared by itself; with reduced motion, none; a click on the water produced one orca in both modes |
+| Lighthouse (localhost) | Mobile: Performance 94 in two runs (First Contentful Paint and Largest Contentful Paint lost points), Accessibility 100, Best Practices 100, SEO 100. Desktop: 99, 100, 100, 100 |
+| Looked at | Hero stopped and running at 1280 and 390 px, the sections at 1280 px in light and dark, the compare slider on a phone |
+| Text | Claims from the README and the app's labels; no en or em dash; the repository address appears only in URLs |
+
+Not verified: the page on its real Pages URL and base path; the social preview in a share card; the Docker licence link's text fragment in a browser; the feel of the motion (only still frames were seen); Edge only, no other browser; a screen reader; a phone device. Pages is not switched on and no release exists, so the download button and the SHA-256 link answer 404 until `v0.1.0` (DZ-D34).
+
 ## Risks
 
 | Risk | State |
@@ -244,11 +258,14 @@ Not verified: the README on github.com in light, dark and phone width (including
 | Docker Hub anonymous pull terms for organisations | Unresolved in the source pack (PT-Q6) |
 | README figures name the current UI's labels; the redesign (items 3 and 4) can leave them stale | Re-check the setup and tray figures after item 4 (DZ-D34) |
 | README download button is a dead link until a release without a suffix exists | Accepted by the user; publish `v0.1.0` and open the button from the README on github.com (DZ-D34) |
+| Landing page download button and SHA-256 link are dead until a release without a suffix exists; the page demos the current UI's labels and the redesign (items 3 and 4) can leave them stale | Switch Pages on only after `v0.1.0`; re-check the page's demos after item 4 (DZ-D35, DZ-D34) |
+| Landing page `og:image` and canonical URL name the Pages address, which resolves only after Pages is on; sharing debuggers cache the image | Re-scrape after the first deploy (DZ-D35) |
 | Logo or name read as Docker Inc. or Portainer branding | Phase 10 logo uses an orca, not Docker's whale graphic (DZ-D31); README and landing page state no affiliation (DZ-D30); Docker's trademark guidelines not checked, the user checks them before the release |
 
 ## Next action
 
 1. Phase 10 item 2: the user reviews `design/ui-inventory/index.html` and confirms the list of states is complete.
 2. Phase 10 item 5 (README) was built ahead of items 3 and 4 at the user's request (DZ-D34): the user reviewed `README.md` and `design/readme/asset/`, and the README is committed; the user pushes it. Items 3, 4 and 6 follow in order, one commit per item after its checks pass; after item 4, re-check the setup and tray figures against the redesigned UI.
-3. Phase 9: after Phase 10, the user pushes tag `v0.1.0` on the commit that ends it; the workflow builds the exe and creates the release. Download that exe and re-run the full clean-profile gate on it (DZ-D29). The agent's earlier attempt to publish was refused by its permission mode, so the user pushes the tag or allows it.
-4. Then mark Phase 9 complete with the release URL.
+3. Phase 10 item 6 (landing page) was built ahead of items 3 and 4 (DZ-D35): the user reviews `index.html` in a browser; `index.html`, `.nojekyll` and `design/landing/` are committed, and the user pushes them. The user answers DZ-Q6 (link the page from the README and the repository Website field). The user switches Pages on (Settings, Pages, Deploy from a branch, `main`, `/ (root)`) only after a release without a suffix exists. Re-check the page's demos after item 4.
+4. Phase 9: after Phase 10, the user pushes tag `v0.1.0` on the commit that ends it; the workflow builds the exe and creates the release. Download that exe and re-run the full clean-profile gate on it (DZ-D29). The agent's earlier attempt to publish was refused by its permission mode, so the user pushes the tag or allows it.
+5. Then mark Phase 9 complete with the release URL.
