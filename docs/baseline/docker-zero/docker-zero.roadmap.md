@@ -4,7 +4,7 @@ pack: "docker-zero"
 document: "roadmap"
 status: "draft"
 updated: "2026-10-22"
-code_ref: "5a4774d"
+code_ref: "uncommitted"
 ---
 
 # docker-zero roadmap
@@ -12,7 +12,7 @@ code_ref: "5a4774d"
 | Phase | Depends on | Status | Acceptance |
 |---|---|---|---|
 | Phase 1 | - | complete | Minimal Wails3 tray exe runs from `%LOCALAPPDATA%\Programs` on this machine |
-| Phase 2 | Phase 1 | planned | Repo scaffold builds; lint and tests run |
+| Phase 2 | Phase 1 | complete | Repo scaffold builds; lint and tests run |
 | Phase 3 | Phase 2 | planned | Go WSL runner and status detection tested against the real distro |
 | Phase 4 | Phase 3 | planned | Tray popup and corner box drive Start, Stop, Shut down, Open |
 | Phase 5 | Phase 4 | planned | Settings apply and revert each item |
@@ -27,7 +27,7 @@ Status: complete. Built a hello-world Wails3 tray app (`wails3` `v3.0.0-beta.30`
 
 ## Phase 2: Repository scaffold
 
-Status: planned. Wails3 project from the `svelte` template (DZ-D11, DZ-D12), Go module, `go vet` and `golangci-lint`, `go test`, `README.md`, `AGENTS.md`, `.gitignore`. Gate: `wails3 build` produces the exe; tests and lint pass.
+Status: complete. Wails3 project from the `svelte` template (DZ-D11, DZ-D12) trimmed to Windows, assets moved to `packaging/` (DZ-D13). Files: `main.go` (single-instance tray app with a hidden frameless popup), `internal/paths` (install and config dirs, with tests), `Taskfile.yml` tasks `build`, `dev`, `test`, `lint`, `packaging/`, `frontend/`, `.golangci.yml`, `README.md`, `AGENTS.md`, `.gitignore`. Evidence: `wails3 task build` produced `bin/docker-zero.exe` (10.3 MB); `go test ./...` ok; `wails3 task lint` ran `go vet`, `golangci-lint` `v2.15.0` with 0 issues and `svelte-check` with 0 errors. The gate named `wails3 build`; it is replaced by `wails3 task build` (DZ-D13).
 
 ## Phase 3: WSL runner and status
 
@@ -63,10 +63,11 @@ Status: planned. Release build, README with screenshots, licence file. Gate: the
 |---|---|
 | Unsigned exe blocked on managed machines | Passed on this machine in Phase 1 (DZ-D12); other machines unverified |
 | Wails3 is pre-release | Pinned version (DZ-D9) |
+| `packaging/windows/wails.exe.manifest` uncommitted: the commit secret scan flags the public Common-Controls assembly token on line 6 | Open; a clean clone cannot build until the user allows committing it |
 | `.wslconfig` and `wsl --shutdown` affect every distro of the account | Confirmation dialogs; keepalive mode is the default (DZ-D6) |
 | Trusting a root certificate on a managed device may raise a security alert | Optional step, user-initiated (DZ-D6) |
 | Docker Hub anonymous pull terms for organisations | Unresolved in the source pack (PT-Q6) |
 
 ## Next action
 
-1. Phase 2: scaffold the Wails3 project in the repository root.
+1. Phase 3: build the Go WSL runner and status detection.
