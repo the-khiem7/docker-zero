@@ -244,7 +244,7 @@ Item 6 evidence, built and committed but not pushed, awaiting the user's review 
 
 | Check | Result |
 |---|---|
-| Files | `index.html` (50 363 bytes, inline CSS and JS, no analytics, no third-party script), `.nojekyll`, `design/landing/source/og.html`, `design/landing/asset/og.png` (1200x630, 79 869 bytes, viewed); favicon is `design/brand/logo-tile.svg` |
+| Files | `index.html` (50 363 bytes, inline CSS and JS, no analytics, no third-party script) and `.nojekyll` in `b394f9b`; `design/landing/source/og.html` and `design/landing/asset/og.png` (1200x630, 79 869 bytes, viewed) in `4176b1f`; favicon is `design/brand/logo-tile.svg`; the working tree was clean at `12e1644` |
 | Structure, links, metadata | `shoot.py check` at 390, 820 and 1280 px in light and dark, with axe in both schemes: 0 FAIL, 0 WARN; title, description, Open Graph, Twitter, icon and both theme colours present |
 | Controls | Start, Stop distro, the compare buttons, Start setup, Replay and two ring tabs each changed the screen with and without reduced motion |
 | Ambient leaps | Over 20 s after the first pod: with motion, one orca appeared by itself; with reduced motion, none; a click on the water produced one orca in both modes |
