@@ -125,6 +125,19 @@ func dockerCmd(distro string) string {
 	return strings.Join(lines, "\r\n")
 }
 
+// dockerSh is the same wrapper for Git Bash, which does not run .cmd files.
+// MSYS_NO_PATHCONV keeps Git Bash from rewriting arguments such as -v /a:/b.
+func dockerSh(distro string) string {
+	lines := []string{
+		"#!/bin/sh",
+		`: "${DOCKER_WSL_DISTRO:=` + distro + `}"`,
+		"export MSYS_NO_PATHCONV=1",
+		`exec wsl.exe -d "$DOCKER_WSL_DISTRO" -- docker "$@"`,
+		"",
+	}
+	return strings.Join(lines, "\n")
+}
+
 // newToken returns a 256-bit one-time setup token as hex.
 func newToken() (string, error) {
 	var b [32]byte

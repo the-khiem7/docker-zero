@@ -247,6 +247,13 @@ func TestRunFreshInstall(t *testing.T) {
 	if !strings.Contains(string(cmd), `"DOCKER_WSL_DISTRO=dz-throwaway"`) || !strings.Contains(string(cmd), "\r\n") {
 		t.Errorf("wrapper: %q", cmd)
 	}
+	sh, err := os.ReadFile(filepath.Join(h.binDir, "docker"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(sh), "DOCKER_WSL_DISTRO:=dz-throwaway") || strings.Contains(string(sh), "\r") {
+		t.Errorf("bash wrapper: %q", sh)
+	}
 	if !slices.Equal(h.path, []string{h.binDir}) {
 		t.Errorf("PATH additions %q", h.path)
 	}

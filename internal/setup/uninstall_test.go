@@ -170,7 +170,7 @@ func TestRemoveLauncherLeavesOtherFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 	other := filepath.Join(dir, "mine.txt")
-	for _, f := range []string{filepath.Join(dir, "docker.cmd"), other} {
+	for _, f := range []string{filepath.Join(dir, "docker.cmd"), filepath.Join(dir, "docker"), other} {
 		if err := os.WriteFile(f, nil, 0o600); err != nil {
 			t.Fatal(err)
 		}
@@ -183,6 +183,9 @@ func TestRemoveLauncherLeavesOtherFiles(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(dir, "docker.cmd")); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("docker.cmd stays: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "docker")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("docker stays: %v", err)
 	}
 	if err := removeLauncher(filepath.Join(dir, "gone")); err != nil {
 		t.Fatalf("a missing folder is not an error: %v", err)

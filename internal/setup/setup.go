@@ -381,10 +381,13 @@ func (w *Wizard) stepWrapper(_ context.Context, _ Credentials) (bool, error) {
 	return false, nil
 }
 
-// WriteLauncher writes docker.cmd into dir, creating the folder. The wrapper
-// forwards docker to the engine in distro.
+// WriteLauncher writes docker.cmd (cmd, PowerShell) and docker (Git Bash) into
+// dir, creating the folder. The wrappers forward docker to the engine in distro.
 func WriteLauncher(dir, distro string) error {
 	if err := os.MkdirAll(dir, 0o750); err != nil {
+		return err
+	}
+	if err := os.WriteFile(filepath.Join(dir, "docker"), []byte(dockerSh(distro)), 0o644); err != nil { //nolint:gosec // a launcher script, readable by the user's shell
 		return err
 	}
 	return os.WriteFile(filepath.Join(dir, "docker.cmd"), []byte(dockerCmd(distro)), 0o644) //nolint:gosec // a launcher script, readable by the user's shell

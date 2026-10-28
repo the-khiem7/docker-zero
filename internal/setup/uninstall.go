@@ -195,11 +195,13 @@ func (w *Wizard) stepWindows(context.Context) (bool, error) {
 	return false, errors.Join(errs...)
 }
 
-// removeLauncher deletes docker.cmd and then the folder if nothing else is in
-// it; a folder with other files stays.
+// removeLauncher deletes docker.cmd and docker and then the folder if nothing
+// else is in it; a folder with other files stays.
 func removeLauncher(dir string) error {
-	if err := os.Remove(filepath.Join(dir, "docker.cmd")); err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return err
+	for _, name := range []string{"docker.cmd", "docker"} {
+		if err := os.Remove(filepath.Join(dir, name)); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return err
+		}
 	}
 	// A folder that still holds other files is not ours to delete.
 	_ = os.Remove(dir)
