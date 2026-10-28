@@ -3,7 +3,7 @@ baseline_schema: "2.0"
 pack: "docker-zero"
 document: "hallucination"
 status: "draft"
-updated: "2026-10-23"
+updated: "2026-10-28"
 code_ref: "uncommitted"
 ---
 
@@ -31,7 +31,7 @@ code_ref: "uncommitted"
 | DZ-D16 | Settings mechanics and the hold-only job object | closed, certificate read amended by DZ-D23 | DZ-D6, DZ-D9, DZ-D15, DZ-D23 |
 | DZ-D17 | Lesson: a phase marked complete with its gate unmet | closed | DZ-D15, DZ-D16 |
 | DZ-D18 | Portainer admin: created through the init API with an app-chosen setup token, reset with the helper and a hash | closed | DZ-Q2, DZ-D5, DZ-D7 |
-| DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed | DZ-D5, DZ-D18 |
+| DZ-D19 | Setup wizard mechanics: resumable steps, token through an env file, pinned certificate, no `docker.ps1` | closed, wrapper list amended by DZ-D36 | DZ-D5, DZ-D18, DZ-D36 |
 | DZ-D20 | Maintenance mechanics: update skips a current image, reset sends a hash, uninstall order and self-removal | closed, settings removal superseded by DZ-D25 | DZ-D7, DZ-D18, DZ-D19, DZ-D25 |
 | DZ-D21 | Adoption mechanics: four replaceable items, read-only detection, replace before remove, one offer | closed, launch offer superseded by DZ-D24 | DZ-D8, DZ-D6, DZ-D20, DZ-D24 |
 | DZ-D22 | Repository licence: MIT | closed | DZ-Q3, DZ-D1 |
@@ -48,6 +48,7 @@ code_ref: "uncommitted"
 | DZ-D33 | The release workflow stamps the exe version from the git tag, on the runner only | closed | DZ-D32 |
 | DZ-D34 | README: story-led, no UI screenshots, drawn figures, banner with the logo as the letter o | closed | DZ-D30, DZ-D31, DZ-D27 |
 | DZ-D35 | Landing page: root `index.html`, rising-tide hero with a leaping pod, interactive body figures | closed | DZ-D34, DZ-D30, DZ-D31, DZ-D27, DZ-D1 |
+| DZ-D36 | Wrappers: `docker.cmd` for cmd and PowerShell, an extensionless `docker` for Git Bash | closed | DZ-D19, DZ-D5 |
 | DZ-Q6 | Link the landing page from the README and the repository Website field | open | DZ-D35, DZ-D34 |
 
 ## Open questions
@@ -524,3 +525,17 @@ What breaks if ignored: a relative download link on Pages points into the Pages 
 Rejected: the first-round poster of the setup window as the whole page (the story becomes a row of cards). The dense card grid and the lifecycle timeline as whole pages (no hero moment and the story demoted; longest page with plain lists), kept as body figures instead. The hoop (the ring as a buoy, orcas threading it): left-to-right leaps only, a bare ring when stopped, lost behind the text on a phone, reads as a circus trick. The gauge (dusk to day, a four-mark tide gauge): a dark first impression on a cream brand, headline contrast dips when the text colour flips mid-transition, most code, gauge hidden under 700 px. Placement in `docs/` (the served folder would hold `docs/baseline/`). A Pages deploy through Actions (no workflow exists for it; a static file needs none). Relative links to GitHub (cannot reach it) and no GitHub links (no download). Leaps only on click (the user asked for life). Leaps that loop under reduced motion.
 
 Lesson: the first build set the compare slider's Docker Zero window inside the dark band, so its text inherited cream from the band onto a cream card and the window showed ticks with no words; it looked right because the card's own background was set and its text colour was not. The section screenshots showed it; the structure check, run first without axe, did not name it. Fixed by giving the pane its own text colour.
+
+### DZ-D36: Wrappers: `docker.cmd` for cmd and PowerShell, an extensionless `docker` for Git Bash
+
+Decision: setup step 8 and the take-over write two files into the bin folder, `docker.cmd` (CRLF) and `docker` (LF, `#!/bin/sh`, `exec wsl.exe -d "$DOCKER_WSL_DISTRO" -- docker "$@"`, default distro from the config, `MSYS_NO_PATHCONV=1`); uninstall removes both.
+
+Amends DZ-D19: the wrapper list was `docker.cmd` only.
+
+Why: Git Bash does not run `.cmd` files, so `docker` was "command not found" there even with the folder on PATH; `cmd` and PowerShell ignore a file without an extension, so the two files do not collide and `docker.ps1` stays unneeded; `MSYS_NO_PATHCONV` stops Git Bash rewriting arguments such as `-v /a:/b` into Windows paths.
+
+What breaks if ignored: `docker` fails in Git Bash after a correct setup; a bash wrapper written with CRLF fails with `bad interpreter`; a missing `MSYS_NO_PATHCONV` turns bind-mount arguments into `C:/Program Files/Git/...`.
+
+Rejected: `docker.ps1` - DZ-D19. A `docker.exe` shim - a second binary to build and ship, or a copy of the GUI exe that has no console. An alias in `~/.bashrc` - the app does not edit a shell profile it does not own.
+
+Observed: unit tests for the written files and the removal pass. Not verified: the wrapper run in Git Bash on a built exe. Found on this workstation: the user PATH held `docker-zero\bin` while the folder and `docker.cmd` did not exist, so `docker` failed in every shell; the cause is unknown (see the Phase 10 tech debt table in the roadmap).

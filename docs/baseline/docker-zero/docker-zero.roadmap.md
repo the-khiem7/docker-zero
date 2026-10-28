@@ -3,7 +3,7 @@ baseline_schema: "2.0"
 pack: "docker-zero"
 document: "roadmap"
 status: "draft"
-updated: "2026-10-23"
+updated: "2026-10-28"
 code_ref: "uncommitted"
 ---
 
@@ -194,6 +194,13 @@ Status: active. Brand, app UI and front door before the first release (DZ-D27). 
 | 4. Apply the design | Svelte and CSS changes under `frontend/`, the window sizes in `internal/ui` if a design needs them; no behaviour change | `wails3 task test`, `wails3 task lint`, `wails3 task build` pass; every inventory state re-shot from the built exe in light and dark and matched to its approved mockup |
 | 5. README banner | Hero banner and figures as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten story-first with no UI screenshots (DZ-D34), no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
 | 6. Landing page | One `index.html` for GitHub Pages (`frontdoor-landing`), social preview image, favicon from the mark, no-affiliation statement (DZ-D30) | User picks a direction and the placement; the skill's axe and Lighthouse checks; the user switches on Pages in the repository settings |
+
+Tech debt to solve in items 3 and 4 (research first, then design):
+
+| Debt | Evidence | Research to do |
+|---|---|---|
+| The setup window has no visible way back once setup is done | Reachable only from the tray menu entry "Set up Docker Zero..." and the small "Set up..." link at the foot of the popup; the Settings window has no entry; the window opens by itself only while the distro is not installed (DZ-D24) | Which name and place suit a returning user (a "Repair setup" action in Settings, a banner in the popup when a part is missing); what the window should show on a finished setup (the "Nothing left to replace" observation of item 2) |
+| Setup does not notice a missing or stale part | On this workstation `docker-zero\bin` was on the user PATH while the folder and `docker.cmd` were gone; every shell reported `docker` not found and the popup showed Running (DZ-D36) | Cause (uninstall, a manual delete, or a skipped step 8); whether the popup should check the wrapper files and PATH and offer Repair |
 
 Item 1 evidence (`3aa5256` icons, `c824f21` gallery):
 
