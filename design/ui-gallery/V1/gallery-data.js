@@ -1,9 +1,9 @@
 window.GALLERY = {
  "title": "Docker Zero UI gallery",
- "lede": "Every window and state of the app as it looks today, rendered from the real Svelte frontend with the Go services replaced by fixed data. Mark each state Keep, Revise or Discuss to drive the redesign.",
+ "lede": "Every window and state of the app before the V2 redesign (kept as history: the app now shows the V2 design, so rendering again produces V2), rendered from the real Svelte frontend with the Go services replaced by fixed data. Mark each state Keep, Revise or Discuss to drive the redesign.",
  "regenerate": [
   "cd frontend && npm run gallery",
-  "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/gallery.json"
+  "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/V1/gallery.json"
  ],
  "generated": "2026-10-22",
  "commit": "9c4baf1",
