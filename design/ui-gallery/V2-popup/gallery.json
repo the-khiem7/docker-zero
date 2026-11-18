@@ -1,0 +1,275 @@
+{
+  "title": "Docker Zero UI redesign board, V2 popup (popup and corner box)",
+  "lede": "Proposed redesign (direction B: centred ring with the logo's orca, brand colours, long-step feedback), rendered from the app frontend with the same mocked services as the current-UI board. The Settings window moved to V2-setting and the Setup window to V2-setup. Every state keeps the id of its current-UI twin; the motion frames and the long-step setup states are extra. Mark each Keep, Revise or Discuss.",
+  "base": "http://127.0.0.1:9246",
+  "regenerate": [
+    "cd frontend && npm run gallery",
+    "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/V2-popup/gallery.json"
+  ],
+  "storageKey": "docker-zero-ui-gallery2",
+  "scale": 2,
+  "quality": 80,
+  "defaults": {
+    "scroller": "main"
+  },
+  "views": {
+    "popup": {
+      "title": "Tray popup",
+      "size": [
+        360,
+        420
+      ],
+      "source": "frontend/src/Popup.svelte",
+      "opens": "Click the tray icon, or launch the exe while it already runs.",
+      "url": "/?view=popup"
+    },
+    "corner": {
+      "title": "Corner box",
+      "size": [
+        280,
+        96
+      ],
+      "source": "frontend/src/Corner.svelte",
+      "opens": "Corner box switch in the popup, or Show corner box in the tray menu; stays on top at the bottom right.",
+      "url": "/?view=corner"
+    }
+  },
+  "states": [
+    {
+      "id": "popup-loading",
+      "view": "popup",
+      "state": "loading",
+      "title": "Loading",
+      "how": "The first moment after the popup opens, before a status arrives."
+    },
+    {
+      "id": "popup-running",
+      "view": "popup",
+      "state": "running",
+      "title": "Running",
+      "how": "Distro, Docker and Portainer up; keepalive hold on."
+    },
+    {
+      "id": "popup-starting",
+      "view": "popup",
+      "state": "starting",
+      "title": "Starting",
+      "how": "Right after Start, until Portainer answers (up to 90 s)."
+    },
+    {
+      "id": "popup-partial",
+      "view": "popup",
+      "state": "partial",
+      "title": "Distro up, Portainer down",
+      "how": "The container exited while the distro runs."
+    },
+    {
+      "id": "popup-stopping",
+      "view": "popup",
+      "state": "stopping",
+      "title": "Stopping",
+      "how": "Right after Stop distro."
+    },
+    {
+      "id": "popup-stopped",
+      "view": "popup",
+      "state": "stopped",
+      "title": "Stopped",
+      "how": "Distro stopped by the user or by the WSL idle timeout."
+    },
+    {
+      "id": "popup-not-installed",
+      "view": "popup",
+      "state": "not-installed",
+      "title": "Not installed",
+      "how": "Before setup, or after Uninstall all."
+    },
+    {
+      "id": "popup-no-wsl",
+      "view": "popup",
+      "state": "no-wsl",
+      "title": "WSL missing",
+      "how": "WSL is not enabled on the machine."
+    },
+    {
+      "id": "popup-no-wsl-info",
+      "view": "popup",
+      "state": "no-wsl",
+      "title": "WSL missing, details open",
+      "how": "The i button opened: the raw error text sits behind it.",
+      "actions": [
+        {
+          "click": "More information"
+        }
+      ]
+    },
+    {
+      "id": "popup-confirm-shutdown",
+      "view": "popup",
+      "state": "running",
+      "title": "Confirm Shut down WSL",
+      "how": "Shut down WSL clicked.",
+      "actions": [
+        {
+          "click": "More"
+        },
+        {
+          "click": "Shut down WSL",
+          "role": "menuitem"
+        }
+      ]
+    },
+    {
+      "id": "popup-start-error",
+      "view": "popup",
+      "state": "start-error",
+      "title": "Start failed",
+      "how": "Start clicked and Portainer did not answer in time.",
+      "actions": [
+        {
+          "click": "Start"
+        }
+      ]
+    },
+    {
+      "id": "popup-start-hover",
+      "view": "popup",
+      "state": "stopped",
+      "title": "Pointer on Start",
+      "how": "The pointer rests on the Start button.",
+      "actions": [
+        {
+          "hover": "Start"
+        }
+      ],
+      "keepHover": true
+    },
+    {
+      "id": "popup-more",
+      "view": "popup",
+      "state": "running",
+      "title": "More menu open",
+      "how": "The three-dot menu: Settings, Corner box, Set up..., Shut down WSL.",
+      "actions": [
+        {
+          "click": "More"
+        }
+      ]
+    },
+    {
+      "id": "popup-starting-1",
+      "view": "popup",
+      "state": "starting-1",
+      "title": "Motion: Start, 1 of 4 parts",
+      "how": "Right after Start: only WSL is up; the sea is low."
+    },
+    {
+      "id": "popup-starting-2",
+      "view": "popup",
+      "state": "starting-2",
+      "title": "Motion: Start, 2 of 4 parts",
+      "how": "Ubuntu is up, Docker is not yet."
+    },
+    {
+      "id": "popup-leap-0",
+      "view": "popup",
+      "state": "running",
+      "title": "Motion: leap, start",
+      "how": "The moment Portainer answers: the orca low in the sea, tilted.",
+      "url": "/?view=popup&frame=0"
+    },
+    {
+      "id": "popup-leap-50",
+      "view": "popup",
+      "state": "running",
+      "title": "Motion: leap, peak",
+      "how": "Half way through the single 1.4 s leap: the orca at its highest.",
+      "url": "/?view=popup&frame=0.45"
+    },
+    {
+      "id": "popup-leap-100",
+      "view": "popup",
+      "state": "running",
+      "title": "Motion: leap, end",
+      "how": "The leap has finished; the orca rests as in the logo. Nothing loops after this.",
+      "url": "/?view=popup&frame=1"
+    },
+    {
+      "id": "corner-running",
+      "view": "corner",
+      "state": "running",
+      "title": "Running",
+      "how": "Portainer up."
+    },
+    {
+      "id": "corner-starting",
+      "view": "corner",
+      "state": "starting",
+      "title": "Working",
+      "how": "Any action in progress."
+    },
+    {
+      "id": "corner-stopped",
+      "view": "corner",
+      "state": "stopped",
+      "title": "Stopped",
+      "how": "Distro stopped."
+    },
+    {
+      "id": "corner-start-error",
+      "view": "corner",
+      "state": "start-error",
+      "title": "Start failed",
+      "how": "Start clicked and Portainer did not answer in time.",
+      "actions": [
+        {
+          "click": "Start"
+        }
+      ]
+    },
+    {
+      "id": "corner-start-error-info",
+      "view": "corner",
+      "state": "start-error",
+      "title": "Start failed, details open",
+      "how": "The i button opened; the raw error replaces the buttons until it is closed.",
+      "actions": [
+        {
+          "click": "Start"
+        },
+        {
+          "click": "More information"
+        }
+      ]
+    },
+    {
+      "id": "corner-not-installed",
+      "view": "corner",
+      "state": "not-installed-start",
+      "title": "Not installed",
+      "how": "Corner box on while the distro is missing; Start clicked.",
+      "actions": [
+        {
+          "click": "Start"
+        }
+      ]
+    },
+    {
+      "id": "corner-not-installed-info",
+      "view": "corner",
+      "state": "not-installed-start",
+      "title": "Not installed, details open",
+      "how": "The i button opened.",
+      "actions": [
+        {
+          "click": "Start"
+        },
+        {
+          "click": "More information"
+        }
+      ]
+    }
+  ],
+  "skipped": [],
+  "real": []
+}
