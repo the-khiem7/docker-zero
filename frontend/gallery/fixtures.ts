@@ -139,6 +139,8 @@ export const scenarios: Record<string, Scenario> = {
   loading: { view: { checkedAt: "" } },
   running: {},
   starting: { view: { busy: "start", level: "partial", portainerUp: false, portainerVersion: "" } },
+  "starting-1": { view: { ...stoppedView, busy: "start", level: "partial" } },
+  "starting-2": { view: { busy: "start", level: "partial", docker: "unknown", portainer: "unknown", portainerUp: false, portainerVersion: "" } },
   partial: { view: { portainer: "exited", portainerUp: false, portainerVersion: "", level: "partial" } },
   stopping: { view: { busy: "stop" } },
   stopped: { view: stoppedView },
@@ -236,6 +238,16 @@ export const scenarios: Record<string, Scenario> = {
     view: notInstalledView,
     report: noDistro,
     setup: { steps: steps(setupTitles, [D, D, R]), log: setupLog, running: true, done: false },
+  },
+  "setup-distro": {
+    view: notInstalledView,
+    report: noDistro,
+    setup: {
+      steps: steps(setupTitles, [D, R]),
+      log: ["Checking WSL", "Downloading and registering Ubuntu-24.04 as Ubuntu-24.04"],
+      running: true,
+      done: false,
+    },
   },
   "setup-failed": {
     view: { ...stoppedView, distro: State.StateRunning, level: "partial" },
