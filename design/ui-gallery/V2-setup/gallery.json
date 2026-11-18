@@ -1,0 +1,142 @@
+{
+  "title": "Docker Zero Setup redesign board, V2 setup (bento)",
+  "lede": "The Setup window in the same bento language as V2-setting: a hero card with the ring and chips, a track of the eight steps, a key disc as the start button, take-over tiles, details behind the i button. Same mocked services and state ids as V2-popup. Mark each Keep, Revise or Discuss.",
+  "base": "http://127.0.0.1:9246",
+  "regenerate": [
+    "cd frontend && npm run gallery",
+    "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/V2-setup/gallery.json"
+  ],
+  "storageKey": "docker-zero-ui-gallery-v2-setup",
+  "scale": 2,
+  "quality": 80,
+  "defaults": {
+    "scroller": "main"
+  },
+  "views": {
+    "setup": {
+      "title": "Setup",
+      "size": [
+        520,
+        700
+      ],
+      "source": "frontend/src/Setup.svelte",
+      "opens": "Opens by itself at launch while Ubuntu-24.04 is missing; Set up tile or Set up... link in the popup; Set up Docker Zero... in the tray menu.",
+      "url": "/?view=setup",
+      "timers": "paused"
+    }
+  },
+  "states": [
+    {
+      "id": "setup-fresh",
+      "view": "setup",
+      "state": "setup-fresh",
+      "title": "First run",
+      "how": "First launch on a machine without Ubuntu-24.04.",
+      "crop": "full"
+    },
+    {
+      "id": "setup-invalid",
+      "view": "setup",
+      "state": "setup-fresh",
+      "title": "Form error",
+      "how": "Start setup clicked with the password empty.",
+      "actions": [
+        {
+          "click": "Start setup"
+        }
+      ],
+      "crop": "full"
+    },
+    {
+      "id": "setup-distro",
+      "view": "setup",
+      "state": "setup-distro",
+      "title": "Installing the distro",
+      "how": "Step 2 of 8, just started.",
+      "crop": "full"
+    },
+    {
+      "id": "setup-distro-slow",
+      "view": "setup",
+      "state": "setup-distro",
+      "title": "Same step, 2 min 30 s later",
+      "how": "The clock runs from when the window first saw the step; past 2 minutes a still-working notice appears.",
+      "actions": [
+        {
+          "press": "Shift",
+          "wait": 150000,
+          "label": "2 min 30 s later"
+        }
+      ],
+      "crop": "full"
+    },
+    {
+      "id": "setup-running",
+      "view": "setup",
+      "state": "setup-running",
+      "title": "Running",
+      "how": "Setup in progress, third step.",
+      "crop": "full"
+    },
+    {
+      "id": "setup-failed",
+      "view": "setup",
+      "state": "setup-failed",
+      "title": "Failed",
+      "how": "A step failed; the form returns with Try again.",
+      "crop": "full"
+    },
+    {
+      "id": "setup-done",
+      "view": "setup",
+      "state": "setup-done",
+      "title": "All set",
+      "how": "Every step finished.",
+      "crop": "full"
+    },
+    {
+      "id": "setup-existing",
+      "view": "setup",
+      "state": "setup-existing",
+      "title": "Existing setup found",
+      "how": "A setup made by hand from the old guide is detected.",
+      "crop": "full"
+    },
+    {
+      "id": "setup-adopted",
+      "view": "setup",
+      "state": "setup-existing",
+      "title": "Taken over",
+      "how": "Take over clicked; every item replaced.",
+      "actions": [
+        {
+          "click": "Take over"
+        }
+      ],
+      "crop": "full"
+    },
+    {
+      "id": "setup-adopt-error",
+      "view": "setup",
+      "state": "setup-adopt-error",
+      "title": "Take over failed",
+      "how": "A legacy file was locked by another process.",
+      "actions": [
+        {
+          "click": "Take over"
+        }
+      ],
+      "crop": "full"
+    },
+    {
+      "id": "setup-installed",
+      "view": "setup",
+      "state": "setup-installed",
+      "title": "Opened after setup",
+      "how": "Set up... opened again on a machine Docker Zero already set up.",
+      "crop": "full"
+    }
+  ],
+  "skipped": [],
+  "real": []
+}
