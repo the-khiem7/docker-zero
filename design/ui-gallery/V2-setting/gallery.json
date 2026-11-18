@@ -1,0 +1,528 @@
+{
+  "title": "Docker Zero Settings redesign board, V2 control deck",
+  "lede": "The Settings window as a control deck: a grid of big visual controls (power disc, app tiles, tide slider, certificate stamp) with drawn icons, chips instead of paragraphs and long explanations behind the i button. Chosen from three layouts of the exploration board. Same mocked services and state ids as before. Mark each Keep, Revise or Discuss.",
+  "base": "http://127.0.0.1:9246",
+  "regenerate": [
+    "cd frontend && npm run gallery",
+    "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/V2-setting/gallery.json"
+  ],
+  "storageKey": "docker-zero-ui-gallery3",
+  "scale": 2,
+  "quality": 80,
+  "defaults": {
+    "scroller": "main"
+  },
+  "skipped": [],
+  "real": [],
+  "views": {
+    "settings": {
+      "title": "Settings",
+      "size": [
+        520,
+        680
+      ],
+      "source": "frontend/src/Settings.svelte",
+      "opens": "Gear in the popup, or Settings... in the tray menu.",
+      "url": "/?view=settings"
+    },
+    "maintenance": {
+      "title": "Settings: Portainer and Danger zone",
+      "size": [
+        520,
+        680
+      ],
+      "source": "frontend/src/Maintenance.svelte",
+      "opens": "Bottom of the Settings window, below the certificate.",
+      "url": "/?view=settings",
+      "short": "Portainer and Danger zone"
+    }
+  },
+  "states": [
+    {
+      "id": "settings-loading",
+      "view": "settings",
+      "state": "settings-loading",
+      "title": "Loading",
+      "how": "The first moment after the window opens."
+    },
+    {
+      "id": "settings",
+      "view": "settings",
+      "state": "settings",
+      "title": "All settings",
+      "how": "Typical state after setup: auto start, shortcuts, keepalive, trusted certificate.",
+      "crop": "full"
+    },
+    {
+      "id": "settings-off",
+      "view": "settings",
+      "state": "settings-off",
+      "title": "Everything off",
+      "how": "Fresh portable run: no auto start, no shortcuts, WSL default idle.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Start with Windows",
+          "Shortcuts",
+          "Keep Ubuntu-24.04 running"
+        ]
+      }
+    },
+    {
+      "id": "settings-wslconfig",
+      "view": "settings",
+      "state": "settings-wslconfig",
+      "title": ".wslconfig mode pending",
+      "how": "Never stop idle distros chosen; WSL has not restarted yet.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Keep Ubuntu-24.04 running"
+        ]
+      }
+    },
+    {
+      "id": "settings-wslconfig-confirm",
+      "view": "settings",
+      "state": "settings-wslconfig",
+      "title": "Confirm Apply now",
+      "how": "Apply now... clicked.",
+      "actions": [
+        {
+          "click": "Apply now..."
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Keep Ubuntu-24.04 running"
+        ]
+      }
+    },
+    {
+      "id": "settings-browser",
+      "view": "settings",
+      "state": "settings-browser",
+      "title": "Custom browser, no Chrome",
+      "how": "Other browser chosen with Browse...; Chrome not installed.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Open Portainer in"
+        ]
+      }
+    },
+    {
+      "id": "settings-untrusted",
+      "view": "settings",
+      "state": "settings-untrusted",
+      "title": "Certificate not trusted",
+      "how": "After setup, before Install (trust).",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Certificate"
+        ]
+      }
+    },
+    {
+      "id": "settings-no-cert",
+      "view": "settings",
+      "state": "settings-no-cert",
+      "title": "No certificate",
+      "how": "Distro running but setup did not reach the certificate step.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Certificate"
+        ]
+      }
+    },
+    {
+      "id": "settings-cert-unread",
+      "view": "settings",
+      "state": "settings-cert-unread",
+      "title": "Distro stopped",
+      "how": "Settings opened while Ubuntu-24.04 is stopped; the certificate is not read.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Certificate"
+        ]
+      }
+    },
+    {
+      "id": "settings-hint-open",
+      "view": "settings",
+      "state": "settings",
+      "title": "Explanation behind the i button",
+      "how": "The i of the Certificate section opened: the long text is read on request, not printed on the page.",
+      "actions": [
+        {
+          "click": "About Certificate"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Certificate"
+        ]
+      }
+    },
+    {
+      "id": "settings-busy",
+      "view": "settings",
+      "state": "settings-busy",
+      "title": "Working",
+      "how": "A setting is being applied.",
+      "actions": [
+        {
+          "click": "Desktop",
+          "role": "checkbox"
+        }
+      ],
+      "crop": "full"
+    },
+    {
+      "id": "settings-problems",
+      "view": "settings",
+      "state": "settings-problems",
+      "title": "Errors",
+      "how": "A setting failed to apply, and two settings could not be read.",
+      "actions": [
+        {
+          "click": "Desktop",
+          "role": "checkbox"
+        }
+      ],
+      "crop": "full"
+    },
+    {
+      "id": "maint",
+      "view": "maintenance",
+      "state": "maint",
+      "title": "Idle",
+      "how": "Settings window scrolled to the bottom.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-updating",
+      "view": "maintenance",
+      "state": "maint-updating",
+      "title": "Updating",
+      "how": "Update Portainer clicked; pull in progress.",
+      "actions": [
+        {
+          "click": "Update Portainer"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-updated",
+      "view": "maintenance",
+      "state": "maint-updated",
+      "title": "Updated",
+      "how": "A newer lts image was pulled and Portainer restarted.",
+      "actions": [
+        {
+          "click": "Update Portainer"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-current",
+      "view": "maintenance",
+      "state": "maint-current",
+      "title": "Already latest",
+      "how": "Update clicked with the image current.",
+      "actions": [
+        {
+          "click": "Update Portainer"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-update-failed",
+      "view": "maintenance",
+      "state": "maint-update-failed",
+      "title": "Update failed",
+      "how": "Docker Hub unreachable.",
+      "actions": [
+        {
+          "click": "Update Portainer"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-reset-open",
+      "view": "maintenance",
+      "state": "maint",
+      "title": "Reset form",
+      "how": "Reset admin password... clicked.",
+      "actions": [
+        {
+          "click": "Reset admin password..."
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-reset-invalid",
+      "view": "maintenance",
+      "state": "maint",
+      "title": "Reset form: short password",
+      "how": "Reset password clicked with the fields empty.",
+      "actions": [
+        {
+          "click": "Reset admin password..."
+        },
+        {
+          "click": "Reset password"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-reset-wrong-user",
+      "view": "maintenance",
+      "state": "maint-reset-wrong-user",
+      "title": "Reset: wrong username",
+      "how": "Password replaced, but the username check failed.",
+      "actions": [
+        {
+          "click": "Reset admin password..."
+        },
+        {
+          "fill": "Admin username",
+          "value": "nobody"
+        },
+        {
+          "fill": "New password",
+          "value": "inventory-example-pass"
+        },
+        {
+          "fill": "Repeat new password",
+          "value": "inventory-example-pass"
+        },
+        {
+          "click": "Reset password"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-reset-done",
+      "view": "maintenance",
+      "state": "maint-reset-done",
+      "title": "Reset done",
+      "how": "Password replaced and checked.",
+      "actions": [
+        {
+          "click": "Reset admin password..."
+        },
+        {
+          "fill": "New password",
+          "value": "inventory-example-pass"
+        },
+        {
+          "fill": "Repeat new password",
+          "value": "inventory-example-pass"
+        },
+        {
+          "click": "Reset password"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-plan",
+      "view": "maintenance",
+      "state": "maint",
+      "title": "Uninstall plan",
+      "how": "Uninstall all... clicked; backup on, no file yet.",
+      "actions": [
+        {
+          "click": "Uninstall all..."
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-plan-file",
+      "view": "maintenance",
+      "state": "maint-plan-file",
+      "title": "Uninstall plan with backup file",
+      "how": "Choose file... used.",
+      "actions": [
+        {
+          "click": "Uninstall all..."
+        },
+        {
+          "click": "Choose file..."
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-confirm",
+      "view": "maintenance",
+      "state": "maint",
+      "title": "Uninstall confirmation",
+      "how": "Backup unticked, Continue clicked.",
+      "actions": [
+        {
+          "click": "Uninstall all..."
+        },
+        {
+          "click": "Save a backup of Ubuntu-24.04 first",
+          "role": "checkbox"
+        },
+        {
+          "click": "Continue"
+        }
+      ],
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-uninstalling",
+      "view": "maintenance",
+      "state": "maint-uninstalling",
+      "title": "Uninstalling",
+      "how": "Uninstall now clicked; backup export running.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-uninstall-failed",
+      "view": "maintenance",
+      "state": "maint-uninstall-failed",
+      "title": "Uninstall failed",
+      "how": "The Windows certificate dialog was answered No.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    },
+    {
+      "id": "maint-uninstalled",
+      "view": "maintenance",
+      "state": "maint-uninstalled",
+      "title": "Uninstalled",
+      "how": "Every step finished; only Quit is left.",
+      "crop": {
+        "selector": "section.card",
+        "heading": "h2",
+        "text": [
+          "Portainer",
+          "Danger zone"
+        ]
+      }
+    }
+  ]
+}
