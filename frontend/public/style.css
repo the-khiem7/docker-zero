@@ -1,33 +1,58 @@
-/* Windows 11 Action Center look: Mica-like surface, Segoe UI Variable, rounded tiles. */
+@font-face {
+  font-family: "Dela Gothic One";
+  src: url("/fonts/dela-gothic-one-latin-400-normal.woff2") format("woff2");
+  font-display: swap;
+}
+
 :root {
   color-scheme: light dark;
-  --surface: #f3f3f3;
-  --card: #ffffff;
-  --card-hover: #f9f9f9;
-  --border: #e5e5e5;
-  --text: #1b1b1b;
-  --text-muted: #5f5f5f;
-  --accent: #005fb8;
-  --accent-text: #ffffff;
-  --ok: #0f7b0f;
-  --warn: #9d5d00;
-  --bad: #c42b1c;
-  --radius: 8px;
+  --sea-0: #fbf6ea;
+  --sea-1: #f4ecd8;
+  --card: #fffdf6;
+  --line: #e3d9bf;
+  --text: #1f2a28;
+  --text-muted: #5c6a66;
+  --teal: #1e7468;
+  --teal-strong: #165a50;
+  --on-teal: #ffffff;
+  --water-a: #2d8f81;
+  --water-b: #1e7468;
+  --stopped: #7d8683;
+  --partial: #c97d0a;
+  --running: #2a9456;
+  --failed: #c4382f;
+  --font-display: "Dela Gothic One", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --radius: 14px;
+  --ease: cubic-bezier(0.22, 0.8, 0.3, 1);
+  /* shorter names the Settings and Maintenance styles use */
+  --border: var(--line);
+  --surface: var(--sea-0);
+  --card-hover: var(--sea-1);
+  --accent: var(--teal);
+  --accent-text: var(--on-teal);
+  --ok: var(--running);
+  --warn: var(--partial);
+  --bad: var(--failed);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface: #202020;
-    --card: #2d2d2d;
-    --card-hover: #353535;
-    --border: #3a3a3a;
-    --text: #ffffff;
-    --text-muted: #c5c5c5;
-    --accent: #60cdff;
-    --accent-text: #000000;
-    --ok: #6ccb5f;
-    --warn: #fce100;
-    --bad: #ff99a4;
+    --sea-0: #0b1f26;
+    --sea-1: #0f2a33;
+    --card: #12303a;
+    --line: #1f4651;
+    --text: #e9f1ee;
+    --text-muted: #9db4ae;
+    --teal: #4fc3b1;
+    --teal-strong: #7ad8c8;
+    --on-teal: #06231f;
+    --water-a: #3fb5a3;
+    --water-b: #2a8f82;
+    --stopped: #8c9a96;
+    --partial: #f0a43a;
+    --running: #4fd18a;
+    --failed: #ff7a6e;
   }
 }
 
@@ -40,9 +65,9 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: var(--surface);
+  background: var(--sea-0);
   color: var(--text);
-  font: 14px/1.4 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  font: 14px/1.4 var(--font-body);
   user-select: none;
 }
 
@@ -53,4 +78,17 @@ body {
 button {
   font: inherit;
   color: inherit;
+}
+
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
