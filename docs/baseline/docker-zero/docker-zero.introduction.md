@@ -19,7 +19,7 @@ In scope:
 - Day 2 widget: tray icon plus an Action Center style popup, and an optional always-on-top box in the bottom-right corner, with Start, Stop (terminate distro or shut down WSL), Open Portainer and live status (DZ-D3, DZ-D4).
 - Settings: auto start, shortcuts, idle mode, browser choice, certificate install/remove/regenerate, Portainer update and admin reset, uninstall (DZ-D6, DZ-D7, DZ-D20).
 - Adopting an existing manual setup made from the source guide (DZ-D8, DZ-D21).
-- Brand and front door: a logo used as the app icon, a UI design upgrade, an illustrated README and a GitHub Pages landing page, before the first release (DZ-D27).
+- Brand and front door: a logo used as the app icon, a UI design upgrade (pack `ui-ux`), an illustrated README and a GitHub Pages landing page, before the first release (DZ-D27).
 - Release: a GitHub Actions workflow builds the exe and creates the GitHub release when a `v*` tag is pushed (DZ-D32).
 
 Out of scope: anything Portainer already does (containers, images, volumes, logs) - DZ-D4; enabling the WSL Windows feature (needs admin) - DZ-D5; Kubernetes; machine-wide install.

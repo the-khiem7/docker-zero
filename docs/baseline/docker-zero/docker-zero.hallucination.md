@@ -3,7 +3,7 @@ baseline_schema: "2.0"
 pack: "docker-zero"
 document: "hallucination"
 status: "draft"
-updated: "2026-10-28"
+updated: "2026-11-19"
 code_ref: "uncommitted"
 ---
 
@@ -40,7 +40,6 @@ code_ref: "uncommitted"
 | DZ-D25 | WebView2 data beside the settings, both folders removed after exit | closed | DZ-D20, DZ-D9 |
 | DZ-D26 | Lesson: Windows line endings and a shared WebView2 folder broke checks during the release run | closed | DZ-D13, DZ-D25 |
 | DZ-D27 | The first release waits for the design phase | closed | DZ-D22, DZ-D29 |
-| DZ-D28 | UI inventory: mocked frontend for every state, real exe for the main windows, committed | closed | DZ-Q4, DZ-D27 |
 | DZ-D29 | The rebuilt release exe re-runs the full clean-profile gate | closed, gate target amended by DZ-D32 | DZ-Q5, DZ-D27, DZ-D32 |
 | DZ-D30 | README and landing page state no affiliation with Docker Inc. or Portainer | closed, logo rule amended by DZ-D31 | DZ-D1, DZ-D27, DZ-D31 |
 | DZ-D31 | Logo: an orca leaping out of a red ring over a two-tone sea; design rounds kept as a public gallery | closed | DZ-D30, DZ-D27 |
@@ -411,18 +410,6 @@ What breaks if ignored: the first public download carries an icon and a UI about
 
 Rejected: publish `v0.1.0` at `da09172` now and ship the design in a later version - the user declined it.
 
-### DZ-D28: UI inventory: mocked frontend for every state, real exe for the main windows, committed
-
-Decision: Phase 10 item 2 renders every window and state from the Svelte frontend in a browser with the Wails bindings replaced by per-state mocks, in light and dark; the built exe, driven by UI Automation, supplies reference screenshots of the main windows; the inventory page and its images are committed to the repository.
-
-Closes DZ-Q4.
-
-Why: several states exist only under real conditions (distro not installed, setup running, a failed pull, a stopped distro); mocks make each one repeatable for the before and after compare of item 4, and the real screenshots catch where the mock and WebView2 differ. Committed at the user's choice.
-
-What breaks if ignored: real-exe-only capture needs an uninstall or a blocked Docker Hub per state and per redesign; mock-only capture hides a drift between the mock and the Go services.
-
-Rejected: real exe only, and mocks only - the costs above. The inventory as a gitignored private Artifact, or a local file only - the user chose to commit it. Committed images must carry no account path, user name or machine name (public repository).
-
 ### DZ-D29: The rebuilt release exe re-runs the full clean-profile gate
 
 Decision: before `v0.1.0` is published, the exe built from the commit that ends Phase 10 passes the Phase 9 gate again: Uninstall all, then setup from scratch through the window, on this account.
@@ -539,4 +526,4 @@ What breaks if ignored: `docker` fails in Git Bash after a correct setup; a bash
 
 Rejected: `docker.ps1` - DZ-D19. A `docker.exe` shim - a second binary to build and ship, or a copy of the GUI exe that has no console. An alias in `~/.bashrc` - the app does not edit a shell profile it does not own.
 
-Observed: unit tests for the written files and the removal pass. Not verified: the wrapper run in Git Bash on a built exe. Found on this workstation: the user PATH held `docker-zero\bin` while the folder and `docker.cmd` did not exist, so `docker` failed in every shell; the cause is unknown (see the Phase 10 tech debt table in the roadmap).
+Observed: unit tests for the written files and the removal pass. Not verified: the wrapper run in Git Bash on a built exe.

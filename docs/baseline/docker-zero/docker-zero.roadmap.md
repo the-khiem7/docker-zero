@@ -3,7 +3,7 @@ baseline_schema: "2.0"
 pack: "docker-zero"
 document: "roadmap"
 status: "draft"
-updated: "2026-10-28"
+updated: "2026-11-19"
 code_ref: "uncommitted"
 ---
 
@@ -184,23 +184,14 @@ Not verified: SmartScreen or policy behaviour on another machine; the release do
 
 ## Phase 10: Design
 
-Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief was pending. Item 1 done: logo chosen after seven rounds (DZ-D31). Items 5 and 6 were built ahead of items 3 and 4 at the user's request; item 6 is built and awaits review (DZ-D35).
+Status: active. Brand, app UI and front door before the first release (DZ-D27). Items run in order; each starts only after the user accepts the review point of the one before. Exception: item 2 was built before item 1 at the user's request while the logo brief was pending. Item 1 done: logo chosen after seven rounds (DZ-D31). Items 2 to 4 moved to pack `ui-ux`. Items 5 and 6 were built ahead of items 3 and 4 at the user's request; item 6 is built and awaits review (DZ-D35).
 
 | Item | Output | Review point |
 |---|---|---|
 | 1. Brand logo | Signature note and two or three rough logo directions on the local board (`frontdoor-illustrate`); the chosen mark as a vector source, rendered to `packaging/appicon.png`, `packaging/windows/icon.ico` (`wails3 generate icons`) and the status tray icons of `internal/trayicon` | User picks or mixes a direction; the mark reads at 16, 20, 24 and 32 px; tray states stay distinguishable on light and dark taskbars |
-| 2. UI inventory | One HTML page listing every window and state (popup, corner box, settings, maintenance, setup with the take-over card, confirmations, errors), each with a screenshot: mocked frontend for every state, real exe for the main windows, committed (DZ-D28) | User confirms the list is complete |
-| 3. UI evaluation and design | Findings per screen; redesigned mockups in the logo's signature for the screens that need it | User approves each changed screen |
-| 4. Apply the design | Svelte and CSS changes under `frontend/`, the window sizes in `internal/ui` if a design needs them; no behaviour change | `wails3 task test`, `wails3 task lint`, `wails3 task build` pass; every inventory state re-shot from the built exe in light and dark and matched to its approved mockup |
+| 2 to 4. UI inventory, UI evaluation and design, apply the design | Moved to pack `ui-ux` (its Phase 1 to Phase 3); the inventory decision is UX-D1, formerly DZ-D28 | Review points are recorded there; item 4 changes `frontend/src/` only after the user approves the boards (UX-D3) |
 | 5. README banner | Hero banner and figures as light and dark WebP pairs (`frontdoor-readme` with `frontdoor-illustrate`), README rewritten story-first with no UI screenshots (DZ-D34), no-affiliation statement (DZ-D30) | User approves the README plan before building; the skill's verify step passes; no account path in any image |
 | 6. Landing page | One `index.html` for GitHub Pages (`frontdoor-landing`), social preview image, favicon from the mark, no-affiliation statement (DZ-D30) | User picks a direction and the placement; the skill's axe and Lighthouse checks; the user switches on Pages in the repository settings |
-
-Tech debt to solve in items 3 and 4 (research first, then design):
-
-| Debt | Evidence | Research to do |
-|---|---|---|
-| The setup window has no visible way back once setup is done | Reachable only from the tray menu entry "Set up Docker Zero..." and the small "Set up..." link at the foot of the popup; the Settings window has no entry; the window opens by itself only while the distro is not installed (DZ-D24) | Which name and place suit a returning user (a "Repair setup" action in Settings, a banner in the popup when a part is missing); what the window should show on a finished setup (the "Nothing left to replace" observation of item 2) |
-| Setup does not notice a missing or stale part | On this workstation `docker-zero\bin` was on the user PATH while the folder and `docker.cmd` were gone; every shell reported `docker` not found and the popup showed Running (DZ-D36) | Cause (uninstall, a manual delete, or a skipped step 8); whether the popup should check the wrapper files and PATH and offer Repair |
 
 Item 1 evidence (`3aa5256` icons, `c824f21` gallery):
 
@@ -213,19 +204,6 @@ Item 1 evidence (`3aa5256` icons, `c824f21` gallery):
 | Gallery | `design/brand/gallery/` (72 sheets, `directions.json`, `directions.html`); the `.frontdoor/` copy deleted; `AGENTS.md` rule added, scoped to the logo rounds by DZ-D34 |
 
 Not verified: the icons in the real Windows tray and in Explorer from a built exe.
-
-Item 2 evidence, awaiting the user's review:
-
-| Check | Result |
-|---|---|
-| Mock harness | `frontend/vite.inventory.config.ts` (`npm run inventory`, port 9246) swaps the six bound service modules for `frontend/inventory/mock/*`; scenarios in `frontend/inventory/fixtures.ts`; each mock `satisfies` the generated binding's signatures, so a new or changed Go method fails `svelte-check` |
-| Render | `design/ui-inventory/shoot.py` (Playwright on the installed Edge): 50 states over popup, corner box, settings, maintenance and setup, light and dark, WebP at 2x, 4.4 MB |
-| Page | `design/ui-inventory/index.html`: filters by window, screenshot theme and review state, Keep / Revise / Discuss with a note per state kept in the browser, Copy review as Markdown; no horizontal scroll at 390 px; no page errors |
-| Real references | `design/ui-inventory/real.ps1` captured the popup, corner box, settings and setup windows of the installed exe; account paths painted over |
-| Observations on the page | 10; among them a failed Start in the corner box shows nothing (the error line is squeezed to zero height), and Setup opened after setup shows Existing setup found / Nothing left to replace above a form that would run setup again |
-| `wails3 task lint`, `wails3 task test`, `wails3 task build` | 0 issues, 0 svelte-check errors; tests ok; build ok, the production bundle does not import the mocks |
-
-Not verified: the mocks against the Go services at run time beyond the type check; the page in browsers other than Edge.
 
 Item 5 evidence, built and awaiting the user's review:
 
@@ -271,7 +249,7 @@ Not verified: the page on its real Pages URL and base path; the social preview i
 
 ## Next action
 
-1. Phase 10 item 2: the user reviews `design/ui-inventory/index.html` and confirms the list of states is complete.
+1. Phase 10 items 2 to 4 (UI inventory, UI redesign, apply the design) moved to pack `ui-ux`; its roadmap holds that next action. The README and landing page figures are re-checked after its Phase 3.
 2. Phase 10 item 5 (README) was built ahead of items 3 and 4 at the user's request (DZ-D34): the user reviewed `README.md` and `design/readme/asset/`, and the README is committed; the user pushes it. Items 3, 4 and 6 follow in order, one commit per item after its checks pass; after item 4, re-check the setup and tray figures against the redesigned UI.
 3. Phase 10 item 6 (landing page) was built ahead of items 3 and 4 (DZ-D35): the user reviews `index.html` in a browser; `index.html`, `.nojekyll` and `design/landing/` are committed, and the user pushes them. The user answers DZ-Q6 (link the page from the README and the repository Website field). The user switches Pages on (Settings, Pages, Deploy from a branch, `main`, `/ (root)`) only after a release without a suffix exists. Re-check the page's demos after item 4.
 4. Phase 9: after Phase 10, the user pushes tag `v0.1.0` on the commit that ends it; the workflow builds the exe and creates the release. Download that exe and re-run the full clean-profile gate on it (DZ-D29). The agent's earlier attempt to publish was refused by its permission mode, so the user pushes the tag or allows it.
