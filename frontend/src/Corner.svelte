@@ -1,51 +1,72 @@
 <script lang="ts">
-  import { live, run, service, levelLabel } from "./lib/status.svelte";
+  import { live, run, service } from "./lib/status.svelte";
+  import Ring from "./Ring.svelte";
+  import ErrorNote from "./ErrorNote.svelte";
 
+  let errOpen = $state(false);
   const v = $derived(live.view);
+  const err = $derived(live.error || v?.error || "");
   const level = $derived(v?.level ?? "stopped");
   const busy = $derived(v?.busy ?? "");
+  const up = $derived([v?.wslAvailable, v?.distro === "running", v?.docker === "active", v?.portainerUp].filter(Boolean).length);
+  const word = $derived(
+    busy ? "Working" : ({ running: "Running", partial: "Not ready", stopped: "Stopped", failed: "Needs setup" }[level] ?? "Stopped"),
+  );
 </script>
 
 <main>
-  <div class="head">
-    <span class="dot {level}"></span>
-    <strong>Docker Zero</strong>
-    <span class="state">{busy ? "Working..." : levelLabel[level]}</span>
-    <button class="close" title="Hide corner box" onclick={() => service.SetCornerBox(false)}>&#10005;</button>
-  </div>
-  <div class="actions">
-    {#if v?.portainerUp}
-      <button onclick={() => run(() => service.OpenPortainer())}>Open Portainer</button>
-      <button disabled={!!busy} onclick={() => run(() => service.StopDistro())}>Stop</button>
+  <Ring id="corner" orca parts={up} {level} size={64} />
+  <div class="col">
+    <div class="head">
+      <strong class="word">{word}</strong>
+      <button class="close" title="Hide corner box" aria-label="Hide corner box" onclick={() => service.SetCornerBox(false)}
+        >&#10005;</button
+      >
+    </div>
+    {#if err}
+      <ErrorNote compact showDetail={false} bind:open={errOpen} detail={err} />
+    {/if}
+    {#if errOpen}
+      <p class="detail">{err}</p>
     {:else}
-      <button class="primary" disabled={!!busy} onclick={() => run(() => service.Start())}>Start</button>
+      <div class="actions">
+        {#if v?.portainerUp}
+          <button class="primary" onclick={() => run(() => service.OpenPortainer())}>Open</button>
+          <button disabled={!!busy} onclick={() => run(() => service.StopDistro())}>Stop</button>
+        {:else}
+          <button class="primary" disabled={!!busy} onclick={() => run(() => service.Start())}>Start</button>
+        {/if}
+      </div>
     {/if}
   </div>
-  {#if live.error}
-    <p class="error" title={live.error}>{live.error}</p>
-  {/if}
 </main>
 
 <style>
   main {
-    height: 100%;
-    padding: 12px;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid var(--border);
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+    padding: 8px 12px;
+    background: var(--sea-0);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
     --wails-draggable: drag;
+  }
+  .col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
   }
   .head {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
   }
-  .state {
-    margin-left: auto;
-    color: var(--text-muted);
-    font-size: 12px;
+  .word {
+    font: 15px/1 var(--font-display);
   }
   .close {
     border: 0;
@@ -56,47 +77,34 @@
   }
   .actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
   }
   .actions button {
     flex: 1;
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+    min-height: 28px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
     background: var(--card);
+    font-weight: 600;
     cursor: pointer;
     --wails-draggable: no-drag;
   }
+  .actions button.primary {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--on-teal);
+  }
   .actions button:disabled {
-    opacity: 0.45;
+    opacity: 0.5;
     cursor: default;
   }
-  .actions button.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--accent-text);
-  }
-  .error {
+  .detail {
     margin: 0;
-    font-size: 11px;
-    color: var(--bad);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text-muted);
-  }
-  .dot.running {
-    background: var(--ok);
-  }
-  .dot.partial {
-    background: var(--warn);
-  }
-  .dot.failed {
-    background: var(--bad);
+    max-height: 38px;
+    overflow: auto;
+    color: var(--text-muted);
+    font: 11px/1.35 Consolas, monospace;
+    word-break: break-word;
+    user-select: text;
   }
 </style>
