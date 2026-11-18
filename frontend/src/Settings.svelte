@@ -1,5 +1,9 @@
 <script lang="ts">
+  import "./sx.css";
   import Maintenance from "./Maintenance.svelte";
+  import Icon from "./Icon.svelte";
+  import Hint from "./Hint.svelte";
+  import ErrorNote from "./ErrorNote.svelte";
   import * as S from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/settingsservice";
   import type { SettingsView } from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/models";
   import { BrowserKind, IdleMode } from "../bindings/github.com/the-khiem7/docker-zero/internal/settings/models";
@@ -34,283 +38,272 @@
   const idleModes = [
     {
       mode: IdleMode.IdleKeepalive,
-      title: "Keep running while Docker Zero runs",
+      icon: "anchor",
+      pos: 50,
+      title: "Keep alive",
+      scope: "This app only",
       note: "A hidden session holds Ubuntu-24.04 up. Changes nothing outside this app.",
     },
     {
       mode: IdleMode.IdleWSLConfig,
-      title: "Never stop idle distros (.wslconfig)",
-      note: "Sets instanceIdleTimeout=-1. Applies to every WSL2 distro of your account after WSL restarts.",
+      icon: "infinity",
+      pos: 94,
+      title: "Never idle",
+      scope: "All WSL distros",
+      note: "Sets instanceIdleTimeout=-1 in .wslconfig. Applies to every WSL2 distro of your account after WSL restarts.",
     },
     {
       mode: IdleMode.IdleDefault,
+      icon: "moon",
+      pos: 6,
       title: "WSL default",
+      scope: "Stops when idle",
       note: "WSL stops the distro, and Portainer with it, when nothing uses it.",
     },
   ];
 
   const expires = $derived(v?.cert.notAfter ? new Date(v.cert.notAfter).toLocaleDateString() : "");
+  const stopPos = $derived(v?.idleMode === IdleMode.IdleDefault ? 6 : v?.idleMode === IdleMode.IdleKeepalive ? 50 : 94);
+  const idleNote = $derived(idleModes.find((m) => m.mode === v?.idleMode)?.note ?? "");
+  const thumb = $derived(v?.cert.thumbprint ? v.cert.thumbprint.slice(0, 8) + "..." + v.cert.thumbprint.slice(-4) : "");
 
   load();
   window.addEventListener("focus", load);
 </script>
 
-<main>
+<main class="sx">
   <h1>Settings</h1>
 
   {#if !v}
-    <p class="muted">Loading...</p>
+    <span class="sr">Loading...</span>
+    <div class="grid">
+      <div class="skel w6"></div>
+      <div class="skel w3"></div>
+      <div class="skel w3"></div>
+      <div class="skel w6"></div>
+    </div>
   {:else}
-    <section class="card">
-      <h2>Start with Windows</h2>
-      <label class="row">
-        <input
-          type="checkbox"
-          checked={v.autoStart.enabled}
-          disabled={!!busy}
-          onchange={(e) => act("autostart", () => S.SetAutoStart(e.currentTarget.checked, v!.autoStart.startDistro))}
-        />
-        Start Docker Zero when I sign in
-      </label>
-      <label class="row indent">
-        <input
-          type="checkbox"
-          checked={v.autoStart.startDistro}
-          disabled={!!busy || !v.autoStart.enabled}
-          onchange={(e) => act("autostart", () => S.SetAutoStart(true, e.currentTarget.checked))}
-        />
-        Also start Ubuntu-24.04 and Portainer
-      </label>
-    </section>
-
-    <section class="card">
-      <h2>Shortcuts</h2>
-      <label class="row">
-        <input
-          type="checkbox"
-          checked={v.shortcuts.desktop}
-          disabled={!!busy}
-          onchange={(e) => act("shortcuts", () => S.SetShortcuts(e.currentTarget.checked, v!.shortcuts.startMenu))}
-        />
-        Desktop
-      </label>
-      <label class="row">
-        <input
-          type="checkbox"
-          checked={v.shortcuts.startMenu}
-          disabled={!!busy}
-          onchange={(e) => act("shortcuts", () => S.SetShortcuts(v!.shortcuts.desktop, e.currentTarget.checked))}
-        />
-        Start Menu
-      </label>
-      <p class="muted small">Shortcuts and auto start point at {v.installPath}; the app copies itself there first.</p>
-    </section>
-
-    <section class="card">
-      <h2>Keep Ubuntu-24.04 running</h2>
-      {#each idleModes as m (m.mode)}
-        <label class="row option">
-          <input
-            type="radio"
-            name="idle"
-            checked={v.idleMode === m.mode}
-            disabled={!!busy}
-            onchange={() => act("idle", () => S.SetIdleMode(m.mode))}
+    <div class="grid">
+      <section class="card w6">
+        <div class="lab">
+          <h2>Start with Windows</h2>
+          <Hint
+            label="Start with Windows"
+            text="Docker Zero opens when you sign in. With the second switch on it also starts Ubuntu-24.04 and Portainer."
           />
-          <span>
-            <strong>{m.title}</strong>
-            <span class="muted small block">{m.note}</span>
-          </span>
-        </label>
-      {/each}
-      <p class="muted small">.wslconfig: {v.wslConfigIdle ? "instanceIdleTimeout=-1 is set" : "no idle override"}</p>
-      {#if v.needsWslReboot}
-        {#if confirmApply}
-          <div class="warn">
-            <p>Shut down WSL now? Every WSL distro of your account stops, then starts again when used.</p>
-            <button
-              class="danger"
-              onclick={() => {
-                confirmApply = false;
-                act("apply", () => S.ApplyWSLConfig());
-              }}>Shut down WSL</button
-            >
-            <button onclick={() => (confirmApply = false)}>Later</button>
+        </div>
+        <div class="start">
+          <label class="disc" class:on={v.autoStart.enabled}>
+            <input
+              class="pick"
+              type="checkbox"
+              aria-label="Start Docker Zero when I sign in"
+              checked={v.autoStart.enabled}
+              disabled={!!busy}
+              onchange={(e) => act("autostart", () => S.SetAutoStart(e.currentTarget.checked, v!.autoStart.startDistro))}
+            />
+            <Icon name="power" size={36} />
+          </label>
+          <div>
+            <div class="big">{v.autoStart.enabled ? "On at sign-in" : "Off"}</div>
+            <label class="subline" class:off={!v.autoStart.enabled}>
+              Ubuntu + Portainer too
+              <input
+                class="pick"
+                type="checkbox"
+                aria-label="Also start Ubuntu-24.04 and Portainer"
+                checked={v.autoStart.startDistro}
+                disabled={!!busy || !v.autoStart.enabled}
+                onchange={(e) => act("autostart", () => S.SetAutoStart(true, e.currentTarget.checked))}
+              />
+              <span class="sw" class:on={v.autoStart.startDistro}></span>
+            </label>
           </div>
+        </div>
+      </section>
+
+      <section class="card w3">
+        <div class="lab">
+          <h2>Shortcuts</h2>
+          <Hint label="Shortcuts" text={"Shortcuts and auto start point at " + v.installPath + "; the app copies itself there first."} />
+        </div>
+        <div class="apps">
+          <label class="app" class:on={v.shortcuts.desktop}>
+            <input
+              class="pick"
+              type="checkbox"
+              aria-label="Desktop"
+              checked={v.shortcuts.desktop}
+              disabled={!!busy}
+              onchange={(e) => act("shortcuts", () => S.SetShortcuts(e.currentTarget.checked, v!.shortcuts.startMenu))}
+            />
+            <span class="face"><Icon name="monitor" size={26} /></span>Desktop
+          </label>
+          <label class="app" class:on={v.shortcuts.startMenu}>
+            <input
+              class="pick"
+              type="checkbox"
+              aria-label="Start Menu"
+              checked={v.shortcuts.startMenu}
+              disabled={!!busy}
+              onchange={(e) => act("shortcuts", () => S.SetShortcuts(v!.shortcuts.desktop, e.currentTarget.checked))}
+            />
+            <span class="face"><Icon name="menu" size={26} /></span>Start
+          </label>
+        </div>
+      </section>
+
+      <section class="card w3">
+        <div class="lab"><h2>Open Portainer in</h2></div>
+        <div class="rounds">
+          <label class="rb" class:on={v.browser === BrowserKind.BrowserDefault}>
+            <input
+              class="pick"
+              type="radio"
+              name="browser"
+              aria-label="System default"
+              checked={v.browser === BrowserKind.BrowserDefault}
+              onchange={() => act("browser", () => S.SetBrowser(BrowserKind.BrowserDefault, ""))}
+            />
+            <span class="o"><Icon name="globe" size={20} /></span>Default
+          </label>
+          <label class="rb" class:on={v.browser === BrowserKind.BrowserChrome} class:off={!v.chromePath}>
+            <input
+              class="pick"
+              type="radio"
+              name="browser"
+              aria-label="Google Chrome"
+              checked={v.browser === BrowserKind.BrowserChrome}
+              disabled={!v.chromePath}
+              onchange={() => act("browser", () => S.SetBrowser(BrowserKind.BrowserChrome, ""))}
+            />
+            <span class="o"><Icon name="compass" size={20} /></span>{v.chromePath ? "Chrome" : "no Chrome"}
+          </label>
+          <label class="rb" class:on={v.browser === BrowserKind.BrowserCustom} class:off={!v.browserPath}>
+            <input
+              class="pick"
+              type="radio"
+              name="browser"
+              aria-label="Other browser"
+              checked={v.browser === BrowserKind.BrowserCustom}
+              disabled={!v.browserPath}
+              onchange={() => act("browser", () => S.SetBrowser(BrowserKind.BrowserCustom, v!.browserPath))}
+            />
+            <span class="o"><Icon name="window" size={20} /></span>Other
+          </label>
+        </div>
+        <div class="chips">
+          {#if v.browserPath}
+            <span class="chip mono" title={v.browserPath}><Icon name="folder" size={14} /><span class="clip"><bdi>{v.browserPath}</bdi></span></span>
+          {/if}
+          <button class="btn small" onclick={pickBrowser}><Icon name="folder" size={14} />Browse...</button>
+        </div>
+      </section>
+
+      <section class="card w6">
+        <div class="lab">
+          <h2>Keep Ubuntu-24.04 running</h2>
+          <Hint label="Keep Ubuntu-24.04 running" text={idleNote} />
+        </div>
+        <div class="tide">
+          <svg viewBox="0 0 400 20" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 10Q25 0 50 10T100 10T150 10T200 10T250 10T300 10T350 10T400 10" fill="none" stroke="var(--line)" stroke-width="4" vector-effect="non-scaling-stroke" />
+            <path
+              d="M0 10Q25 0 50 10T100 10T150 10T200 10T250 10T300 10T350 10T400 10"
+              fill="none"
+              stroke="var(--teal)"
+              stroke-width="4"
+              vector-effect="non-scaling-stroke"
+              style="clip-path: inset(-4px {100 - stopPos}% -4px 0)"
+            />
+          </svg>
+          {#each [...idleModes].sort((a, b) => a.pos - b.pos) as m (m.mode)}
+            <label class="stop" class:on={v.idleMode === m.mode} style="left: {m.pos}%">
+              <input
+                class="pick"
+                type="radio"
+                name="idle"
+                aria-label={m.title}
+                checked={v.idleMode === m.mode}
+                disabled={!!busy}
+                onchange={() => act("idle", () => S.SetIdleMode(m.mode))}
+              />
+              <span class="dot"><Icon name={m.icon} size={m.pos === stopPos ? 22 : 18} /></span>{m.title}
+            </label>
+          {/each}
+        </div>
+        <div class="scope"><span>stops when idle</span><span>this app only</span><span>all distros</span></div>
+        <div class="chips">
+          <span class="chip" class:ok={v.wslConfigIdle}><Icon name="file" size={14} />.wslconfig {v.wslConfigIdle ? "idle override on" : "no idle override"}</span>
+          {#if v.needsWslReboot}
+            {#if confirmApply}
+              <span class="chip bad"><Icon name="alert" size={14} />Shut down WSL now? Every distro stops</span>
+              <button
+                class="btn danger small"
+                onclick={() => {
+                  confirmApply = false;
+                  act("apply", () => S.ApplyWSLConfig());
+                }}><Icon name="power" size={14} />Shut down WSL</button
+              >
+              <button class="btn small" onclick={() => (confirmApply = false)}>Later</button>
+            {:else}
+              <span class="chip warn"><Icon name="wave" size={14} />Restart WSL to apply</span>
+              <button class="btn small" disabled={!!busy} onclick={() => (confirmApply = true)}>Apply now...</button>
+            {/if}
+          {/if}
+        </div>
+      </section>
+
+      <section class="card w4">
+        <div class="lab">
+          <h2>Certificate</h2>
+          <Hint
+            label="Certificate"
+            text="Windows asks you to confirm each change to your trusted certificates. The private key stays inside Ubuntu-24.04. Regenerate restarts Portainer."
+          />
+        </div>
+        {#if v.cert.present}
+          <div class="stamp" class:warn={!v.cert.trusted}>
+            <svg class="arc" viewBox="0 0 108 108" aria-hidden="true">
+              <defs><path id="ca" d="M17 54a37 37 0 0 1 74 0" /><path id="cb" d="M15 58a39 39 0 0 0 78 0" /></defs>
+              <text font-size="10" font-weight="700" letter-spacing="2.5" fill="currentColor"
+                ><textPath href="#ca" startOffset="50%" text-anchor="middle">{v.cert.trusted ? "TRUSTED" : "NOT TRUSTED"}</textPath></text
+              >
+              <text font-size="9" fill="currentColor"><textPath href="#cb" startOffset="50%" text-anchor="middle">until {expires}</textPath></text>
+            </svg>
+            <Icon name={v.cert.trusted ? "shield" : "shieldAlert"} size={34} />
+          </div>
+          <div class="stampbar"><span class="chip mono" title={v.cert.thumbprint}><Icon name="hash" size={12} />{thumb}</span></div>
         {:else}
-          <div class="warn">
-            <p>The .wslconfig change takes effect after WSL shuts down.</p>
-            <button disabled={!!busy} onclick={() => (confirmApply = true)}>Apply now...</button>
+          <div class="stamp none"><Icon name={v.certUnread ? "moon" : "shieldOff"} size={34} /></div>
+          <div class="stampbar">
+            <span class="chip"><Icon name={v.certUnread ? "power" : "alert"} size={14} />{v.certUnread ? "Start Ubuntu-24.04 to read it" : "No certificate yet"}</span>
           </div>
         {/if}
-      {/if}
-    </section>
+        <div class="rounds" style="margin-top: 12px">
+          <button class="rbtn" aria-label="Install (trust)" disabled={!!busy || !v.cert.present || v.cert.trusted} onclick={() => act("cert", () => S.TrustCert())}
+            ><span class="o"><Icon name="shield" size={20} /></span>Trust</button
+          >
+          <button class="rbtn" aria-label="Remove" disabled={!!busy || !v.cert.trusted} onclick={() => act("cert", () => S.UntrustCert())}
+            ><span class="o"><Icon name="shieldOff" size={20} /></span>Remove</button
+          >
+          <button class="rbtn" aria-label="Regenerate" disabled={!!busy || v.certUnread} onclick={() => act("cert", () => S.RegenerateCert())}
+            ><span class="o"><Icon name="refresh" size={20} /></span>Renew</button
+          >
+        </div>
+      </section>
 
-    <section class="card">
-      <h2>Browser for Open Portainer</h2>
-      <label class="row">
-        <input
-          type="radio"
-          name="browser"
-          checked={v.browser === BrowserKind.BrowserDefault}
-          onchange={() => act("browser", () => S.SetBrowser(BrowserKind.BrowserDefault, ""))}
-        />
-        System default
-      </label>
-      <label class="row">
-        <input
-          type="radio"
-          name="browser"
-          checked={v.browser === BrowserKind.BrowserChrome}
-          disabled={!v.chromePath}
-          onchange={() => act("browser", () => S.SetBrowser(BrowserKind.BrowserChrome, ""))}
-        />
-        Google Chrome {v.chromePath ? "" : "(not found)"}
-      </label>
-      <label class="row">
-        <input
-          type="radio"
-          name="browser"
-          checked={v.browser === BrowserKind.BrowserCustom}
-          disabled={!v.browserPath}
-          onchange={() => act("browser", () => S.SetBrowser(BrowserKind.BrowserCustom, v!.browserPath))}
-        />
-        Other: <span class="path">{v.browserPath || "none chosen"}</span>
-        <button class="small-btn" onclick={pickBrowser}>Browse...</button>
-      </label>
-    </section>
-
-    <section class="card">
-      <h2>Certificate for https://localhost:9443</h2>
-      {#if v.cert.present}
-        <p class="small">
-          Expires {expires}.
-          {v.cert.trusted ? "Trusted by this Windows account." : "Not trusted: the browser shows a warning."}
-        </p>
-        <p class="muted small mono">{v.cert.thumbprint}</p>
-      {:else if v.certUnread}
-        <p class="small">Start Ubuntu-24.04 to read its certificate.</p>
-      {:else}
-        <p class="small">No certificate in Ubuntu-24.04 yet.</p>
-      {/if}
-      <div class="buttons">
-        <button disabled={!!busy || !v.cert.present || v.cert.trusted} onclick={() => act("cert", () => S.TrustCert())}
-          >Install (trust)</button
-        >
-        <button disabled={!!busy || !v.cert.trusted} onclick={() => act("cert", () => S.UntrustCert())}>Remove</button>
-        <button disabled={!!busy || v.certUnread} onclick={() => act("cert", () => S.RegenerateCert())}>Regenerate</button>
-      </div>
-      <p class="muted small">
-        Windows asks you to confirm each change to your trusted certificates. The private key stays inside
-        Ubuntu-24.04. Regenerate restarts Portainer.
-      </p>
-    </section>
-
-    <Maintenance />
+      <Maintenance />
+    </div>
   {/if}
 
   {#if busy}
-    <p class="muted small">Working...</p>
+    <div class="toast"><span class="spin"></span>Working...</div>
   {/if}
   {#if error}
-    <p class="error">{error}</p>
+    <div style="margin-top: 10px"><ErrorNote title="Could not apply the change" detail={error} /></div>
   {/if}
   {#each v?.problems ?? [] as p (p)}
-    <p class="error small">{p}</p>
+    <div style="margin-top: 8px"><ErrorNote title="Could not read a setting" detail={p} /></div>
   {/each}
 </main>
-
-<style>
-  main {
-    height: 100%;
-    overflow-y: auto;
-    padding: 16px 20px 24px;
-    user-select: text;
-  }
-  h1 {
-    margin: 0 0 12px;
-    font-size: 20px;
-    font-weight: 600;
-  }
-  h2 {
-    margin: 0 0 8px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    margin-bottom: 12px;
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 3px 0;
-  }
-  .row.option {
-    align-items: flex-start;
-  }
-  .indent {
-    padding-left: 24px;
-  }
-  .block {
-    display: block;
-  }
-  .muted {
-    color: var(--text-muted);
-  }
-  .small {
-    font-size: 12px;
-  }
-  .mono {
-    font-family: Consolas, monospace;
-    word-break: break-all;
-  }
-  .path {
-    color: var(--text-muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 220px;
-  }
-  .buttons {
-    display: flex;
-    gap: 8px;
-    margin: 8px 0;
-  }
-  button {
-    padding: 5px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface);
-    cursor: pointer;
-  }
-  button:disabled {
-    opacity: 0.45;
-    cursor: default;
-  }
-  .small-btn {
-    margin-left: auto;
-    padding: 2px 10px;
-  }
-  .danger {
-    background: var(--bad);
-    border-color: var(--bad);
-    color: #fff;
-  }
-  .warn {
-    margin-top: 8px;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--warn);
-  }
-  .warn p {
-    margin: 0 0 8px;
-  }
-  .error {
-    color: var(--bad);
-  }
-</style>

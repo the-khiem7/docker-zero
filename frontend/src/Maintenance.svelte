@@ -1,5 +1,9 @@
 <script lang="ts">
   import { Events } from "@wailsio/runtime";
+  import Icon from "./Icon.svelte";
+  import Hint from "./Hint.svelte";
+  import Ring from "./Ring.svelte";
+  import ErrorNote from "./ErrorNote.svelte";
   import * as M from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/maintainservice";
   import * as U from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/uninstallservice";
   import type { SetupView } from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/models";
@@ -26,7 +30,14 @@
   const removed = $derived(u?.done ?? false);
   const working = $derived(!!busy || removing);
 
-  const icons: Record<string, string> = { running: "◐", done: "✓", skipped: "↷", failed: "✕" };
+  const subject = (title: string) => {
+    const t = title.toLowerCase();
+    if (t.includes("back up")) return "backup";
+    if (t.includes("certificate")) return "shield";
+    if (t.includes("distro")) return "distro";
+    if (t.includes("auto start")) return "power";
+    return "sliders";
+  };
 
   Events.On("uninstall", (e) => {
     u = e.data;
@@ -88,264 +99,191 @@
     });
 
   const quit = () => act("quit", () => U.Quit());
+
+  const removes = [
+    { icon: "distro", t: "Ubuntu", s: "Ubuntu-24.04 with images, containers, volumes" },
+    { icon: "shield", t: "Certificate", s: "the trusted Portainer certificate" },
+    { icon: "power", t: "Auto start", s: "auto start, shortcuts and the PATH entry" },
+    { icon: "terminal", t: "docker", s: "the docker command" },
+    { icon: "file", t: ".wslconfig", s: "the idle line this app added" },
+    { icon: "sliders", t: "Settings", s: "Docker Zero settings and data folder" },
+  ];
+
+  const short = (title: string) => {
+    const k = subject(title);
+    return ({ backup: "Backup", shield: "Certificate", distro: "Ubuntu", power: "Auto start", sliders: "Settings" } as Record<string, string>)[k] ?? title;
+  };
+  const finished = $derived((u?.steps ?? []).filter((s) => s.status === "done" || s.status === "skipped").length);
+  const trackPct = $derived(Math.min(100, (Math.max(0, finished - (removing ? 0 : 1)) / Math.max(1, (u?.steps?.length ?? 2) - 1)) * 100));
+  const ready = $derived(!!username.trim() && secret.length >= minLength && secret === again);
+  const fill = $derived(Math.min(100, (secret.length / minLength) * 100));
 </script>
 
-<section class="card">
-  <h2>Portainer</h2>
-  <div class="buttons">
-    <button disabled={working} onclick={update}>Update Portainer</button>
-    <button disabled={working} onclick={() => (resetOpen = !resetOpen)}>Reset admin password...</button>
+<section class="card w2">
+  <div class="lab">
+    <h2>Portainer</h2>
+    <Hint
+      label="Portainer"
+      text="Update pulls the latest long-term-support image and restarts Portainer; your data stays. Reset replaces the password of the existing admin account."
+    />
   </div>
-  <p class="muted small">
-    Update pulls the latest long-term-support image and restarts Portainer; your data stays. Reset replaces the
-    password of the existing admin account.
-  </p>
-  {#if resetOpen}
-    <div class="panel">
-      <label class="field">
-        Admin username
-        <input type="text" bind:value={username} autocomplete="off" spellcheck="false" />
-      </label>
-      <label class="field">
-        New password
-        <input type="password" bind:value={secret} autocomplete="new-password" />
-      </label>
-      <label class="field">
-        Repeat new password
-        <input type="password" bind:value={again} autocomplete="new-password" />
-      </label>
-      <p class="muted small">
-        At least {minLength} characters. The username is only used to check the new password; the account keeps its
-        name. Portainer stops for a few seconds.
-      </p>
-      <button class="primary" disabled={working} onclick={reset}>Reset password</button>
-    </div>
-  {/if}
-  {#if busy === "update" || busy === "reset"}<p class="muted small">Working...</p>{/if}
-  {#if notice}<p class="ok small">{notice}</p>{/if}
-  {#if error && busy === ""}<p class="error small">{error}</p>{/if}
+  <div class="col">
+    <button class="sq" aria-label="Update Portainer" disabled={working} onclick={update}>
+      {#if busy === "update"}<span class="spin big"></span>{:else}<Icon name="update" size={24} />{/if}Update
+    </button>
+    <button class="sq" aria-label="Reset admin password..." disabled={working} onclick={() => (resetOpen = !resetOpen)}
+      ><Icon name="key" size={24} />Reset password</button
+    >
+  </div>
 </section>
 
-<section class="card danger-zone">
-  <h2>Danger zone</h2>
+{#if resetOpen}
+  <section class="card w6">
+    <div class="lab">
+      <h2>Reset admin password</h2>
+      <Hint
+        label="Reset password"
+        text={`At least ${minLength} characters. The username is only used to check the new password; the account keeps its name. Portainer stops for a few seconds.`}
+      />
+    </div>
+    <div class="resetrow">
+      <button class="disc key" class:on={ready} aria-label="Reset password" disabled={working} style="--fill: {fill}%" onclick={reset}>
+        {#if busy === "reset"}<span class="spin big"></span>{:else}<Icon name="key" size={34} />{/if}
+      </button>
+      <div class="uf">
+        <label class="ul"><Icon name="user" size={18} /><input type="text" aria-label="Admin username" placeholder="Admin username" bind:value={username} autocomplete="off" spellcheck="false" /></label>
+        <label class="ul"><Icon name="lock" size={18} /><input type="password" aria-label="New password" placeholder="New password" bind:value={secret} autocomplete="new-password" /></label>
+        <label class="ul"><Icon name="lock" size={18} /><input type="password" aria-label="Repeat new password" placeholder="Repeat new password" bind:value={again} autocomplete="new-password" /></label>
+        <div class="meter">
+          <span class="ticks">{#each Array.from({ length: minLength }, (_, i) => i) as i (i)}<i class:on={i < secret.length}></i>{/each}</span>
+          <span class="chip" class:ok={secret.length >= minLength}>{Math.min(secret.length, minLength)}/{minLength}</span>
+          {#if again}<span class="chip" class:ok={again === secret} class:bad={again !== secret}
+              ><Icon name={again === secret ? "check" : "cross"} size={14} />{again === secret ? "match" : "differ"}</span
+            >{/if}
+        </div>
+      </div>
+    </div>
+  </section>
+{/if}
+{#if error && busy === ""}
+  <div class="w6"><ErrorNote title={error.length > 60 ? "Portainer task failed" : error} detail={error} /></div>
+{/if}
+
+<section class="card w6 red">
+  <div class="lab">
+    <h2>Danger zone</h2>
+    <Hint
+      label="Danger zone"
+      text="Uninstall removes the Ubuntu-24.04 distro with all its images, containers and volumes; the trusted Portainer certificate (Windows asks you to confirm); auto start, shortcuts, the docker command and its PATH entry; the .wslconfig idle line this app added; and the Docker Zero settings."
+    />
+  </div>
+
   {#if u && (removing || removed || u.error)}
-    <ul class="steps">
-      {#each u.steps as step (step.id)}
-        <li class={step.status || "pending"}>
-          <span class="icon" aria-hidden="true">{icons[step.status] ?? "○"}</span>
-          <span>{step.title}</span>
-          {#if step.status === "skipped"}<span class="note">nothing to do</span>{/if}
-        </li>
-      {/each}
-    </ul>
-    {#if u.log?.length}<pre class="log">{u.log.join("\n")}</pre>{/if}
-    {#if u.error}<p class="error small">{u.error}</p>{/if}
     {#if removed}
-      <p class="small">
-        Docker Zero is removed. Quit to finish: its own folder is deleted once the app has closed. A new terminal no
-        longer finds the docker command.
-      </p>
-      <button class="danger" disabled={!!busy} onclick={quit}>Quit Docker Zero</button>
-    {:else if !removing}
-      <p class="muted small">Fix the problem above and run the uninstall again; finished steps are skipped.</p>
-      <button disabled={working} onclick={() => (stage = "plan")}>Uninstall all...</button>
+      <div class="dz">
+        <Ring id="gone" orca parts={0} level="stopped" size={72} />
+        <div class="grow">
+          <div class="big">Docker Zero is removed</div>
+          <span class="chip"><Icon name="terminal" size={14} />new terminals lose the docker command</span>
+        </div>
+        <button class="btn danger" disabled={!!busy} onclick={quit}><Icon name="power" size={16} />Quit Docker Zero</button>
+      </div>
+    {:else}
+      <div class="track" style="--p: {trackPct}%">
+        <span class="rail"><i></i></span>
+        {#each u.steps as step (step.id)}
+          <div class="st {step.status || 'pending'}" title={step.title}>
+            <span class="nd">
+              {#if step.status === "done"}<Icon name="check" size={16} />
+              {:else if step.status === "failed"}<Icon name="cross" size={16} />
+              {:else if step.status === "skipped"}<Icon name="skip" size={16} />
+              {:else}<Icon name={subject(step.title)} size={15} />
+              {/if}
+            </span>
+            <span class="cap">{short(step.title)}</span>
+            <span class="sr">{step.title}: {step.status || "pending"}</span>
+          </div>
+        {/each}
+      </div>
+      <div class="chips" style="justify-content: space-between">
+        {#if u.log?.length}
+          <details open={removing}>
+            <summary><Icon name="terminal" size={14} />Details</summary>
+            <pre class="log">{u.log.join("\n")}</pre>
+          </details>
+        {:else}<span></span>{/if}
+        {#if !removing}
+          <button class="btn ghost-danger small" disabled={working} onclick={() => (stage = "plan")}><Icon name="refresh" size={14} />Uninstall all...</button>
+        {/if}
+      </div>
+    {/if}
+    {#if u.error}
+      <div style="margin-top: 10px"><ErrorNote title="Uninstall stopped" detail={u.error} /></div>
     {/if}
   {:else if stage === "idle"}
-    <p class="muted small">Removes Ubuntu-24.04 with Docker, Portainer and every container and volume in it.</p>
-    <button class="danger-outline" disabled={working} onclick={() => (stage = "plan")}>Uninstall all...</button>
+    <div class="dz">
+      <button class="disc red" aria-label="Uninstall all..." disabled={working} onclick={() => (stage = "plan")}><Icon name="trash" size={32} /></button>
+      <div class="grow">
+        <div class="big">Uninstall everything</div>
+        <div class="chips" style="margin-top: 6px">
+          <span class="chip"><Icon name="distro" size={14} />Ubuntu-24.04</span>
+          <span class="chip"><Icon name="app" size={14} />Docker + Portainer</span>
+          <span class="chip bad"><Icon name="trash" size={14} />volumes</span>
+        </div>
+      </div>
+    </div>
   {/if}
 
   {#if stage === "plan" && !removing && !removed}
-    <div class="panel">
-      <p class="small"><strong>This removes:</strong></p>
-      <ul class="small list">
-        <li>the Ubuntu-24.04 distro with all its images, containers and volumes</li>
-        <li>the trusted Portainer certificate (Windows asks you to confirm)</li>
-        <li>auto start, shortcuts, the docker command and its PATH entry</li>
-        <li>the .wslconfig idle line this app added, and the Docker Zero settings</li>
-      </ul>
-      <label class="row">
-        <input type="checkbox" bind:checked={backup} />
-        Save a backup of Ubuntu-24.04 first
-      </label>
-      {#if backup}
-        <p class="warn small">
-          Making the backup stops Ubuntu-24.04 and every container in it. The file can be as large as the whole
-          distro.
-        </p>
-        <div class="row">
-          <span class="path small">{backupPath || "no file chosen"}</span>
-          <button class="small-btn" onclick={pick}>Choose file...</button>
-        </div>
-      {/if}
-      <div class="buttons">
-        <button disabled={backup && !backupPath} onclick={() => (stage = "confirm")}>Continue</button>
-        <button onclick={() => (stage = "idle")}>Cancel</button>
+    <div class="cargo" aria-label="What is removed">
+      {#each removes as r (r.t)}
+        <span class="cg" title={r.s}><span class="bub"><Icon name={r.icon} size={22} /></span>{r.t}</span>
+      {/each}
+    </div>
+    <div class="planrow">
+      <div class="bkcell" class:on={backup}>
+        <label class="bkhead">
+          <input class="pick" type="checkbox" aria-label="Save a backup of Ubuntu-24.04 first" bind:checked={backup} />
+          <span class="bub on"><Icon name="backup" size={22} /></span>
+          <span class="grow"><b>Backup first</b></span>
+          <span class="sw" class:on={backup}></span>
+        </label>
+        {#if backup}
+          <div class="chips" style="margin-top: 8px">
+            <span class="chip mono" title={backupPath}><Icon name="file" size={14} /><span class="clip"><bdi>{backupPath || "no file chosen"}</bdi></span></span>
+            <button class="btn small" onclick={pick}><Icon name="folder" size={14} />Choose file...</button>
+            <Hint label="Backup" text="The backup stops Ubuntu-24.04 and every container in it. The file can be as large as the whole distro." />
+          </div>
+        {/if}
+      </div>
+      <div class="col2">
+        <button class="btn primary" disabled={backup && !backupPath} onclick={() => (stage = "confirm")}>Continue</button>
+        <button class="btn" onclick={() => (stage = "idle")}>Cancel</button>
       </div>
     </div>
   {/if}
 
   {#if stage === "confirm" && !removing && !removed}
-    <div class="panel warn-panel">
-      <p class="small">
-        <strong>This cannot be undone.</strong>
-        {backup ? "Your backup is saved first." : "No backup will be made."} Remove Docker Zero and Ubuntu-24.04 now?
-      </p>
-      <div class="buttons">
-        <button class="danger" disabled={working} onclick={begin}>Uninstall now</button>
-        <button onclick={() => (stage = "idle")}>Cancel</button>
+    <div class="dz">
+      <button class="disc red on" aria-label="Uninstall now" disabled={working} onclick={begin}><Icon name="trash" size={32} /></button>
+      <div class="grow">
+        <div class="big">This cannot be undone</div>
+        <div class="chips" style="margin-top: 6px">
+          <span class="chip" class:ok={backup}><Icon name={backup ? "backup" : "cross"} size={14} />{backup ? "backup first" : "no backup"}</span>
+          <span class="chip bad">tap the disc to remove</span>
+        </div>
       </div>
+      <button class="btn" onclick={() => (stage = "idle")}>Cancel</button>
     </div>
   {/if}
 
-  {#if busy === "uninstall" || removing}<p class="muted small">Working...</p>{/if}
-  {#if error && busy === "" && stage !== "idle"}<p class="error small">{error}</p>{/if}
+  {#if error && busy === "" && stage !== "idle"}
+    <div style="margin-top: 10px"><ErrorNote title="Could not start" detail={error} /></div>
+  {/if}
 </section>
 
-<style>
-  h2 {
-    margin: 0 0 8px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    margin-bottom: 12px;
-  }
-  .danger-zone {
-    border-color: var(--bad);
-  }
-  .panel {
-    margin-top: 8px;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-  }
-  .warn-panel {
-    border-color: var(--bad);
-  }
-  .muted {
-    color: var(--text-muted);
-  }
-  .small {
-    font-size: 12px;
-  }
-  .ok {
-    color: var(--ok);
-  }
-  .error {
-    color: var(--bad);
-    word-break: break-word;
-  }
-  .warn {
-    color: var(--warn);
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 8px;
-  }
-  .field input {
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface);
-    color: inherit;
-  }
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 3px 0;
-  }
-  .list {
-    margin: 0 0 8px;
-    padding-left: 18px;
-  }
-  .path {
-    color: var(--text-muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-  }
-  .buttons {
-    display: flex;
-    gap: 8px;
-    margin: 8px 0;
-  }
-  button {
-    padding: 5px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface);
-    cursor: pointer;
-  }
-  button:disabled {
-    opacity: 0.45;
-    cursor: default;
-  }
-  .small-btn {
-    padding: 2px 10px;
-  }
-  .primary {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: var(--accent-text);
-  }
-  .danger {
-    background: var(--bad);
-    border-color: var(--bad);
-    color: #fff;
-  }
-  .danger-outline {
-    border-color: var(--bad);
-    color: var(--bad);
-  }
-  .steps {
-    list-style: none;
-    margin: 0 0 8px;
-    padding: 0;
-  }
-  .steps li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 3px 0;
-    color: var(--text-muted);
-  }
-  .steps li.running,
-  .steps li.done {
-    color: inherit;
-  }
-  .steps li.done .icon {
-    color: var(--ok);
-  }
-  .steps li.failed .icon {
-    color: var(--bad);
-  }
-  .icon {
-    width: 16px;
-    text-align: center;
-  }
-  .note {
-    margin-left: auto;
-    font-size: 12px;
-  }
-  .log {
-    max-height: 140px;
-    overflow: auto;
-    margin: 8px 0;
-    padding: 8px 10px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    font-size: 11px;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-</style>
+{#if busy === "update" || busy === "reset" || busy === "uninstall" || removing || notice}
+  <div class="toast" class:good={!!notice && !busy && !removing}>
+    {#if notice && !busy && !removing}<Icon name="check" size={16} />{notice}{:else}<span class="spin"></span>Working...{/if}
+  </div>
+{/if}
