@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Docker Zero README motion banner and social preview</title>
+<!--
+Signature: same as figures.html (cream paper, red ring, two-tone teal sea, Dela Gothic One for the name).
+- Motion: the sea drifts one wave period per loop (back swell right, front swell left) so the loop is seamless, the two orcas bob out of step, three bubbles rise from the sea and fade. Nothing else moves; the text stays still so it can be read at any frame.
+- Loop: 30 frames, 80 ms each. A reader with prefers-reduced-motion gets the still hero from figures.html through the <picture> sources in the README.
+- Social: one text block (the name) inside the 40 px safe border, the sea along the bottom edge.
+
+Render, from the repository root:
+1. the social card (still PNG, 1280x640):
+   uvx --from playwright --with pillow python -I <skill-dir>/scripts/render.py design/readme/source/motion.html --root . --out design/readme/asset --items social
+2. the animated hero (hero-motion.webp and hero-motion-dark.webp):
+   uvx --from playwright --with pillow python -I design/readme/source/frames.py
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Figtree:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+  .hero .sea g { will-change: transform; }
+  .hero .bub { position: absolute; border-radius: 50%; border: 3px solid var(--teal); opacity: 0; }
+  .social { width: 640px; height: 320px; text-align: center; }
+  .social .wm { position: absolute; left: 50%; transform: translateX(-50%); top: 96px; line-height: 1; white-space: nowrap; font-size: 76px; letter-spacing: -1px; margin: 0; font-weight: 400; }
+  .social .sea { position: absolute; left: 0; bottom: 0; width: 640px; height: 70px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<div class="item hero" id="hero-motion" style="height:420px">
+  <div class="wm display">D<svg class="o" viewBox="0 0 100 100"><use href="#mark"/></svg>cker Zer<svg class="o" viewBox="0 0 100 100"><use href="#mark"/></svg></div>
+  <p class="quote">No admin prompt. No licence talk. No terminal marathon.</p>
+  <p class="tag">Docker and Portainer on Windows, set up for you and kept one click away.</p>
+  <span class="bub" style="left:70px;width:16px;height:16px"></span>
+  <span class="bub" style="left:118px;width:10px;height:10px"></span>
+  <span class="bub" style="left:1104px;width:14px;height:14px"></span>
+  <svg class="sea" viewBox="0 0 1200 90" preserveAspectRatio="none" data-bleed>
+    <g id="wb"><path d="M-240,30 Q-180,10 -120,30 T0,30 T120,30 T240,30 T360,30 T480,30 T600,30 T720,30 T840,30 T960,30 T1080,30 T1200,30 T1320,30 T1440,30 L1440,90 L-240,90 Z" fill="#7fd1c7"/></g>
+    <g id="wf"><path d="M-240,48 Q-180,28 -120,48 T0,48 T120,48 T240,48 T360,48 T480,48 T600,48 T720,48 T840,48 T960,48 T1080,48 T1200,48 T1320,48 T1440,48 L1440,90 L-240,90 Z" fill="#2a9d8f"/></g>
+  </svg>
+</div>
+
+<div class="item social" id="social" data-social>
+  <h1 class="wm display">D<svg class="o" viewBox="0 0 100 100" style="display:inline-block;width:1.0885em;height:1.0885em;vertical-align:-0.178em;margin:0 -0.0762em;color:var(--red)"><use href="#mark"/></svg>cker Zer<svg class="o" viewBox="0 0 100 100" style="display:inline-block;width:1.0885em;height:1.0885em;vertical-align:-0.178em;margin:0 -0.0762em;color:var(--red)"><use href="#mark"/></svg></h1>
+  <svg class="sea" viewBox="0 0 640 70" preserveAspectRatio="none" data-bleed>
+    <path d="M0,24 Q40,8 80,24 T160,24 T240,24 T320,24 T400,24 T480,24 T560,24 T640,24 L640,70 L0,70 Z" fill="#7fd1c7"/>
+    <path d="M0,40 Q40,24 80,40 T160,40 T240,40 T320,40 T400,40 T480,40 T560,40 T640,40 L640,70 L0,70 Z" fill="#2a9d8f"/>
+  </svg>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+/* setT(t), t in 0..1, is the loop position; the frame script steps it. Without ?t= the page shows frame 0. */
+const TAU = Math.PI * 2;
+const set = (id, v) => { const el = document.getElementById(id); if (el) el.setAttribute("transform", v); };
+function setT(t) {
+  set("wb", `translate(${240 * t} 0)`);
+  set("wf", `translate(${-240 * t} 0)`);
+  document.querySelectorAll("#hero-motion .o").forEach((o, k) => {
+    const s = Math.sin(TAU * t + k * Math.PI);
+    o.style.transform = `translateY(${(-5 * s).toFixed(2)}px) rotate(${(2.5 * s).toFixed(2)}deg)`;
+  });
+  document.querySelectorAll("#hero-motion .bub").forEach((b, k) => {
+    const p = (t + k / 3) % 1;
+    b.style.top = `${340 - p * 130}px`;
+    b.style.opacity = (Math.sin(Math.PI * p) * 0.7).toFixed(2);
+  });
+}
+setT(parseFloat(new URLSearchParams(location.search).get("t") || "0"));
+</script>
+</body>
+</html>
