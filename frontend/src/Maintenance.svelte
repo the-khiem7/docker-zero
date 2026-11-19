@@ -119,7 +119,7 @@
   const fill = $derived(Math.min(100, (secret.length / minLength) * 100));
 </script>
 
-<section class="card w2">
+<section class="card w3">
   <div class="lab">
     <h2>Portainer</h2>
     <Hint

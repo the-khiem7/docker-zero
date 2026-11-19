@@ -3,6 +3,7 @@
   import Maintenance from "./Maintenance.svelte";
   import Icon from "./Icon.svelte";
   import Hint from "./Hint.svelte";
+  import Sea from "./Sea.svelte";
   import ErrorNote from "./ErrorNote.svelte";
   import * as S from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/settingsservice";
   import type { SettingsView } from "../bindings/github.com/the-khiem7/docker-zero/internal/ui/models";
@@ -102,30 +103,33 @@
               disabled={!!busy}
               onchange={(e) => act("autostart", () => S.SetAutoStart(e.currentTarget.checked, v!.autoStart.startDistro))}
             />
+            <Sea level={v.autoStart.enabled ? 0.42 : 0} deep />
             <Icon name="power" size={36} />
           </label>
-          <div>
+          <div class="grow">
             <div class="big">{v.autoStart.enabled ? "On at sign-in" : "Off"}</div>
-            <label class="subline" class:off={!v.autoStart.enabled}>
-              Ubuntu + Portainer too
-              <input
-                class="pick"
-                type="checkbox"
-                aria-label="Also start Ubuntu-24.04 and Portainer"
-                checked={v.autoStart.startDistro}
-                disabled={!!busy || !v.autoStart.enabled}
-                onchange={(e) => act("autostart", () => S.SetAutoStart(true, e.currentTarget.checked))}
-              />
-              <span class="sw" class:on={v.autoStart.startDistro}></span>
-            </label>
+            <div class="sub">{v.autoStart.enabled ? "opens with Windows" : "start it from the Start menu"}</div>
           </div>
+          <label class="duo" class:on={v.autoStart.enabled && v.autoStart.startDistro} class:off={!v.autoStart.enabled}>
+            <input
+              class="pick"
+              type="checkbox"
+              role="switch"
+              aria-label="Also start Ubuntu-24.04 and Portainer"
+              checked={v.autoStart.startDistro}
+              disabled={!!busy || !v.autoStart.enabled}
+              onchange={(e) => act("autostart", () => S.SetAutoStart(true, e.currentTarget.checked))}
+            />
+            <span class="face"><Icon name="distro" size={22} /><span class="plus">+</span><Icon name="app" size={22} /></span>
+            <span class="cap">{v.autoStart.enabled && v.autoStart.startDistro ? "Ubuntu + Portainer" : "App only"}</span>
+          </label>
         </div>
       </section>
 
       <section class="card w3">
         <div class="lab">
           <h2>Shortcuts</h2>
-          <Hint label="Shortcuts" text={"Shortcuts and auto start point at " + v.installPath + "; the app copies itself there first."} />
+          <Hint label="Shortcuts" text="Shortcuts and auto start open the installed copy; the app copies itself there first." code={v.installPath} />
         </div>
         <div class="apps">
           <label class="app" class:on={v.shortcuts.desktop}>
@@ -192,7 +196,7 @@
             <span class="o"><Icon name="window" size={20} /></span>Other
           </label>
         </div>
-        <div class="chips">
+        <div class="chips mid">
           {#if v.browserPath}
             <span class="chip mono" title={v.browserPath}><Icon name="folder" size={14} /><span class="clip"><bdi>{v.browserPath}</bdi></span></span>
           {/if}
@@ -228,11 +232,12 @@
                 disabled={!!busy}
                 onchange={() => act("idle", () => S.SetIdleMode(m.mode))}
               />
-              <span class="dot"><Icon name={m.icon} size={m.pos === stopPos ? 22 : 18} /></span>{m.title}
+              <span class="dot">{#if v.idleMode === m.mode}<Sea level={0.38} simple />{/if}<Icon name={m.icon} size={m.pos === stopPos ? 22 : 18} /></span>
+              <span class="t">{m.title}</span>
+              <span class="s">{m.scope}</span>
             </label>
           {/each}
         </div>
-        <div class="scope"><span>stops when idle</span><span>this app only</span><span>all distros</span></div>
         <div class="chips">
           <span class="chip" class:ok={v.wslConfigIdle}><Icon name="file" size={14} />.wslconfig {v.wslConfigIdle ? "idle override on" : "no idle override"}</span>
           {#if v.needsWslReboot}
@@ -254,7 +259,7 @@
         </div>
       </section>
 
-      <section class="card w4">
+      <section class="card w3">
         <div class="lab">
           <h2>Certificate</h2>
           <Hint
