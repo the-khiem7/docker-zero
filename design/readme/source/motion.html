@@ -12,8 +12,8 @@ Signature: same as figures.html (cream paper, red ring, two-tone teal sea, Dela 
 Render, from the repository root:
 1. the social card (still PNG, 1280x640):
    uvx --from playwright --with pillow python -I <skill-dir>/scripts/render.py design/readme/source/motion.html --root . --out design/readme/asset --items social
-2. the animated hero (hero-motion.webp and hero-motion-dark.webp):
-   uvx --from playwright --with pillow python -I design/readme/source/frames.py
+2. the animated hero (hero-motion.webp and hero-motion-dark.webp), with the animate.py of the frontdoor-readme skill:
+   uvx --from playwright --with pillow python -I <frontdoor-readme-dir>/scripts/animate.py design/readme/source/motion.html --root . --item hero-motion --call "setT({v})" --motion loop --name hero-motion --out design/readme/asset
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
