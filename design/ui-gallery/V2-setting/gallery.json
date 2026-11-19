@@ -178,6 +178,18 @@
       }
     },
     {
+      "id": "settings-hint-shortcuts",
+      "view": "settings",
+      "state": "settings",
+      "title": "Explanation of a card on the left edge",
+      "how": "The i of the Shortcuts card opened: the bubble stays inside the window and the install folder sits in a monospace pill.",
+      "actions": [
+        {
+          "click": "About Shortcuts"
+        }
+      ]
+    },
+    {
       "id": "settings-busy",
       "view": "settings",
       "state": "settings-busy",

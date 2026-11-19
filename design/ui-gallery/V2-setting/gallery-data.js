@@ -6,7 +6,7 @@ window.GALLERY = {
   "uvx --from playwright --with pillow python -I <frontdoor-ui-gallery>/scripts/shoot.py render design/ui-gallery/V2-setting/gallery.json"
  ],
  "generated": "2026-11-19",
- "commit": "3579917",
+ "commit": "e966701",
  "storageKey": "docker-zero-ui-gallery3",
  "views": {
   "settings": {
@@ -50,7 +50,7 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 680,
-    "kb": 6
+    "kb": 7
    },
    "dark": {
     "w": 520,
@@ -74,12 +74,12 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 1021,
-    "kb": 74
+    "kb": 75
    },
    "dark": {
     "w": 520,
     "h": 1021,
-    "kb": 69
+    "kb": 70
    }
   },
   {
@@ -98,12 +98,12 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 520,
-    "kb": 34
+    "kb": 35
    },
    "dark": {
     "w": 520,
     "h": 520,
-    "kb": 31
+    "kb": 32
    }
   },
   {
@@ -201,7 +201,7 @@ window.GALLERY = {
    "dark": {
     "w": 520,
     "h": 296,
-    "kb": 19
+    "kb": 20
    }
   },
   {
@@ -249,7 +249,7 @@ window.GALLERY = {
    "dark": {
     "w": 520,
     "h": 296,
-    "kb": 13
+    "kb": 14
    }
   },
   {
@@ -270,12 +270,38 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 296,
-    "kb": 28
+    "kb": 26
    },
    "dark": {
     "w": 520,
     "h": 296,
-    "kb": 27
+    "kb": 25
+   }
+  },
+  {
+   "id": "settings-hint-shortcuts",
+   "view": "settings",
+   "state": "settings",
+   "title": "Explanation of a card on the left edge",
+   "how": "The i of the Shortcuts card opened: the bubble stays inside the window and the install folder sits in a monospace pill.",
+   "note": "",
+   "actions": [
+    "click About Shortcuts"
+   ],
+   "crop": "window",
+   "themes": [
+    "light",
+    "dark"
+   ],
+   "light": {
+    "w": 520,
+    "h": 680,
+    "kb": 57
+   },
+   "dark": {
+    "w": 520,
+    "h": 680,
+    "kb": 53
    }
   },
   {
@@ -296,12 +322,12 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 1074,
-    "kb": 75
+    "kb": 76
    },
    "dark": {
     "w": 520,
     "h": 1074,
-    "kb": 70
+    "kb": 71
    }
   },
   {
@@ -322,12 +348,12 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 1245,
-    "kb": 88
+    "kb": 89
    },
    "dark": {
     "w": 520,
     "h": 1245,
-    "kb": 82
+    "kb": 83
    }
   },
   {
@@ -588,7 +614,7 @@ window.GALLERY = {
    "light": {
     "w": 520,
     "h": 531,
-    "kb": 40
+    "kb": 41
    },
    "dark": {
     "w": 520,
